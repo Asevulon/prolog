@@ -1,0 +1,695 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 12. Пункт 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch11_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch12_2.htm">Вперёд</a></p>
+
+<hr>
+
+<h3 align="center">Глава 12</h3>
+
+<h3 align="center">ПОИСК С ПРЕДПОЧТЕНИЕМ: ЭВРИСТИЧЕСКИЙ
+ПОИСК</h3>
+
+<p>Поиск в графах при решении задач, как правило,
+невозможен без решения проблемы комбинаторной
+сложности, возникающей из-за быстрого роста<a
+name="tn344"> числа альтернатив. Эффективным средством
+борьбы с этим служит <span id="t344">эвристический
+поиск</span>.</p>
+</a>
+
+<p><a name="tn342">Один из путей использования
+эвристической информации о задаче - это
+получение численных <em><span id="t342">эвристических
+оценок</span></em> для вершин пространства состояний.
+Оценка вершины указывает нам, насколько данная
+вершина перспективна с точки зрения достижения
+цели. Идея состоит в том, чтобы всегда продолжать
+поиск, начиная с наиболее перспективной вершины,
+выбранной из всего множества кандидатов. Именно
+на этом принципе основана программа поиска с
+предпочтением, описанная в данной главе</a><a
+name="tn214">.</p>
+</a><a name="p12_1"><script language="JavaScript">double_line();</script>
+</a>
+
+<h4>12. 1.&nbsp;&nbsp;&nbsp; <span id="t214">Поиск с предпочтением</span></h4>
+
+<p>Программу поиска с предпочтением можно
+получить как результат усовершенствования
+программы поиска в ширину (рис. 11.13). Подобно
+поиску в ширину, поиск с предпочтением
+начинается со стартовой вершины и использует
+множество путей-кандидатов. В то время, как поиск
+в ширину всегда выбирает для продолжения самый
+короткий путь (т.е. переходит в вершины
+наименьшей глубины), поиск с предпочтением
+вносит в этот принцип следующее
+усовершенствование: для каждого кандидата
+вычисляется оценка и для продолжения выбирается
+кандидат с наилучшей оценкой.</p>
+
+<p align="center"><img src="pic/fig12_1.gif" width="213" height="189"
+alt="fig12_1.gif (1069 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 12. 1.</strong>&nbsp; Построение
+эвристической оценки <em>f(n)</em>&nbsp; стоимости<br>
+самого дешевого пути из&nbsp; <em>s</em>&nbsp; в&nbsp; <em>t</em>,
+&nbsp; проходящего через&nbsp; <em>n</em>:&nbsp; <em>f(n) = g(n) + h(n)</em><a
+name="tn217">.</small></p>
+</a>
+
+<p>Мы будем в дальнейшем предполагать, что <span
+id="t217">для дуг пространства состояний определена
+функция стоимости <em>с(n, n')</em></span>&nbsp; - стоимость
+перехода из вершины <em>n</em>&nbsp; к вершине-преемнику
+<em>n'</em><a name="tn215">.</p>
+
+<p><span id="t215">Пусть <em>f</em>&nbsp; - это эвристическая
+оценочная функция</span>, при помощи которой мы
+получаем для каждой вершины <em>n</em>&nbsp; оценку <em>f(
+n)</em> &nbsp; &quot;трудности&quot; этой вершины. Тогда
+наиболее перспективной вершиной-кандидатом
+следует считать вершину, для которой&nbsp; <em>f</em>
+&nbsp; принимает минимальное значение. Мы будем
+использовать здесь функцию&nbsp; <em>f</em> &nbsp;
+специального вида, приводящую к хорошо
+известному А*-алгоритму. Функция&nbsp; <em>f( n)</em> &nbsp;
+будет построена таким образом, чтобы давать
+оценку стоимости оптимального решающего пути из
+стартовой вершины&nbsp; <em>s</em>&nbsp; к одной из целевых
+вершин при условии, что этот путь проходит через
+вершину&nbsp; <em>n</em>.&nbsp; Давайте предположим, что
+такой путь существует и что&nbsp; <em>t</em>&nbsp; -&nbsp; это
+целевая вершина, для которой этот путь минимален.
+Тогда оценку&nbsp; <em>f( n)</em> можно представить в виде
+суммы из двух слагаемых (рис. 12.1):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>f( n) = g( n) + h( n)</em></p>
+
+<p>Здесь&nbsp; <em>g( n)</em>&nbsp; - оценка оптимального пути
+из&nbsp; <em>s</em>&nbsp; в&nbsp; <em>n</em>;&nbsp; <em>h( n)</em> -&nbsp; оценка
+оптимального пути из&nbsp; <em>n</em>&nbsp; в&nbsp; <em>t</em>.</p>
+
+<p>Когда в процессе поиска мы попадаем в вершину
+&nbsp; <em>n</em>,&nbsp; мы оказываемся в следующей
+ситуация: путь из&nbsp; <em>s</em>&nbsp; в&nbsp; <em>n</em>&nbsp; уже
+найден, и его стоимость может быть вычислена как
+сумма стоимостей составляющих его дуг. Этот путь
+не обязательно оптимален (возможно, существует
+более дешевый, еще не найденный путь из&nbsp; <em>s</em>
+&nbsp; в&nbsp; <em>n</em>),&nbsp; однако стоимость этого пути
+можно использовать в качестве оценки&nbsp; <em>g(n)</em>
+&nbsp; минимальной стоимости пути из&nbsp; <em>s</em>&nbsp; в
+&nbsp; <em>n</em>.&nbsp; Что же касается второго слагаемого
+&nbsp; <em>h(n)</em>,&nbsp; то о нем трудно что-либо сказать,
+поскольку к этому моменту область пространства
+состояний, лежащая между&nbsp; <em>n</em>&nbsp; и&nbsp; <em>t</em>,
+&nbsp; еще не &quot;изучена&quot; программой поиска.
+Поэтому, как правило, о значении&nbsp; <em>h(n)</em> &nbsp;
+можно только строить догадки на основании
+эвристических соображений, т.е. на основании тех
+знаний о конкретной задаче, которыми обладает
+алгоритм. Поскольку значение&nbsp; <em>h</em> &nbsp;
+зависит от предметной области, универсального
+метода для его вычисления не существует.
+Конкретные примеры того, как строят эти
+&quot;эвристические догадки&quot;, мы приведем позже.
+Сейчас же будем считать, что тем или иным
+способом функция&nbsp; <em>h</em>&nbsp; задана, и
+сосредоточим свое внимание на деталях нашей
+программы поиска с предпочтением.</p>
+
+<p>Можно представлять себе поиск с предпочтением
+следующим образом. Процесс поиска состоит из
+некоторого числа конкурирующих между собой
+подпроцессов, каждый из которых занимается своей
+альтерна-</p>
+
+<p align="center"><img src="pic/fig12_2.gif" width="461" height="712"
+alt="fig12_2.gif (4971 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 12. 2.</strong>&nbsp; Поиск
+кратчайшего маршрута из&nbsp; <em>s</em>&nbsp; в&nbsp; <em>t</em>.
+&nbsp; (а)&nbsp; Карта со</small><br>
+<small>связями между городами; связи помечены
+своими длинами; в</small><br>
+<small>квадратиках указаны расстояния по прямой до
+цели&nbsp; <em>t</em>.</small><br>
+<small>(b)&nbsp; Порядок, в котором при поиске с
+предпочтением происходит</small><br>
+<small>обход городов. Эвристические оценки основаны
+на расстояниях</small><br>
+<small>по прямой. Пунктирной линией показано
+переключение активности</small><br>
+<small>между альтернативными путями. Эта линия
+задает тот порядок, в</small><br>
+<small>котором вершины принимаются для <em>продолжения</em>
+пути, а не тот</small><br>
+<small>порядок, в котором они порождаются.</small></p>
+
+<p>тивой, т.е. просматривает свое поддерево. У
+поддеревьев есть свои поддеревья, их
+просматривают подпроцессы подпроцессов и т.д. В
+каждый данный момент среди всех конкурирующих
+процессов активен только один - тот, который
+занимается наиболее перспективной к настоящему
+моменту альтернативой, т.е. альтернативой с
+наименьшим значением&nbsp; <em>f</em>. Остальные
+процессы спокойно ждут того момента, когда <em>f</em>-оценки
+изменятся и в результате какая-нибудь другая
+альтернатива станет наиболее перспективной.
+Тогда производится переключение активности на
+эту альтернативу. Механизм
+активации-дезактивации процессов функционирует
+следующим образом: процесс, работающий над
+текущей альтернативой высшего приоритета,
+получает некоторый &quot;бюджет&quot; и остается
+активным до тех пор, пока его бюджет не
+исчерпается. Находясь в активном состоянии,
+процесс продолжает углублять свое поддерево.
+Встретив целевую вершину, он выдает
+соответствующее решение. Величина бюджета,
+предоставляемого процессу на данный конкретный
+запуск, определяется эвристической оценкой
+конкурирующей альтернативы, ближайшей к данной.</p>
+
+<p>На рис. 12.2 показан пример поведения
+конкурирующих процессов. Дана карта, задача
+состоит в том, чтобы найти кратчайший маршрут из
+стартового города&nbsp; <em>s</em>&nbsp; в целевой город
+&nbsp; <em>t</em>.&nbsp; В качестве оценки стоимости
+остатка маршрута из города&nbsp; <em>Х</em>&nbsp; до цели
+мы будем использовать расстояние по прямой <em>расст(
+X, t)</em> от&nbsp; <em>Х</em>&nbsp; до&nbsp; <em>t</em>.&nbsp; Таким
+образом,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>f( Х) = g( X) + h( X) = g( X) +
+расст( X, t)</em></p>
+
+<p>Мы можем считать, что в данном примере процесс
+поиска с предпочтением состоит из двух
+процессов. Каждый процесс прокладывает свой путь
+- один из двух альтернативных путей: Процесс 1
+проходит через&nbsp; <em>а</em>.&nbsp; Процесс 2 - через&nbsp; <em>е</em>.
+&nbsp; Вначале Процесс 1 более активен, поскольку
+значения&nbsp; <em>f</em>&nbsp; вдоль выбранного им пути
+меньше, чем вдоль второго пути. Когда Процесс 1
+достигает города&nbsp; <em>с</em>,&nbsp; а Процесс 2 все еще
+находится в&nbsp; <em>е</em>,&nbsp; ситуация меняется:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>f( с) = g( c) + h( c) = 6 + 4 = 10</em></p>
+
+<p><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f( e) = g( e) + h( e) = 2 + 7 = 9</em></p>
+
+<p>Поскольку <em>f( e) &lt; f( c)</em>,&nbsp; Процесс 2 переходит
+к&nbsp; <em>f</em>,&nbsp; a Процесс 1 ждет. Однако</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>f( f) = 7 + 4 = 11</em></p>
+
+<p><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f( c) = 10</em></p>
+
+<p><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f( c) &lt; f( f)</em></p>
+
+<p>Поэтому Процесс 2 останавливается, а Процессу 1
+дается разрешение продолжать движение, но только
+до&nbsp; <em>d</em>,&nbsp; так как <em>f( d) = 12 &gt; 11</em>.
+Происходит активация Процесса 2, после чего он,
+уже не прерываясь, доходит до цели&nbsp; <em>t</em>.</p>
+
+<p>Мы реализуем этот механизм программно при
+помощи усовершенствования программы поиска в
+ширину (рис. 11.13). Множество путей-кандидатов
+представим деревом. Дерево будет изображаться в
+программе в виде терма, имеющего одну из двух
+форм:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>л( В, F/G)</strong> -
+дерево, состоящее из одной вершины (листа); <strong>В</strong>
+&nbsp; -&nbsp; вершина пространства состояний, <strong>G</strong>
+&nbsp; -&nbsp; <em>g</em>(<strong> B</strong>)&nbsp; (стоимость уже
+найденного пути из стартовой вершины в <strong>В</strong>);
+&nbsp; <strong>F</strong> - <em>f</em>(<strong> В</strong>)&nbsp; =&nbsp; <strong>G</strong>
+&nbsp; + <em>h</em>(<strong> В</strong>).</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>д( В, F/G, Пд)</strong> -
+дерево с непустыми поддеревьями; <strong>В</strong>&nbsp; -
+&nbsp; корень дерева, <strong>Пд</strong>&nbsp; -&nbsp; список
+поддеревьев; <strong>G</strong>&nbsp; -&nbsp; <em>g</em>(<strong> B</strong>);
+&nbsp; <strong>F</strong>&nbsp; -&nbsp; <em>уточненное</em> значение <em>f</em>(<strong>
+В</strong>),&nbsp; т.е. значение&nbsp;&nbsp; <em>f</em> &nbsp;&nbsp; для
+наиболее перспективного преемника вершины <strong>В</strong>;&nbsp;
+список <strong>Пд</strong> &nbsp; упорядочен в порядке
+возрастания <em>f</em>-оценок поддеревьев.</p>
+
+<p>Уточнение значения&nbsp; <em>f</em>&nbsp; необходимо для
+того, чтобы дать программе возможность
+распознавать наиболее перспективное поддерево
+(т.е. поддерево, содержащее наиболее
+перспективную концевую вершину) на любом уровне
+дерева поиска. Эта модификация <em>f</em>-оценок на
+самом деле приводит к обобщению, расширяющему
+область определения функции <em>f</em>.&nbsp; Теперь
+функция&nbsp; <em>f</em>&nbsp; определена не только на
+вершинах, но и на деревьях. Для одновершинных
+деревьев (листов) <em>n</em>&nbsp; остается
+первоначальное определение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>f( n) = g( n) + h( n)</em></p>
+
+<p>Для дерева <em>T</em>&nbsp; с корнем&nbsp; <em>n</em>, &nbsp;
+имеющем преемников <em>m<sub>1</sub></em>,&nbsp; <em>m<sub>2</sub></em>,
+&nbsp; ...,&nbsp; получаем</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>f( T) = </em>min<em>&nbsp; f( m<sub>i</sub>
+)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<sup>i</sup></em><br>
+Программа поиска с предпочтением, составленная в
+соответствии с приведенными выше общими
+соображениями, показана на рис 12.3. Ниже даются
+некоторые дополнительные пояснения.</p>
+
+<p>Так же, как и в случае поиска в ширину (рис. 11.13),
+ключевую роль играет процедура <strong>расширить</strong>,
+имеющая на этот раз шесть аргументов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( Путь,
+Дер, Предел, Дер1, ЕстьРеш, Решение)</strong></p>
+
+<p>Эта процедура расширяет текущее (под)дерево,
+пока&nbsp; <em>f</em>-оценка остается равной либо
+меньшей, чем <strong>Предел</strong>.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>% Поиск с предпочтением</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>эврпоиск( Старт,
+Решение):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+макс_f( Fмакс).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Fмакс&nbsp; &gt;&nbsp; любой&nbsp; f-оценки</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>расширить( [ ], л( Старт, 0/0), Fмакс, _, да,
+Решение).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( П, л( В, _ ),
+_, _, да, [В | П] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( В).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( П, л( В,
+F/G), Предел, Дер1, ЕстьРеш, Реш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F &lt;= Предел,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ( bagof( B1/C, (
+после( В, В1, С), not принадлежит( В1, П)),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Преемники), &nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+преемспис( G, Преемники, ДД),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+опт_f( ДД, F1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( П, д( В, F1/G, ДД), Предел, Дер1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш, Реш);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ЕстьРеш =
+никогда).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Нет преемников - тупик</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( П, д( В, F/G,
+[Д | ДД]), Предел, Дер1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш, Реш):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F &lt;= Предел,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+опт_f( ДД, OF), мин( Предел, OF, Предел1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( [В | П], Д, Предел1, Д1, ЕстьРеш1, Реш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+продолжить( П, д( В, F/G, [Д1, ДД]), Предел, Дер1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш1, ЕстьРеш, Реш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( _, д( _, _, [
+]), _, _, никогда, _ ) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Тупиковое дерево - нет решений</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( _, Дер,
+Предел, Дер, нет, _ ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f( Дер, F), F &gt; Предел.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Рост
+остановлен</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>продолжить( _, _, _, _, да,
+да, Реш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; продолжить( П, д( В,
+F/G, [Д1, ДД]), Предел, Дер1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш1, ЕстьРеш, Реш):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( ЕстьРеш1 = нет, встав( Д1, ДД, НДД);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш1 = никогда, НДД = ДД),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+опт_f( НДД, F1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( П, д( В, F1/G, НДД), Предел, Дер1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш, Реш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; преемспис( _, [ ], [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; преемспис( G0, [В/С |
+ВВ], ДД) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G is G0 + С,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+h( В, Н),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Эвристика h(B)</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>F is G + Н,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+преемспис( G0, ВВ, ДД1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( л( В, F/G), ДД1, ДД).</strong></p>
+
+<p><small>% Вставление дерева Д в список деревьев ДД с
+сохранением<br>
+% упорядоченности по f-оценкам</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>встав( Д, ДД, [Д | ДД] )
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f( Д, F), опт_f( ДД, F1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F =&lt; F1,&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Д, [Д1 | ДД], [Д1 |
+ДД1] ) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( Д, ДД, ДД1).</strong></p>
+
+<p><small>% Получение f-оценки</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>f( л( _, F/_ ), F).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% f-оценка листа</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>f( д( _, F/_, _ ) F).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% f-оценка дерева</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>опт_f( [Д | _ ], F) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Наилучшая f-оценка для</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>f( Д,
+F).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% списка деревьев</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>опт_f( [ ], Fмакс) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Нет деревьев:</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>мaкс_f(
+Fмакс).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% плохая f-оценка</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>мин( X, Y, X) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х =&lt; Y,
+&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; мин( X, Y, Y).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 12. 3.</strong>&nbsp; Программа
+поиска с предпочтением.</small></p>
+
+<p>Аргументы процедуры <strong>расширить</strong> имеют
+следующий смысл:</p>
+
+<p><strong>Путь</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Путь между
+стартовой вершиной и корнем дерева <strong>Дер</strong>.</p>
+
+<p><strong>Дер</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Текущее (под)дерево поиска.</p>
+
+<p><strong>Предел</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Предельное значение <em>f</em>-оценки, при котором
+допускается расширение.</p>
+
+<p><strong>Дер1</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Дерево <strong>Дер</strong>, расширенное в пределах
+ограничения <strong>Предел</strong>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>f</em>-оценка дерева <strong>Дер1</strong> больше, чем <strong>Предел</strong>
+( если только при расширении не была обнаружена
+целевая вершина).</p>
+
+<p><strong>ЕстьРеш</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Индикатор,
+принимающий значения &quot;да&quot;, &quot;нет&quot; и
+&quot;никогда&quot;.</p>
+
+<p><strong>Решение</strong>&nbsp;&nbsp;&nbsp;&nbsp; Решающий путь,
+ведущий из стартовой вершины через дерево <strong>Дер1</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+к целевой вершине и имеющий стоимость, не
+превосходящую ограничение <strong>Предел</strong> (если
+такая целевая вершина была обнаружена).</p>
+
+<p>Переменные <strong>Путь</strong>, <strong>Дер</strong>, и <strong>Предел</strong>
+- это &quot;входные&quot; параметры процедуры <strong>расширить</strong>
+в том смысле, что при каждом обращении к <strong>расширить</strong>
+они всегда конкретизированы. Процедура <strong>расширить</strong>
+порождает результаты трех видов. Какой вид
+результата получен, можно определить по значению
+индикатора <strong>ЕстьРеш</strong> следующим образом:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш = да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Решение</strong>
+= решающий путь, найденный при расширении дерева <strong>Дер</strong>
+с учетом ограничения <strong>Предел</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1</strong>
+= неконкретизировано.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш = нет</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1</strong>
+= дерево <strong>Дер</strong>, расширенное до тех пор,
+пока его <em>f</em>-оценка не превзойдет <strong>Предел</strong>
+(см. рис. 12.4).</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Решение</strong>
+= неконкретизировано.</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш = никогда.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Дер1</strong>
+и <strong>Решение</strong> = неконкретизированы.</p>
+
+<p>В последнем случае <strong>Дер</strong> является
+&quot;тупиковой&quot; альтернативой, и
+соответствующий процесс никогда не будет
+реактивирован для продолжения просмотра этого
+дерева. Случай этот возникает тогда, когда <em>f</em>-оценка
+дерева <strong>Дер</strong> не превосходит ограничения <strong>Предел</strong>,
+однако дерево не может &quot;расти&quot; потому, что ни
+один его лист не имеет преемников, или же любой
+преемник порождает цикл.</p>
+
+<p>Некоторые предложения процедуры <strong>расширить</strong>
+требуют пояснений. Предложение, относящееся к
+наиболее сложному случаю, когда <strong>Дер</strong>
+имеет поддеревья, т.е.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер = д( В, F/G, [Д | ДД ] )</strong></p>
+
+<p>означает следующее. Во-первых, расширению
+подвергается наиболее перспективное дерево <strong>Д</strong>.
+В качестве ограничения этому дереву выдается не <strong>Предел</strong>,
+а не-</p>
+
+<p align="center"><img src="pic/fig12_4.gif" width="434" height="365"
+alt="fig12_4.gif (3426 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 12. 4.</strong>&nbsp; Отношение <strong>расширить</strong>:
+расширение дерева <strong>Дер</strong> до тех</small><br>
+<small>пор, пока <em>&nbsp; f</em>-оценка не превзойдет <strong>Предел</strong>,
+приводит к дереву <strong>Дер1</strong>.</small></p>
+
+<p>которое, возможно, меньшее значение <strong>Предел1</strong>,
+зависящее от <em>f</em>-оценок других конкурирующих
+поддеревьев <strong>ДД</strong>. Тем самым
+гарантируется, что &quot;растущее&quot; дерево - это
+всегда наиболее перспективное дерево, а
+переключение активности между поддеревьями
+происходит в соответствии с их&nbsp; <em>f</em>-оценками.
+После того, как самый перспективный кандидат
+расширен, вспомогательная процедура <strong>продолжить</strong>
+решает, что делать дальше, а это зависит от типа
+результата, полученного после расширения. Если
+найдено решение, то оно и выдается, в противном
+случае процесс расширения деревьев
+продолжается.</p>
+
+<p>Предложение, относящееся к случаю</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер = л( В, F/G)</strong></p>
+
+<p>порождает всех преемников вершины <strong>В</strong>
+вместе со стоимостями дуг, ведущих в них из <strong>В</strong>.
+Процедура <strong>преемспис</strong> формирует список
+поддеревьев, соответствующих
+вершинам-преемникам, а также вычисляет их <em>g-</em>
+и <em>f-</em>оценки, как показано на рис. 12.5. Затем
+полученное таким образом дерево подвергается
+расширению с учетом ограничения <strong>Предел</strong>.
+Если преемников нет, то переменной <strong>ЕстьРеш</strong>
+придается значение &quot;никогда&quot; и в результате
+лист <strong>В</strong> покидается навсегда.</p>
+
+<p>Другие отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>после( В, В1, С)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>В1</strong> &nbsp; -&nbsp; преемник вершины <strong>В</strong>;&nbsp;
+<strong>С</strong> - стоимость дуги, ведущей из <strong>В</strong>&nbsp;
+в <strong>В1</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>h( В, Н)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Н</strong> &nbsp; -&nbsp; эвристическая оценка
+стоимости оптимального пути<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+из вершины <strong>В</strong>&nbsp; в целевую вершину.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>макс_f( Fмакс)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Fмакс</strong> &nbsp; -&nbsp; некоторое значение,
+задаваемое пользователем,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+про которое известно, что оно больше любой
+возможной <em>f</em>-оценки.</p>
+
+<p>В следующих разделах мы покажем на примерах,
+как можно применить нашу программу поиска с
+предпочтением к конкретным задачам. А сейчас
+сделаем несколько заключительных замечаний
+общего характера относительно этой программы. Мы
+реализовали один из вариантов эвристического
+алгоритма, известного в литературе как
+А*-алгоритм (ссылки на литературу см. в конце
+главы). А*-алгоритм привлек внимание многих
+исследователей. Здесь мы приведем один важный
+результат, полученный в результате
+математического анализа А*-алгоритма:</p>
+
+<p align="center"><img src="pic/fig12_5.gif" width="264" height="182"
+alt="fig12_5.gif (1245 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 12. 5.</strong>&nbsp; Связь между <em>g-</em>оценкой
+вершины&nbsp; <em>В</em>&nbsp; и&nbsp; <em>f-</em> и&nbsp; <em>g-</em>оценками</small><br>
+<small>ее &quot;детей&quot; в пространстве состояний.</small></p>
+</a><a name="tn120"><script language="JavaScript">line();</script>
+
+
+<p><span id="t120">Алгоритм поиска пути называют <em>допустимым</em></span>,
+если он всегда отыскивает оптимальное решение
+(т.е. путь минимальной стоимости) при условии, что
+такой путь существует. Наша реализация алгоритма
+поиска, пользуясь механизмом возвратов, выдает
+все существующие решения, поэтому, в нашем
+случае, условием допустимости следует считать
+оптимальность <em>первого</em> из найденных решений.
+Обозначим через <em>h*(n)</em>&nbsp; стоимость
+оптимального пути из произвольной вершины&nbsp; <em>n</em>
+&nbsp; в целевую вершину. Верна следующая теорема о
+допустимости А*-алгоритма:&nbsp; А*-алгоритм,
+использующий эвристическую функцию&nbsp; <em>h</em>,
+&nbsp; является допустимым, если</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>h( n) &lt;= h*( n)</em></p>
+
+<p>для всех вершин&nbsp; <em>n</em>&nbsp; пространства
+состояний.</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Этот результат имеет огромное практическое
+значение. Даже если нам не известно точное
+значение&nbsp; <em>h*</em>,&nbsp; нам достаточно найти
+какую-либо нижнюю грань&nbsp; <em>h*</em>&nbsp; и
+использовать ее в качестве&nbsp; <em>h</em>&nbsp; в
+А*-алгоритме - оптимальность решения будет
+гарантирована.</p>
+
+<p>Существует тривиальная нижняя грань, а именно:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>h( n) =</em> 0,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+для всех вершин&nbsp; <em>n</em>&nbsp; пространства
+состояний.</p>
+
+<p>И при таком значении&nbsp; <em>h</em>&nbsp; допустимость
+гарантирована. Однако такая оценка не имеет
+никакой эвристической силы и ничем не помогает
+поиску. А*-алгоритм при&nbsp; <em>h=</em>0&nbsp; ведет себя
+аналогично поиску в ширину. Он, действительно,
+превращается в поиск в ширину, если, кроме того,
+положить&nbsp; <em>с(n, n' )=</em>1&nbsp; для всех дуг&nbsp; <em>(n,
+n')</em> &nbsp; пространства состояний. Отсутствие
+эвристической силы оценки приводит к большой
+комбинаторной сложности алгоритма. Поэтому
+хотелось бы иметь такую оценку&nbsp; <em>h</em>, &nbsp;
+которая была бы нижней гранью&nbsp; <em>h*</em> &nbsp;
+(чтобы обеспечить допустимость) и, кроме того,
+была бы как можно ближе к&nbsp; <em>h*</em>&nbsp; (чтобы
+обеспечить эффективность). В идеальном случае,
+если бы нам была известна сама точная оценка&nbsp; <em>h*</em>,
+&nbsp; мы бы ее и использовали: А*-алгоритм,
+пользующийся&nbsp;&nbsp; <em>h*</em>,&nbsp; находит
+оптимальное решение сразу, без единого возврата.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>12. 1.</strong>&nbsp;&nbsp;&nbsp; Определите отношения <strong>после</strong>,
+<strong>цель</strong> и&nbsp; <strong>h</strong>&nbsp; для задачи
+поиска маршрута рис. 12.2. Посмотрите, как наш
+алгоритм поиска с предпочтением будет вести себя
+при решении этой задачи.</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch11_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch12_2.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

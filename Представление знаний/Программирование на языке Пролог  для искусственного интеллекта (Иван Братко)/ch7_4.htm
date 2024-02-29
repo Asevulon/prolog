@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 7. Пункт 4</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch7_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch7_5.htm">Вперёд</a></p>
+<a name="tn254"><script language="JavaScript">double_line();</script>
+</a><a name="tn23">
+
+<h4>7. 4.&nbsp;&nbsp;&nbsp; <span id="t254">Работа с базой данных</span></h4>
+
+<p>Реляционная модель предполагает, что <span id="t23">база
+данных</span> - это описание некоторого множества
+отношений. Пролог-программу можно рассматривать
+как именно такую базу данных: описание отношений
+частично присутствует в ней в явном виде (факты),
+а частично - в неявном (правила). Более того,
+встроенные предикаты дают возможность
+корректировать эту базу данных в процессе
+выполнения программ. Это делается добавлением к
+программе (в процессе вычисления) новых
+предложений или же вычеркиванием из нее уже</a><a
+name="tn44"> существующих. Предикаты, используемые для
+этой цели, таковы: <strong><span id="t44">assert</span></strong>
+(добавить), <strong>asserta</strong>, <strong>assertz</strong> и <strong>retract</strong>
+(удалить).</p>
+</a>
+
+<p><a name="tn44">Цель</a></p>
+<a name="tn44">
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>assert( С)</strong></p>
+
+<p>всегда успешна, а в качестве своего побочного
+эффекта вызывает &quot;констатацию&quot; предложения
+&nbsp; С,&nbsp; т. е. добавление его к базе данных. </a><a
+name="tn72">Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t72">retract( С)</span></strong></p>
+
+<p>приводит к противоположному эффекту: удаляет
+предложение, сопоставимое с&nbsp; С. Следующий
+диалог иллюстрирует их работу:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; кризис.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ? -&nbsp; assert( кризис).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; кризис.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ? -&nbsp; retract( кризис).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; кризис.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p>Предложения, добавленные к программе таким
+способом, ведут себя точно так же, как и те, что
+были в &quot;оригинале&quot; программы. Следующий
+пример показывает, как с помощью <strong>assert</strong> и <strong>retract</strong>
+можно работать в условиях изменяющейся
+обстановки. Предположим, что у нас есть такая
+программа о погоде:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>хорошая :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+солнечно, not дождь.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; необычная :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+солнечно, дождь.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; отвратительная :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+дождь, туман.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дождь.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; туман.</strong></p>
+
+<p>Ниже приводится пример диалога с этой
+программой, во время которого база данных
+постепенно изменяется:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; хорошая.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-
+&nbsp; отвратительная.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; retract( туман).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-
+&nbsp; отвратительная.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; assert( солнечно).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; необычная.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; retract( дождь).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; уes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; хорошая.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p>Добавлять и удалять можно предложения любой
+формы. Следующий пример показывает, что, кроме
+того, <strong>retract</strong> может работать
+недетерминировано: используя механизм возвратов
+с помощью только одной цели <strong>retract</strong> можно
+удалить целое множество предложений.
+Предположим, что в программе, с которой мы
+&quot;консультируемся&quot;, есть такие факты:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>быстр( энн).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; медл( том).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; медл( пат).</strong></p>
+
+<p>К этой программе можно добавить правило:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; assert(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ( быстрее( X, Y) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстр( X), медл( Y) ) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; быстрее( А, В).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; А = энн<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В = том</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; retract( медл( X) ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = том;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X = пат;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; быстрее( энн, _
+).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong></p>
+
+<p>Заметьте, что при добавлении нового правила
+синтаксис требует, чтобы оно (как аргумент <strong>assert</strong>)
+было заключено в скобки.</p>
+
+<p>При добавлении нового предложения может
+возникнуть желание указать, на какое место в </a><a
+name="tn45">базе</a><a name="tn46"> данных его следует
+поместить. Такую возможность обеспечивают
+предикаты <strong><span id="t45">asserta</span></strong> и <strong><span
+id="t46">assertz</span></strong>. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>asserta( С)</strong></p>
+
+<p>помещает С в начале базы данных. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>assertz( С)</strong></p>
+
+<p>- в конце. Вот пример, иллюстрирующий работу
+этих предикатов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; assеrt( р( a)), assertz(
+р( b) ), asserta( p( c) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; p( X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = с;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = а;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = b</strong></p>
+
+<p>Между <strong>consult</strong> и <strong>assertz</strong> существует
+связь. Обращение к файлу при помощи <strong>consult</strong>
+можно в терминах <strong>assertz</strong> определить так:
+считать все термы (предложения) файла и добавить
+их в конец базы данных.</p>
+
+<p>Одним из полезных применений предиката <strong>asserta</strong>
+является накопление уже вычисленных ответов на
+вопросы. Пусть, например, в программе определен
+предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Задача,
+Решение)</strong></p>
+
+<p>Мы можем теперь задать вопрос и потребовать,
+чтобы ответ на него был запомнен, с тем чтобы
+облегчить получение ответов на будущие вопросы:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; решить(
+задача1, решение),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; asserta(
+решить( Задача1, Решение) ).</strong></p>
+
+<p>Если в первой из приведенных целей будет успех,
+ответ <strong>( Решение)</strong> будет сохранен, а затем
+использован так же, </a><a name="tn124">как и любое другое
+предложение, при ответе на дальнейшие вопросы. <span
+id="t124">Преимущество такого &quot;запоминания&quot;</span>
+состоит в том, что на дальнейшие вопросы,
+сопоставимые с добавленным фактом, ответ будет
+получен, как правило, значительно быстрее, чем в
+первый раз. Ответ будет теперь получен как факт, а
+не как результат вычислений, требующих, возможно,
+длительного времени.</p>
+
+<p>Развитие этой идеи состоит в использовании <strong>assert</strong>
+для порождения всех решений в виде таблицы
+фактов. Например, создать таблицу произведений
+всех чисел от 0 до 9 можно так: породить пару чисел
+Х и Y, вычислить Z, равное Х * Y, добавить эти три
+числа в виде строки в таблицу произведений, а
+затем создать искусственно неуспех. Неуспех
+вызовет возврат, в результате которого будет
+найдена новая пара чисел, и в таблицу добавится
+новая строка и т.д. Эта идея реализована в
+процедуре</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>таблица :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+L = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит( X, L),</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбрать первый сомножитель</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит( Y, L),</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбрать второй сомножитель</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Z is X*Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+assert( произв( X,Y,Z) ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fail.</strong></p>
+
+<p>Вопрос</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-
+&nbsp; таблица.</strong></p>
+
+<p>потерпит, конечно, неудачу, однако в качестве
+своего побочного эффекта приведет к добавлению в
+базу данных целой таблицы произведений. После
+этого можно, например, спросить, какие пары дают
+произведения, равные 8:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; произв( А, В, 8).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; А = 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В = 8;</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; А = 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В = 4;</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>Здесь следует сделать одно замечание,
+относящееся к стилю программирования.
+Приведенные примеры показали некоторые явно
+полезные применения <strong>assert</strong> и <strong>retract</strong>.
+Однако использование этих отношений требует
+особой внимательности. Не рекомендуется
+применять их слишком часто и без должной
+осторожности - это плохой стиль
+программирования. Ведь добавляя и удаляя
+предложения, мы фактически изменяем программу.
+Поэтому отношения, выполнявшиеся в некоторой ее
+точке, могут оказаться неверными в другой. В
+разные моменты времени ответы на одни и те же
+вопросы будут различными. Таким образом, большое
+количество обращений к <strong>assert</strong> и <strong>retract</strong>
+может затемнить смысл программы и станет трудно
+разобрать, что истинно, а что - нет. В результате
+поведение программы может стать непонятным,
+трудно объяснимым, и вряд ли можно будет ей
+доверять.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>7. 6.</strong>&nbsp;&nbsp; (а) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Напишите вопрос к пролог-системе, который
+удаляет из базы данных всю таблицу <strong>произв</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (b)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Измените этот вопрос так,
+чтобы он удалил из таблицы только те строки, в
+которых произведение равно 0.</p>
+
+<p><strong>7. 7.</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Определите
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>копия( Терм, Копия)</strong></p>
+
+<p>которое порождает такую копию <strong>Терм</strong>'а <strong>Копия</strong>,
+в которой все переменные переименованы. Это
+легко сделать, используя <strong>assert</strong> и <strong>retract</strong>.</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch7_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch7_5.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

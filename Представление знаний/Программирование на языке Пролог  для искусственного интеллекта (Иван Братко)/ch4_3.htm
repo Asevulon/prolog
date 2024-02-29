@@ -1,0 +1,324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 4. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch4_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_4.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>4. 3.&nbsp;&nbsp;&nbsp; Моделирование
+недетерминированного автомата</h4>
+
+<p>Данное упражнение показывает, как абстрактную
+математическую конструкцию можно представить на
+Прологе. Кроме того, программа, которая
+получится, окажется значительно более <a name="tn2">гибкой,
+чем предполагалось вначале.</p>
+
+<p><em><span id="t2">Недетерминированный конечный
+автомат</span></em> - это абстрактная машина, которая
+читает символы из входной цепочки и решает, <em>допустить</em>
+или <em>отвергнуть</em> эту цепочку. Автомат имеет
+несколько <em>состояний</em> и всегда находится в
+одном из них. Он может изменить состояние,
+перейдя из одного состояния в другое. Внутреннюю
+структуру такого автомата можно представить
+графом переходов, как показано на рис. 4.3. В этом
+примере <em>S<sub>1</sub></em>, <em>S<sub>2</sub></em>, &nbsp; <em>S<sub>3</sub></em>&nbsp;
+и&nbsp; <em>S<sub>4</sub></em>&nbsp; - <em>состояния</em> автомата.
+Стартовав из начального состояния (в нашем
+примере это <em>S<sub>1</sub></em> ), автомат переходит из
+состояния в состояние по мере чтения входной
+цепочки. Переход зависит от текущего входного
+символа, как указывают метки на дугах графа
+переходов.</p>
+
+<p align="center"><img src="pic/fig4_3.gif" width="411" height="262"
+alt="fig4_3.gif (1992 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 3.</strong>&nbsp; Пример
+недетерминированного конечного автомата.</small></p>
+
+<p>Переход выполняется всякий раз при чтении
+входного символа. Заметим, что переходы могут
+быть недетерминированными. На рис. 4.3 видно, что
+если автомат находится в состоянии <em>S<sub>1</sub></em>,
+и текущий входной символ равен&nbsp; <em>а</em>,&nbsp; то
+переход может осуществиться как в <em>S<sub>1</sub></em>,
+так и в&nbsp; <em>S<sub>2</sub></em>.&nbsp; Некоторые дуги
+помечены меткой пусто, обозначающей &quot;пустой
+символ&quot;. Эти дуги соответствуют &quot;спонтанным
+переходам&quot; автомата. Такой переход называется <em>спонтанным</em>,
+потому что он выполняется без чтения входной
+цепочки. Наблюдатель, рассматривающий автомат
+как черный ящик, не сможет обнаружить, что
+произошел какой-либо переход.</p>
+
+<p>Состояние <em>S<sub>3</sub></em> обведено двойной линией,
+это означает, что <em>S<sub>3</sub></em> - <em>конечное
+состояние</em>. Про автомат говорят, что он <em>допускает</em>
+входную цепочку, если в графе переходов
+существует путь, такой, что:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; он начинается в
+начальном состоянии,<br>
+(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; он оканчивается в
+конечном состоянии, и<br>
+(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; метки дуг, образующих
+этот путь, соответствуют полной входной цепочке.</p>
+
+<p>Решать, какой из возможных переходов делать в
+каждый момент времени - исключительно внутреннее
+дело автомата. В частности, автомат сам решает,
+делать ли спонтанный переход, если он возможен в</p>
+
+<p align="center"><img src="pic/fig4_4.gif" width="482" height="303"
+alt="fig4_4.gif (2270 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 4.</strong>&nbsp; Допущение
+цепочки:&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp; при чтении первого
+символа X;</small><br>
+<small>(b)&nbsp;&nbsp;&nbsp; при совершении спонтанного
+перехода.</small></a></p>
+<a name="tn2">
+
+<p>текущем состоянии. Однако абстрактные
+недетерминированные машины такого типа обладают
+волшебным свойством: если существует выбор, они
+всегда избирают &quot;правильный&quot; переход, т.е.
+переход, ведущий к допущению входной цепочки при
+наличии такого перехода. Автомат на рис. 4.3,
+например, допускает цепочки&nbsp; <em>аb</em>&nbsp; и&nbsp; <em>aabaab</em>,
+&nbsp; но отвергает цепочки&nbsp; <em>abb</em>&nbsp; и&nbsp; <em>abba</em>.
+&nbsp; Легко видеть, что этот автомат допускает
+любые цепочки, оканчивающиеся на&nbsp; <em>аb</em>&nbsp; и
+отвергает все остальные.</p>
+
+<p>Некоторый автомат можно описать на Прологе при
+помощи трех отношений:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Унарного отношения <strong>конечное</strong>,
+которое определяет конечное состояние автомата.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Трехаргументного
+отношения <strong>переход</strong>, которое определяет
+переход из состояния в состояние, при этом</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>переход( S1, X, S2)</strong></p>
+
+<p>означает переход из состояния S1 в S2, если считан
+входной символ X.</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Бинарного отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>спонтанный( S1, S2)</strong></p>
+
+<p>означающего, что возможен спонтанный переход
+из S1 в S2.</p>
+
+<p>Для автомата, изображенного на рис. 4.3, эти
+отношения будут такими:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конечное( S3).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; переход( S1, а, S1).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; переход( S1, а, S2).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; переход( S1, b, S1).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; переход( S2, b, S3).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; переход( S3, b, S4).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; спонтанный( S2, S4).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; спонтанный( S3, S1).</strong></p>
+
+<p>Представим входные цепочки в виде списков
+Пролога. Цепочка&nbsp; <em>ааb</em>&nbsp; будет
+представлена как <strong>[а, а, b]</strong>. Модель
+автомата, получив его описание, будет
+обрабатывать заданную входную цепочку, и решать,
+допускать ее или нет. По определению,
+недетерминированный автомат допускает заданную
+цепочку, если (начав из начального состояния)
+после ее прочтения он способен оказаться в
+конечном состоянии. Модель программируется в
+виде бинарного отношения <strong>допускается</strong>,
+которое определяет принятие цепочки из данного
+состояния. Так</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>допускается(
+Состояние, Цепочка)</strong></p>
+
+<p>истинно, если автомат, начав из состояния <strong>Состояние</strong>
+как из начального, допускает цепочку <strong>Цепочка</strong>.
+Отношение <strong>допускается</strong> можно определить
+при помощи трех предложений. Они соответствуют
+следующим трем случаям:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Пустая цепочка [ ]
+допускается из состояния S, если S - конечное
+состояние.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Непустая цепочка
+допускается из состояния S, если после чтения
+первого ее символа автомат может перейти в
+состояние S1, и оставшаяся часть цепочки
+допускается из S1. Этот случай иллюстрируется на
+рис. 4.4(а).</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цепочка допускается
+из состояния S, если автомат может сделать
+спонтанный переход из S в S1, а затем допустить
+(всю) входную цепочку из S1. Такой случай
+иллюстрируется на рис. 4.4(b).</p>
+
+<p>Эти правила можно перевести на Пролог
+следующим образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>допускается( S, [ ]) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Допуск пустой цепочки</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конечное(
+S).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>допускается( S, [X |
+Остальные]) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Допуск чтением первого символа</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>переход(
+S, X, S1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+допускается( S1, Остальные).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; допускается( S,
+Цепочка) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Допуск выполнением спонтанного перехода</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>спонтанный(
+S, S1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+допускается( S1, Цепочка).</strong></p>
+
+<p>Спросить о том, допускается ли цепочка&nbsp; <em>аааb</em>,
+&nbsp; можно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; допускается( S1,
+[a, a, a, b]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (да)</p>
+
+<p>Как мы уже видели, программы на Прологе часто
+оказываются способными решать более общие
+задачи, чем те, для которых они первоначально
+предназначались. В нашем случае мы можем
+спросить модель также о том, в каком состоянии
+должен находиться автомат в начале работы, чтобы
+он допустил цепочку&nbsp; <em>аb</em>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; допускается( S,
+[a, b]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = s1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = s3</strong></p>
+
+<p>Как ни странно, мы можем спросить также
+&quot;Каковы все цепочки длины 3, допустимые из
+состояния s1?&quot;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; допускается( s1,
+[XI, Х2, X3]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X1 = а<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х2 = а<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х3 = b;</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X1 = b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х2 = а<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х3 = b;</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (нет)</p>
+
+<p>Если мы предпочитаем, чтобы допустимые цепочки
+выдавались в виде списков, тогда наш вопрос
+следует сформулировать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- Цепочка = [ _, _, _ ],
+допускается( s1, Цепочка).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цепочка = [а, а, b];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цепочка = [b, а, b];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(нет)</p>
+
+<p>Можно проделать и еще некоторые эксперименты,
+например спросить: &quot;Из какого состояния
+автомат допустит цепочку длиной 7?&quot;</p>
+
+<p>Эксперименты могут включать в себя переделки
+структуры автомата, вносящие изменения в
+отношения <strong>конечное</strong>, <strong>переход</strong> и <strong>спонтанный</strong>.
+В автомате, изображенном на рис. 4.3, отсутствуют
+циклические &quot;спонтанные пути&quot; (пути,
+состоящие только из спонтанных переходов). Если
+на рис. 4.3 добавить новый переход</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>спонтанный( s1, s3)</strong></p>
+
+<p>то получится &quot;спонтанный цикл&quot;. Теперь
+наша модель может столкнуться с неприятностями.
+Например, вопрос</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; допускается( s1,
+[а]).</strong></p>
+
+<p>приведет к тому, что модель будет бесконечно
+переходить в состояние s1, все время надеясь
+отыскать какой-либо путь в конечное состояние.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>4. 4.</strong>&nbsp;&nbsp;&nbsp; Почему не могло
+возникнуть зацикливание модели исходного
+автомата на рис. 4.3, когда в его графе переходов не
+было &quot;спонтанного цикла&quot;?</p>
+</a>
+
+<p><a href="javascript:fa('4_4')">Посмотреть ответ</a></p>
+
+<p><strong>4. 5.</strong>&nbsp;&nbsp;&nbsp; Зацикливание при
+вычислении <strong>допускается</strong> можно
+предотвратить, например, таким способом:
+подсчитывать число переходов, сделанных к
+настоящему моменту. При этом модель должна будет
+искать пути только некоторой ограниченной длины.
+Модифицируйте так отношение <strong>допускается</strong>.
+Указание: добавьте третий аргумент - максимально
+допустимое число переходов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>допускается(
+Состояние, Цепочка, Макс_переходов)</strong></p>
+
+<p><a href="javascript:fa('4_5')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch4_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

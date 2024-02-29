@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 4. Пункт 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch3_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_2.htm">Вперёд</a></p>
+
+<hr>
+
+<h3 align="center">Глава 4</h3>
+
+<h3 align="center">ИСПОЛЬЗОВАНИЕ СТРУКТУР:<br>
+ПРИМЕРЫ</h3>
+
+<p>Структуры данных вместе с сопоставлением,
+автоматическими возвратами и арифметикой
+представляют собой мощный инструмент
+программирования. В этой главе мы расширим
+навыки использования этого инструмента при
+помощи следующих учебных программных примеров:
+получение структурированной информации из базы
+данных, моделирование недетерминированного
+автомата, планирование маршрута поездки и
+решение задачи о расстановке восьми ферзей на
+шахматной доске. Мы увидим также, как в Прологе
+реализуется принцип абстракции данных.</p>
+<a name="p4_1"><script language="JavaScript">double_line();</script>
+</a>
+
+<h4>4. 1.&nbsp;&nbsp;&nbsp; Получение структурированной
+информации из базы данных</h4>
+
+<p>Это упражнение развивает навыки представления
+структурных объектов данных и управления ими.
+Оно показывает также, что Пролог является
+естественным языком запросов к базе данных.</p>
+
+<p>База данных может быть представлена на Прологе
+в виде множества фактов. Например, в базе данных о
+семьях каждая семья может описываться одним
+предложением. На рис. 4.1 показано, как информацию
+о каждой семье можно представить в виде
+структуры. Каждая семья состоит из трех
+компонент: мужа, жены и детей. Поскольку
+количество детей в разных семьях может быть
+разным, то их целесообразно представить в виде
+списка, состоящего из произвольного числа
+элементов. Каждого члена семьи в свою очередь
+можно представить структурой, состоящей из</p>
+
+<p align="center"><img src="pic/fig4_1.gif" width="627" height="365"
+alt="fig4_1.gif (4590 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 1.</strong> &nbsp;
+Структурированная информация о семье.</small></p>
+
+<p>четырех компонент: имени, фамилии, даты
+рождения и работы. Информация о работе - это либо
+&quot;не работает&quot;, либо указание места работа и
+оклада (дохода). Информацию о семье, изображенной
+на рис. 4.1, можно занести в базу данных с помощью
+предложения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья( членсемьи(
+том, фокс, дата( 7, май, 1950),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+работает( bbс, 15200) ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+членсемьи( энн, фокс, дата( 9, май, 1951), неработает),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[членсемьи( пат, фокс, дата( 5, май, 1973), неработает),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+членсемьи( джим, фокс, дата( 5, май, 1973), неработает)
+] ).</strong></p>
+
+<p>Тогда база данных будет состоять из
+последовательности фактов, подобных этому, и
+описывать все семьи, представляющие интерес для
+нашей программы.</p>
+
+<p>В действительности Пролог очень удобен для
+извлечения необходимой информации из такой базы
+данных. Здесь хорошо то, что можно ссылаться на
+объекты, не указывая в деталях всех их компонент.
+Можно задавать только <em>структуру</em>
+интересующих нас объектов и оставлять
+конкретные компоненты без точного описания или
+лишь с частичным описанием. На рис. 4.2 приведено
+несколько примеров. Так, а запросах к базе данных
+можно ссылаться на всех Армстронгов с помощью
+терма</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья( членсемьи( _,
+армстронг, _, _ ), _, _ )</strong></p>
+
+<p>Символы подчеркивания обозначают различные
+анонимные переменные, значения которых нас не
+заботят. Далее можно сослаться на все семьи с
+тремя детьми при помощи терма:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья( _, _, [ _, _, _ ])</strong></p>
+
+<p>Чтобы найти всех замужних женщин, имеющих по
+крайней мере троих детей, можно задать вопрос:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; семья( _,
+членсемьи( Имя, Фамилия, _, _ ), [ _, _, _ | _ ]).</strong></p>
+
+<p>Главным моментом в этих примерах является то,
+что указывать интересующие нас объекты можно не
+только по их содержимому, но и по их структуре. Мы
+задаем одну структуру и оставляем ее аргументы в
+виде слотов (пропусков).</p>
+
+<p align="center"><img src="pic/fig4_2.gif" width="564" height="530"
+alt="fig4_2.gif (3289 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 2.</strong>&nbsp;&nbsp;&nbsp; Описания
+объектов по их структурным свойствам:&nbsp; (а) &nbsp;
+любая семья Армстронгов;&nbsp; (b)&nbsp; любая семья,
+имеющая ровно трех детей;&nbsp; (с)&nbsp; любая семья,
+имеющая по крайней мере три ребенка.
+Структура&nbsp; (с)&nbsp; дает возможность получить
+имя и фамилию жены конкретизацией переменных <strong>Имя</strong>&nbsp;
+и&nbsp; <strong>Фамилия</strong>.</small></p>
+
+<p>Можно создать набор процедур, который служил бы
+утилитой, делающей взаимодействие с нашей базой
+данных более удобным. Такие процедуры являлись
+бы частью пользовательского интерфейса. Вот
+некоторые полезные процедуры для нашей базы
+данных:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>муж( X) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X - муж</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья(
+X, _, _ ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; жена( X) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X - жена</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья(
+_, X, _ ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ребенок( X) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X - ребенок</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья(
+_, _, Дети),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( X, Дети).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( X, [X | L
+]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( X, [Y | L ])
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( X, L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; существует(
+Членсемьи) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Любой член семьи в базе данных</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>муж(
+Членсемьи);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; жена(
+Членсемьи);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ребенок(
+Членсемьи).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дата рождения(
+Членсемьи( _, _, Дата, _ ), Дата).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; доход( Членсемьи( _,
+_, _, работает( _, S) ), S).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Доход работающего</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доход( Членсемьи( _,
+_, _, неработает), 0).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Доход неработающего</small></p>
+
+<p>Этими процедурами можно воспользоваться,
+например, в следующих запросах к базе данных: 
+
+<ul>
+  <li>Найти имена всех людей из базы данных:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; существует(
+    членсемьи( Имя,Фамилия, _, _ )).</strong><br>
+  </li>
+  <li>Найти всех детей, родившихся в 1981 году:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; ребенок( X),
+    датарождения( X, дата( _, _, 1981) ).</strong><br>
+  </li>
+  <li>Найти всех работающих жен:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; жена( членсемьи(
+    Имя, Фамилия, _, работает( _, _ ))).</strong><br>
+  </li>
+  <li>Найти имена и фамилии людей, которые не работают
+    и родились до 1963 года:<br>
+    <br>
+    <strong>?-&nbsp; существует членсемьи( Имя, Фамилия,
+    дата( _, _, Год), неработает) ),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; Год &lt; 1963.</strong><br>
+  </li>
+  <li>Найти людей, родившихся до 1950 года, чей доход
+    меньше, чем 8000:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; существует(
+    Членсемьи),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; датарождения(
+    Членсемьи, дата( _, _, Год) ),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Год &lt; 1950,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; доход(
+    Членсемьи, Доход),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Доход &lt;
+    8000.</strong><br>
+  </li>
+  <li>Найти фамилии людей, имеющих по крайней мере
+    трех детей:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; семья(
+    членсемьи( _, Фамилия, _, _ ), _, [ _, _, _ | _ ]).</strong></li>
+</ul>
+
+<p>Для подсчета общего дохода семья полезно
+определить сумму доходов людей из некоторого
+списка в виде двухаргументного отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>общий( Список_Людей,
+Сумма_их_доходов)</strong></p>
+
+<p>Это отношение можно запрограммировать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>общий( [ ], 0).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Пустой список людей</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>общий( [ Человек |
+Список], Сумма) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+доход( Человек, S),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% S - доход первого человека</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>общий(
+Список, Остальные),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Остальные - сумма доходов остальных</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Сумма
+is S + Остальные.</strong></p>
+
+<p>Теперь общие доходы всех семей могут быть
+найдены с помощью вопроса:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; семья( Муж,
+Жена, Дети),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; общий(
+[Муж, Жена | Дети], Доход).</strong></p>
+
+<p>Пусть отношение длина подсчитывает количество
+элементов списка, как это было определено в разд.
+3.4. Тогда мы можем найти все семьи, которые имеют
+доход на члена семьи, меньший, чем 2000, при помощи
+вопроса:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; семья( Муж,
+Жена, Дети),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; общий( [
+Муж, Жена | Дети], Доход),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; длина( [
+Муж, Жена | Дети], N),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Доход/N &lt;
+2000.</strong></p>
+
+<h4>Упражнения</h4>
+
+<p><strong>4. 1.</strong>&nbsp;&nbsp;&nbsp; Напишите вопросы для
+поиска в базе данных о семьях.</p>
+
+<p>(а)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; семей без детей;</p>
+
+<p>(b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; всех работающих детей;</p>
+
+<p>(с)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; семей, где жена
+работает, а муж нет,</p>
+
+<p>(d)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; всех детей, разница в
+возрасте родителей которых составляет не менее 15
+лет.</p>
+
+<p><a href="javascript:fa('4_1')">Посмотреть ответ</a></p>
+
+<p><strong>4. 2.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>близнецы( Ребенок1,
+Ребенок2)</strong></p>
+
+<p>для поиска всех близнецов в базе данных о
+семьях.</p>
+
+<p><a href="javascript:fa('4_2')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch3_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_2.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

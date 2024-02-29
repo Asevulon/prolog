@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 12. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch12_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch12_3.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>12. 2.&nbsp;&nbsp;&nbsp; Поиск c предпочтением
+применительно к головоломке &quot;игра в восемь&quot;</h4>
+
+<p>Если мы хотим применить программу поиска с
+предпочтением, показанную на&nbsp; рис. 12.3, к
+какой-нибудь задаче, мы должны добавить к нашей
+программе отношения, отражающие специфику этой
+конкретной задачи. Эти отношения определяют саму
+задачу (&quot;правила игры&quot;), а также вносят в
+алгоритм эвристическую информацию о методе ее
+решения. Эвристическая информация задается в
+форме эвристической функции.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>/*&nbsp; Процедуры, отражающие специфику
+головоломки<br>
+&quot;игра в восемь&quot;.<br>
+Текущая ситуация представлена списком положений
+фишек;<br>
+первый элемент списка соответствует пустой
+клетке.<br>
+Пример:</small></p>
+
+<blockquote>
+  <blockquote>
+    <table border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td><table border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td><small>3&nbsp;&nbsp; <br>
+            2&nbsp; <br>
+            1&nbsp; </small></td>
+            <td><table border="1">
+              <tr>
+                <td><small>&nbsp; 1&nbsp;&nbsp;&nbsp;2&nbsp; &nbsp;3&nbsp; <br>
+                &nbsp; 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4<br>
+                &nbsp; 7&nbsp;&nbsp; 6&nbsp;&nbsp; 5</small></td>
+              </tr>
+            </table>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td><small>&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; 2 &nbsp; 3</small></td>
+          </tr>
+        </table>
+        </td>
+        <td style="padding-left: 50px"><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Эта
+        позиция представляется так:</small><p><small>[2/2, 1/3, 2/3, 3/3,
+        3/2, 3/1, 2/1, 1/1, 1/2]</small></td>
+      </tr>
+    </table>
+  </blockquote>
+</blockquote>
+
+<p><small>&quot;Пусто&quot; можно перемещать в любую
+соседнюю клетку,<br>
+т.е. &quot;Пусто&quot; меняется местами со своим
+соседом.<br>
+*/</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>после( [Пусто | Спис],
+[Фшк | Спис1], 1) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Стоимости всех дуг равны 1</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>перест( Пусто, Фшк, Спис, Спис1).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Переставив Пусто и Фшк, получаем СПИС1</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>перест( П, Ф, [Ф | С], [П
+| С] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расст( П, Ф, 1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перест( П, Ф, [Ф1 | С],
+[Ф1 | С1] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+перест( П, Ф, С, С1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расст( X/Y, X1/Y1, Р) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Манхеттеновское расстояние между клетками</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>расст1( X, X1, Рх),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расст1( Y, Y1, Ру),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Р is Рх + Py.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расст1( А, В, Р) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Р is А-В,&nbsp;&nbsp;&nbsp; Р &gt;= 0,&nbsp; ! ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Р is B-A.</strong></p>
+
+<p><small>% Эвристическая оценка&nbsp; h&nbsp; равна сумме
+расстояний фишек<br>
+% от их &quot;целевых&quot; клеток плюс &quot;степень
+упорядоченности&quot;,<br>
+% умноженная на 3</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>h( [ Пусто | Спис], H) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( [Пусто1 | Цспис] ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сумрасст( Спис, ЦСпис, Р),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+упоряд( Спис, Уп),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Н is Р + 3*Уп.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сумрасст( [ ], [ ], 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сумрасст( [Ф | С], [Ф1 |
+С1], Р) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расст( Ф, Ф1, Р1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сумрасст( С, Cl, P2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Р is P1 + Р2.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; упоряд( [Первый | С],
+Уп) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+упоряд( [Первый | С], Первый, Уп).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; упоряд( [Ф1, Ф2 | С],
+Первый, Уп) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+очки( Ф1, Ф2, Уп1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+упоряд( [Ф2 | С], Первый, Уп2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Уп is Уп1 + Уп2.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; упоряд( [Последний],
+Первый, Уп) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+очки( Последний, Первый, Уп).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 2/2, _, 1) :-&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Фишка в центре - 1 очко</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>очки( 1/3, 2/3, 0) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Правильная последовательность - 0 очков</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>очки( 2/3, 3/3, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 3/3, 3/2, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 3/2, 3/1, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 3/1, 2/1, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 2/1, 1/1, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 1/1, 1/2, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( 1/2, 1/3, 0) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; очки( _, _, 2).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Неправильная последовательность</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>цель( [2/2, 1/3, 2/3, 3/3, 3/2,
+3/1, 2/1, 1/1, 1/2] ).</strong></p>
+
+<p><small>% Стартовые позиции для трех головоломок</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>старт1( [2/2, 1/3, 3/2, 2/3,
+3/3, 3/1, 2/1, 1/1, 1/2] ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Требуется для решения 4 шага</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>старт2( [2/1, 1/2, 1/3, 3/3,
+3/2, 3/1, 2/2, 1/1, 2/3] ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% 5 шагов</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>старт3( [2/2, 2/3, 1/3, 3/1,
+1/2, 2/1, 3/3, 1/1, 3/2] ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% 18 шагов</small></p>
+
+<p><small>% Отображение решающего пути в виде списка
+позиций на доске</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>показреш( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; показреш( [ Поз |
+Спис] :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+показреш( Спис),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nl, write( '---'),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+показпоз( Поз).</strong></p>
+
+<p><small>% Отображение позиции на доске</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>показпоз( [S0, S1, S2, S3,
+S4, S5, S6, S7, S8] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит Y, [3, 2, 1] ),</strong> &nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Порядок Y-координат</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>nl, принадлежит X, [1, 2, 3] ),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Порядок Х-координат</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит( Фшк-X/Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[' '-S0, 1-S1, 2-S2, 3-S3, 4-S4, 5-S5, 6-S6, 7-S7, 8-S8]),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( Фшк),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fail.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>%Возврат с переходом к следующей клетке</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>показпоз( _ ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 12. 6.</strong>&nbsp; Процедуры для
+головоломки &quot;игра в восемь&quot;,</small><br>
+<small>предназначенные для использования
+программой</small> <small>поиска</small><br>
+<small>с предпочтением рис. 12.3.</small></p>
+
+<p>Существуют три отношения, отражающих специфику
+конкретной задачи:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>после( Верш, Верш1,
+Ст)</strong></p>
+
+<p>Это отношение истинно, когда в пространстве
+состояний существует дуга стоимостью <strong>Ст</strong>
+между вершинами <strong>Верш</strong> и <strong>Верш1</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>цель( Верш)</strong></p>
+
+<p>Это отношение истинно, если <strong>Верш</strong> -
+целевая вершина.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>h( Верш, Н)</strong></p>
+
+<p>Здесь <strong>Н</strong> - эвристическая оценка
+стоимости самого дешевого пути из вершины <strong>Верш</strong>
+в целевую вершину.</p>
+
+<p>В данном и следующих разделах мы определим эти
+отношения для двух примеров предметных областей:
+для головоломки &quot;игра в восемь&quot; (описанной в
+разделе 11.1) и планирования прохождения задач в
+многопроцессорной системе.</p>
+
+<p>Отношения для &quot;игры в восемь&quot; показаны на
+рис. 12.6. Вершина пространства состояний - это
+некоторая конфигурация из фишек на игровой
+доске. В программе она задается списком текущих
+положений фишек. Каждое положение определяется
+парой координат <strong>X/Y</strong>. Элементы списка
+располагаются в следующем порядке:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; текущее положение
+пустой клетки,</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; текущее положение
+фишки 1,</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; текущее положение
+фишки 2,</p>
+
+<p>...</p>
+
+<p>Целевая ситуация (см. рис. 11.3) определяется при
+помощи предложения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>цель( [2/2, 1/3, 2/3, 3/3, 3/2,
+3/1, 2/1, 1/1, 1/2] ).</strong></p>
+
+<p>Имеется вспомогательное отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расст( K1, K2, Р)</strong></p>
+
+<p>Р - это &quot;манхеттеновское расстояние&quot; между
+клетками Kl и K2, равное сумме двух расстояний
+между Kl и K2: расстояния по горизонтали и
+расстояния по вертикали.</p>
+
+<p align="center"><img src="pic/fig12_7.gif" width="420" height="114"
+alt="fig12_7.gif (1512 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 12. 7.</strong>&nbsp; Три стартовых
+позиции для &quot;игры в восемь&quot;:&nbsp; (а) &nbsp;
+решение</small> <small>требует</small><br>
+<small>4 шага;</small> <small>(b)&nbsp; решение требует 5
+шагов;&nbsp; (с) &nbsp; решение требует 18 шагов.</small></p>
+
+<p>Наша задача - минимизировать <em>длину</em>
+решения, поэтому мы положим стоимости всех дуг
+пространства состояний равными 1. В программе
+рис. 12. 6. даны также определения трех начальных
+позиций (см. рис. 12.7).</p>
+
+<p>Эвристическая функция&nbsp; <em>h</em>, &nbsp;
+запрограммирована как отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>h( Поз, Н)</strong></p>
+
+<p><strong>Поз</strong> - позиция на доске; <strong>Н</strong>
+вычисляется как комбинация из двух оценок:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумрасст</strong> -
+&quot;суммарное расстояние&quot; восьми фишек,
+находящихся в позиции <strong>Поз</strong>, от их
+положений в целевой позиции. Например, для
+начальной позиции, показанной на рис. 12.7(а), <strong>сумрасст</strong>
+= 4.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>упоряд</strong> -
+степень упорядоченности фишек в текущей позиции
+по отношению к тому порядку, в котором они должны
+находиться в целевой позиции. Величина <strong>упоряд</strong>
+вычисляется как сумма очков, приписываемых
+фишкам, согласно следующим правилам: 
+
+<ul>
+  <li>фишка в центральной позиции - 1 очко;</li>
+  <li>фишка не в центральной позиции, и
+    непосредственно за ней следует (по часовой
+    стрелке) та фишка, какая и должна за ней следовать
+    в целевой позиции - 0 очков.</li>
+  <li>то же самое, но за фишкой следует &quot;не та&quot;
+    фишка - 2 очка.</li>
+</ul>
+
+<p>Например, для начальной позиции рис.12.7(а),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>упоряд</strong> = 6.<br>
+Эвристическая оценка <strong>Н</strong> вычисляется как
+сумма</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Н = сумрасст + 3 *
+упоряд</strong></p>
+
+<p>Эта эвристическая функция хорошо работает в
+том смысле, что она весьма эффективно направляет
+поиск к цели. Например, при решении головоломок
+&nbsp; рис. 12.7(а) и (b) первое решение обнаруживается
+без единого отклонения от кратчайшего решающего
+пути. Другими словами, кратчайшие решения
+обнаруживаются сразу, без возвратов. Даже
+трудная головоломка&nbsp; рис. 12.7 (с) решается почти
+без возвратов. Но данная эвристическая функция
+страдает тем недостатком, что она не является
+допустимой: нет гарантии, что более короткие пути
+обнаруживаются раньше более длинных. Дело в том,
+что для функции&nbsp; <em>h</em>&nbsp; условие&nbsp; <em>h &lt;= h*</em>
+&nbsp; выполнено не для всех вершин пространства
+состояний. Например, для начальной позиции &nbsp;
+рис. 12.7 (а)</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>h = 4 + 3 * 6 = 22,&nbsp;&nbsp;&nbsp; h*
+= 4</em></p>
+
+<p>С другой стороны, оценка &quot;суммарное
+расстояние&quot; допустима: для всех позиций</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумрасст</strong> <em>&lt;=
+h*</em></p>
+
+<p>Доказать это неравенство можно при помощи
+следующего рассуждения: если мы ослабим условия
+задачи и разрешим фишкам взбираться друг на
+друга, то каждая фишка сможет добраться до своего
+целевого положения по траектории, длина которой
+в точности равна манхеттеновскому расстоянию
+между ее начальным и целевым положениями. Таким
+образом, длина оптимального решения упрощенной
+задачи будет в точности равна <strong>сумрасст</strong>.
+Однако в исходном варианте задачи фишки
+взаимодействуют друг с другом и мешают друг
+другу, так что им уже трудно идти по своим
+кратчайшим траекториям. В результате длина
+оптимального решения окажется больше либо
+равной <strong>сумрасст</strong>.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>12. 2.</strong>&nbsp;&nbsp;&nbsp; Введите в программу
+поиска с предпочтением, приведенную на рис. 12.3,
+подсчет числа вершин, порожденных в процессе
+поиска. Один из простых способов это сделать -
+хранить текущее число вершин в виде факта,
+устанавливаемого при помощи <strong>assert</strong>.
+Всегда, когда порождаются новые вершины,
+уточнять это значение при помощи <strong>retract</strong> и <strong>assert</strong>.
+Проведите эксперименты с различными
+эвристическими функциями задачи &quot;игра в
+восемь&quot; с целью оценить их эвристическую силу.
+Используйте для этого вычисленное количество
+порожденных вершин.</p>
+
+<hr>
+
+<p align="center"><a href="ch12_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch12_3.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

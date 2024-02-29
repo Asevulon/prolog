@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 2. Пункт 4</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch2_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch2_5.htm">Вперёд</a></p>
+<a name="tn253"><script language="JavaScript">double_line();</script>
+
+
+<h4>2. 4.&nbsp;&nbsp;&nbsp; <span id="t253">Процедурная семантика</span></h4>
+
+<p>Процедурная семантика определяет, <em>как</em>
+пролог-система отвечает на вопросы. Ответить на
+вопрос - это значит удовлетворить список целей.
+Этого можно добиться, приписав встречающимся
+переменным значения таким образом, чтобы</a> цели
+логически следовали из программы. Можно<a name="tn335">
+сказать, что процедурная семантика Пролога - это <span
+id="t335">процедура вычисления списка целей</span> с
+учетом заданной программы. &quot;Вычислить цели&quot;
+это значит попытаться достичь их.</p>
+
+<p>Назовем эту процедуру <strong>вычислить</strong>. Как
+показано на рис. 2.9, входом и выходом этой
+процедуры являются:</p>
+
+<p>&nbsp;&nbsp;&nbsp; входом - программа и список целей,<br>
+&nbsp;&nbsp;&nbsp; выходом - признак успех/неуспех и
+подстановка переменных.</p>
+
+<p align="center"><img src="pic/fig2_9.gif" width="450" height="135"
+alt="fig2_9.gif (1243 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 2. 9.</strong>&nbsp; Входы и выходы
+процедуры вычисления списка целей.</small></p>
+
+<p>Смысл двух составляющих выхода такой:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp; Признак успех/неуспех принимает
+значение &quot;да&quot;, если цели достижимы, и
+&quot;нет&quot; - в противном случае. Будем говорить,
+что &quot;да&quot; сигнализирует об <em>успешном</em>
+завершении и &quot;нет&quot; - о <em>неуспехе</em>.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp; Подстановка переменных
+порождается только в случае успешного
+завершения; в случае неуспеха подстановка
+отсутствует.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>ПРОГРАММА</strong></p>
+
+<p><strong>большой( медведь).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Предложение 1</small><br>
+<strong>большой( слон).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Предложение 2</small><br>
+<strong>маленький( кот).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Предложение 3</small><br>
+<strong>коричневый ( медведь).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Предложение 4</small><br>
+<strong>черный ( кот).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Предложение 5</small><br>
+<strong>серый( слон).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Предложение 6</small></p>
+
+<p><strong>темный( Z) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Предложение 7:</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>черный( Z).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% любой черный</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp; % объект является темным</small><br>
+<strong>темный( Z) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Предложение 8:</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>коричневый(
+Z).</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&nbsp; % Любой
+коричневый</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp; % объект является темным</small></p>
+
+<p><strong>ВОПРОС</strong></p>
+
+<p><strong>?-&nbsp; темный( X), большой( X)</strong>&nbsp;&nbsp;&nbsp; <small>%
+Кто одновременно темный</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% и большой?</small></p>
+
+<p><strong>ШАГИ&nbsp; ВЫЧИСЛЕНИЯ</strong></p>
+
+<p>(1)&nbsp;&nbsp;&nbsp; Исходный список целевых
+утверждений:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>темный(
+X),&nbsp; большой( X).</strong></p>
+
+<p>(2)&nbsp;&nbsp;&nbsp; Просмотр всей программы от начала к
+концу и поиск предложения, у которого голова
+сопоставима с первым целевым утверждением</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>темный(
+X).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Найдена формула 7:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>темный(
+Z) :- черный( Z).</strong></p>
+
+<p>Замена первого целевого утверждения
+конкретизированным телом предложения 7 -
+порождение нового списка целевых утверждений.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>черный(
+X),&nbsp; большой( X)</strong></p>
+
+<p>(3)&nbsp;&nbsp;&nbsp; Просмотр программы для нахождения
+предложения, сопоставимого с <strong>черный( X)</strong>.
+Найдено предложение 5: <strong>черный ( кот)</strong>. У
+этого предложения нет тела, поэтому список целей
+при соответствующей конкретизации сокращается
+до</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>большой(
+кот)</strong></p>
+
+<p>(4)&nbsp;&nbsp;&nbsp; Просмотр программы в поисках цели <strong>большой(
+кот)</strong>. Ни одно предложение не найдено. Поэтому
+происходит возврат к шагу (3) и отмена
+конкретизации <strong>Х = кот</strong>. Список целей
+теперь снова</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>черный(
+X),&nbsp; большой( X)</strong></p>
+
+<p>Продолжение просмотра программы ниже
+предложения 5. Ни одно предложение не найдено.
+Поэтому возврат к шагу (2) и продолжение просмотра
+ниже предложения 7. Найдено предложение (8):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>темный( Z)
+:- коричневый( Z).</strong></p>
+
+<p>Замена первой цели в списке на <strong>коричневый(
+Х)</strong>, что дает</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>коричневый(
+X), большой( X)</strong></p>
+
+<p>(5)&nbsp;&nbsp;&nbsp; Просмотр программы для обнаружения
+предложения, сопоставимого <strong>коричневый( X)</strong>.
+Найдено предложение <strong>коричневый( медведь)</strong>.
+У этого предложения нет тела, поэтому список
+целей уменьшается до</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>большой(
+медведь)</strong></p>
+
+<p>(6)&nbsp;&nbsp;&nbsp; Просмотр программы и обнаружение
+предложения <strong>большой( медведь)</strong>. У него
+нет тела, поэтому список целей становится пустым.
+Это указывает на успешное завершение, а
+соответствующая конкретизация переменных
+такова:</p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 2. 10.</strong>&nbsp; Пример,
+иллюстрирующий процедурную семантику</small><br>
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Пролога: шаги вычислений,
+выполняемых процедурой <strong>вычислить</strong>.</small></p>
+
+<p>В главе 1 в разд. &quot;Как пролог-система отвечает
+на вопросы&quot; мы уже фактически рассмотрели, что
+делает процедура <strong>вычислить</strong>. В
+оставшейся части данного раздела приводится
+несколько более формальное и систематическое
+описание этого процесса, которое можно
+пропустить без серьезного ущерба для понимания
+остального материала книги.</p>
+
+<p>Конкретные операции, выполняемые в процессе
+вычисления целевых утверждений, показаны на рис.
+2.10. Возможно, следует изучить этот рисунок
+прежде, чем знакомиться с последующим общим
+описанием.</p>
+
+<p>Чтобы вычислить список целевых утверждений</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G1, G2, ..., Gm</p>
+
+<p>процедура <strong>вычислить</strong> делает следующее:</p>
+<script language="JavaScript">line();</script>
+
+
+<ul>
+  <li><strong>Если список целей пуст - завершает работу <em>успешно</em>.</strong></li>
+  <li><strong>Если список целей не пуст, продолжает
+    работу, выполняя (описанную далее) операцию
+    'ПРОСМОТР'.</strong></li>
+  <li><strong><em>ПРОСМОТР</em>: Просматривает предложения
+    программы от начала к концу до обнаружения
+    первого предложения С, такого, что голова С
+    сопоставима с первой целью G1. Если такого
+    предложения обнаружить не удается, то работа
+    заканчивается <em>неуспехом</em>.<br>
+    <br>
+    Если С найдено и имеет вид<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Н&nbsp;&nbsp; :-&nbsp;&nbsp; B1,&nbsp; ...,
+    &nbsp; Вn.<br>
+    <br>
+    то переменные в С переименовываются, чтобы
+    получить такой вариант С' предложения С, в
+    котором нет общих переменных со списком&nbsp; G1, &nbsp;
+    ...,&nbsp; Gm. Пусть С' - это<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Н'&nbsp;&nbsp; :-&nbsp;&nbsp; B1',&nbsp; ...,
+    &nbsp; Вn'.<br>
+    <br>
+    Сопоставляется&nbsp; G1&nbsp; с&nbsp; H';&nbsp; пусть&nbsp; S&nbsp; -
+    результирующая конкретизация переменных.&nbsp; В
+    списке целей&nbsp; G1,&nbsp; G2,&nbsp; ....&nbsp; Gm, цель&nbsp; G1 &nbsp;
+    заменяется на список&nbsp; В1',&nbsp; ..,&nbsp; Вn', &nbsp; что
+    порождает новый список целей:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В1',&nbsp; ...,&nbsp; Вn', G2,&nbsp; ...,
+    &nbsp; Gm<br>
+    <br>
+    (Заметим, что, если&nbsp; С&nbsp; - факт, тогда&nbsp; n=0, &nbsp;
+    и в этом случае новый список целей оказывается
+    короче, нежели исходный; такое уменьшение списка
+    целей может в определенных случаях превратить
+    его в пустой, а следовательно, - привести к
+    успешному завершению.)<br>
+    <br>
+    Переменные в новом списке целей заменяются
+    новыми значениями, как это предписывает
+    конкретизация&nbsp; S,&nbsp; что порождает еще один
+    список целей<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В1'',&nbsp; ....&nbsp; Вn&quot;, G2', &nbsp;
+    ...,&nbsp; Gm'<br>
+    </strong></li>
+  <li><strong>Вычисляет (используя рекурсивно ту же самую
+    процедуру) этот новый список целей. Если его
+    вычисление завершается успешно, то и вычисление
+    исходного списка целей тоже завершается успешно.
+    Если же его вычисление порождает неуспех, тогда
+    новый список целей отбрасывается и происходит
+    возврат к просмотру программы. Этот просмотр
+    продолжается, начиная с предложения,
+    непосредственно следующего за предложением&nbsp; С
+    &nbsp; (С&nbsp; -&nbsp; предложение, использовавшееся
+    последним) и делается попытка достичь успешного
+    завершения с помощью другого предложения.</strong></li>
+</ul>
+<script language="JavaScript">line();</script>
+
+
+<p>Более компактная запись этой процедуры в
+обозначениях, близких к Паскалю, приведена на
+рис. 2.11.</p>
+
+<p>Здесь следует сделать несколько
+дополнительных замечаний, касающихся процедуры <strong>вычислить</strong>
+в том виде, в котором она приводится. Во-первых, в
+ней явно не указано, как порождается
+окончательная результирующая конкретизация
+переменных. Речь идет о конкретизации S, которая
+приводит к успешному завершению и которая,
+возможно, уточнялась последующими
+конкретизациями во время вложенных рекурсивных
+вызовов <strong>вычислить</strong>.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>procedure</strong> <em>вычислить (Прогр, СписокЦелей,
+Успех)</em></p>
+
+<p><small>Входные параметры:</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Прогр:</em> &nbsp;
+список предложений<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>СписокЦелей:</em> &nbsp;
+список целей</small></p>
+
+<p><small>Выходной параметр:</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Успех:</em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; истинностное
+значение; <em>Успех</em> принимает значение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+истина, если список целевых утверждений<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(их конъюнкция) истиннен с точки зрения <em>Прогр</em></small></p>
+
+<p><small>Локальные переменные:</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Цель:</em>&nbsp; цель<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>ДругиеЦели</em>:&nbsp;
+список целей<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Достигнуты:</em> &nbsp;
+истинностное значение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Сопоставились:</em> &nbsp;
+истинностное значение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Конкрет:</em> &nbsp;
+конкретизация переменных<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>Н, &nbsp; Н',&nbsp; B1,&nbsp; B1',&nbsp; ...,&nbsp; В<sub>n</sub> ,&nbsp; В<sub>n</sub>':</em>
+&nbsp; цели</small></p>
+
+<p><small>Вспомогательные функции:</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>пycтой( L):</em> &nbsp;
+возвращает истину, если L - пустой список</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>голoвa( L):</em> &nbsp;
+возвращает первый элемент списка L</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>хвост( L):</em> &nbsp;
+возвращает остальную часть списка L</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>конкат( L1, L2):</em>
+&nbsp; создает конкатенацию списков - присоединяет<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+список L2 к концу списка L1</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>сопоставление( T1,
+T2, Сопоставились, Конкрет):</em> пытается<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сопоставить термы Т1 и T2; если они сопоставимы, то<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>Сопоставились</em> - истина, а <em>Конкрет</em>
+представляет<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+собой конкретизацию переменных</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>подставить(
+Конкрет, Цели):</em> производит подстановку
+переменных<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+в <em>Цели</em> согласно <em>Конкрет</em></small></p>
+
+<p><strong>begin</strong><br>
+&nbsp;&nbsp;&nbsp; <strong>if</strong> <em>пустой( СписокЦелей)</em> <strong>then</strong>
+<em>Успех </em>: =<em> истина</em><br>
+&nbsp;&nbsp;&nbsp; <strong>else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; begin</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Цель</em> : = <em>голова(
+СписокЦелей)</em>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>ДругиеЦели</em>
+: = <em>хвост( СписокЦелей)</em>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Достигнута</em>
+: = <em>ложь;</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>while not</strong>
+<em>Достигнута</em> <strong>and</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&quot;в программе есть еще предложения&quot; <strong>do</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>begin</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>Пусть следующее предложение в Прогр есть<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Н &nbsp;&nbsp; :-&nbsp;&nbsp; B1,&nbsp; ....&nbsp; Вn.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Создать вариант этого предложения<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Н' &nbsp;&nbsp; :-&nbsp;&nbsp; В1',&nbsp; ....&nbsp; Вn'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сопоставление( Цель, Н',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Сопоставились, Конкрет)</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>if</strong> <em>Сопоставились</em> <strong>then</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>begin</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>НовыеЦели</em> : =<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>конкат(</em> [<em>В1', ..., Вn'</em> ]<em>, Другие Цели</em>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>НовыеЦели</em> : =<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>подставить( Конкрет, НовыеЦели);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вычислить( Прогр, НовыеЦели, Достигнуты)</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>end<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+end;</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Успех </em>: =<em>
+Достигнуты</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>end<br>
+end;</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 2. 11.</strong>&nbsp; Вычисление
+целевых утверждений Пролога.</small></p>
+
+<p>Всякий раз, как рекурсивный вызов процедуры <strong>вычислить</strong>
+приводят к неуспеху, процесс вычислений
+возвращается к <strong>ПРОСМОТРУ</strong> и
+продолжается с того предложения&nbsp; С,&nbsp; которое
+использовалось последним. Поскольку применение
+предложения&nbsp; С&nbsp; не привело к успешному
+завершению, пролог-система должна для
+продолжения вычислений попробовать
+альтернативное предложение. В действительности</a><a
+name="tn4"> система аннулирует результаты части
+вычислений, приведших к неуспеху, и осуществляет <span
+id="t4">возврат</span> в ту точку (предложение&nbsp; С),&nbsp;
+в которой эта неуспешная ветвь начиналась. Когда
+процедура осуществляет возврат в некоторую
+точку, все конкретизации переменных, сделанные
+после этой точки, аннулируются. Такой порядок
+обеспечивает систематическую проверку
+пролог-системой всех возможных альтернативных
+путей вычисления до тех пор, пока не будет найден
+путь, ведущий к успеху, или же до тех пор, пока не
+окажется, что все пути приводят к неуспеху.</p>
+
+<p>Мы уже знаем, что даже после успешного
+завершения пользователь может заставить систему
+совершить возврат для поиска новых решений. В
+нашем описании процедуры вычислить эта деталь
+была опущена.</p>
+
+<p>Конечно, в настоящих реализациях Пролога в
+процедуру <strong>вычислить</strong> добавлены и еще
+некоторые усовершенствования. Одно из них -
+сокращение работы по просмотрам программы с
+целью повышения эффективности. Поэтому на
+практике пролог-система не просматривает все
+предложения программы, а вместо этого
+рассматривает только те из них, которые касаются
+текущего целевого утверждения.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>2. 9.</strong>&nbsp;&nbsp;&nbsp; Рассмотрите программу на
+рис. 2.10 и по типу того, как это сделано на рис. 2.10,
+проследите процесс вычисления пролог-системой
+вопроса</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; большой( X), &nbsp;
+темный( X).</strong></p>
+
+<p>Сравните свое описание шагов вычисления с
+описанием на рис. 2.10, где вычислялся, по существу,
+тот же вопрос, но с другой последовательностью
+целей:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; темный( X), &nbsp;
+большой( X).</strong></p>
+
+<p>В каком из этих двух случаев системе приходится
+производить б<em>о</em>льшую работу для нахождения
+ответа?</p>
+</a>
+
+<p><a href="javascript:fa('2_9')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch2_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch2_5.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+<script src="script.js" type="text/javascript"></script>
+<script
+language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 4. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch4_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_3.htm">Вперёд</a></p>
+<a name="tn1"><script language="JavaScript">double_line();</script>
+
+
+<h4>4. 2.&nbsp;&nbsp;&nbsp; <span id="t1">Абстракция данных</span></h4>
+
+<p><em>Абстракцию данных</em> можно рассматривать как
+процесс организации различных фрагментов
+информации в единые логические единицы
+(возможно, иерархически), придавая ей при этом
+некоторую концептуально осмысленную форму.
+Каждая информационная единица должна быть легко
+доступна в программе. В идеальном случае все
+детали реализации такой структуры должны быть
+невидимы пользователю этой структуры. Самое
+главное в этом процессе - дать программисту
+возможность использовать информацию, не думая о
+деталях ее действительного представления. </p>
+
+<p>Обсудим один из способов реализации этого
+принципа на Прологе. Рассмотрим снова пример с
+семьей из предыдущего раздела. Каждая семья - это
+набор некоторых фрагментов информации. Все эти
+фрагменты объединены в естественные
+информационные единицы, такие, как &quot;член
+семьи&quot; или &quot;семья&quot;, и с ними можно
+обращаться как с едиными объектами. Предположим
+опять, что информация о семье структурирована
+так же, как на рис. 4.1. Определим теперь некоторые
+отношения, с помощью которых пользователь может
+получать </a><a name="tn265">доступ к конкретным
+компонентам семьи,</a> не зная деталей рис. 4.1.
+Такие отношения можно назвать <em><span id="t265">селекторами</span></em>,
+поскольку они позволяют выбирать конкретные
+компоненты. Имя такого отношения-селектора будет
+совпадать с именем компоненты, которую нужно
+выбрать. Отношение будет иметь два аргумента:
+первый - объект, который содержит компоненту, и
+второй - саму компоненту:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>отношение_селектор(Объект,
+Выбранная_компонента)</strong></p>
+
+<p>Вот несколько селекторов для структуры семья:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>муж( семья( Муж, _, _ ),
+Муж).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; жена( семья( _, Жена, _
+), Жена).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дети( семья( _, _,
+СписокДетей ), СписокДетей).</strong></p>
+
+<p>Можно также создать селекторы для отдельных
+детей семьи:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>первыйребенок(
+Семья, Первый) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дети(
+Семья, [Первый | _ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; второйребенок(
+Семья, Второй) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дети(
+Семья, [ _, Второй | _ ]). <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>Можно обобщить этот селектор для выбора N-го
+ребенка:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><em>n</em>ребенок( N,
+Семья, Ребенок) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дети(
+Семья, СписокДетей),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>n</em>_элемент(
+N, СписокДетей, Ребенок)</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% N-й элемент списка</small></p>
+
+<p>Другим интересным объектом является &quot;член
+семьи&quot;. Вот некоторые связанные с ним
+селекторы, соответствующие рис. 4.1:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>имя( членсемьи( Имя,
+_, _, _ ), Имя).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; фамилия( членсемьи( _,
+Фамилия, _, _ ), Фамилия).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; датарождения( членсемьи(
+_, _, Дата), Дата).</strong></p>
+
+<p>Какие преимущества мы можем получить от
+использования отношений-селекторов? Определив
+их, мы можем теперь забыть о конкретном виде
+структуры представления информации. Для
+пополнения и обработки этой информации нужно
+знать только имена отношений-селекторов и в
+оставшейся части программы пользоваться только
+ими. В случае, если информация представлена
+сложной структурой, это легче, чем каждый раз
+обращаться к ней в явном виде. В частности, в
+нашем примере с семьей пользователь не обязан
+знать, что дети представлены в виде списка.
+Например, предположим, мы хотим сказать, что Том
+Фокс и Джим Фокс принадлежат к одной семье и что
+Джим - второй ребенок Тома. Используя приведенные
+выше отношения-селекторы, мы можем определить
+двух человек, назовем их <strong>Человек1</strong> и <strong>Человек2</strong>,
+и семью. Следующий список целей приводит к
+желаемому результату:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>имя( Человек1, том),
+фамилия( Человек1, фокс),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Человек1 - Том Фокс</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>имя( Человек2, джим),
+фамилия( Человек1, фокс),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Человек2 - Джим Фокс</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>муж( Семья, Человек1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; второйребенок( Семья,
+Человек2)</strong></p>
+
+<p>Использование отношений-селекторов облегчает
+также и последующую модификацию программ.
+Представьте себе, что мы захотели повысить
+эффективность программы, изменив представление
+информации. Все, что нужно сделать для этого, -
+изменить определения отношений-селекторов, и вся
+остальная программа без изменений будет
+работать с этим новым представлением.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>4. 3.</strong>&nbsp;&nbsp;&nbsp; Завершите определение
+отношения <strong><em>n</em>ребенок</strong>, определив
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><em>n</em>_элемент( N,
+Список, X)</strong></p>
+
+<p>которое выполняется, если Х является N-м
+элементом списка <strong>Список</strong>.</p>
+
+<p><a href="javascript:fa('4_3')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch4_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_3.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

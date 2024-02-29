@@ -1,0 +1,576 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 14. Пункт 6</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch14_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch14_7.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>14. 6.&nbsp;&nbsp;&nbsp; Работа с неопределенностью</h4>
+<a name="p14_6_1">
+
+<hr>
+</a>
+
+<h4>14. 6. 1.&nbsp;&nbsp;&nbsp; Степень достоверности</h4>
+
+<p>Наша оболочка экспертной системы, описанная в
+предыдущем разделе, может работать только с
+такими вопросами (утверждениями), которые либо
+истинны, либо ложны. Предметные области, в
+которых на любой вопрос можно ответить
+&quot;правда&quot; или &quot;ложь&quot;, называются <em>категорическими</em>.
+Наши правила базы знания (также, как и данные)
+были категорическими, это были
+&quot;категорические импликации&quot;. Однако многие
+области экспертных знаний не являются
+категорическими. Как правило, в заключениях
+эксперта много догадок (впрочем, высказанных с
+большой уверенностью), которые обычно верны, но
+могут быть и<a name="tn175"> исключения. Как данные,
+относящиеся к конкретной задаче, так и
+импликации, содержащиеся в правилах, <span id="t175">могут
+быть не вполне определенными</span>.
+Неопределенность можно промоделировать,
+приписывая утверждениям некоторые
+характеристики, отличные от &quot;<em>истина</em>&quot; и
+&quot;<em>ложь</em>&quot;. Характеристики могут иметь свое
+внешнее выражение в форме дескрипторов, таких,
+как, например, <em>верно</em>, <em>весьма вероятно</em>, <em>вероятно</em>,
+<em>маловероятно</em>, <em>невозможно</em>. Другой
+способ: степень уверенности может выражаться в
+форме действительного числа, заключенного в
+некотором</a><a name="tn158"> интервале</a><a name="tn303">,</a>
+например между 0 и 1 или между -5 и +5. Такую числовую
+характеристику называют<a name="tn310"> по-разному - <span
+id="t158">&quot;коэффициент определенности&quot;</span>, <span
+id="t303">&quot;степень доверия&quot;</span> или <span id="t310">&quot;субъективная
+уверенность&quot;</span>. Более естественным было бы
+использовать вероятности (в математическом
+смысле слова), но попытки применить их на
+практике приводят к трудностям. Происходит это
+по следующим причинам: 
+
+<ul>
+  <li>Экспертам, по-видимому, неудобно мыслить в
+    терминах вероятностей. Их оценки правдоподобия
+    не вполне соответствуют математическому
+    определению вероятностей.</li>
+  <li>Работа с вероятностями, корректная с точки
+    зрения математики, потребовала бы или
+    какой-нибудь недоступной информации, или
+    каких-либо упрощающих допущений, не вполне
+    оправданных с точки зрения практического
+    приложения.</li>
+</ul>
+
+<p>Поэтому, даже если выбранная мера
+правдоподобия лежит в интервале 0 и 1, более
+правильным будет называть ее из осторожности
+&quot;субъективной уверенностью&quot;, подчеркивая
+этим, что имеется в виду оценка, данная экспертом.
+Оценки эксперта не удовлетворяют всем
+требованиям теории вероятностей. Кроме того,
+вычисления над такими оценками могут отличаться
+от исчисления вероятностей. Но, несмотря на это,
+они могут служить вполне адекватной моделью
+того, как человек оценивает достоверность своих
+выводов.</p>
+
+<p>Для работы в условиях неопределенности было
+придумано множество различных механизмов. Мы
+будем рассматривать здесь механизм,
+используемый в системах Prospector и AL/X для</a><a name="tn168">
+минералогической разведки и локализации
+неисправностей соответственно. Следует
+заметить, что <span id="t168">модель, применяемая в
+системе Prospector</span>, несовершенна как с
+теоретической, так и с практической точек зрения.
+Однако она использовалась на практике, она
+проста и может служить хорошей иллюстрацией при
+изложении основных принципов, а потому вполне
+подойдет нам, по крайней мере для первого
+знакомства с этой областью. С другой стороны,
+известно, что даже в значительно более сложных
+моделях не обходится без трудностей</a><a name="tn169">.</p>
+</a><a name="p14_6_2">
+
+<hr>
+</a>
+
+<h4>14. 6. 2.&nbsp;&nbsp;&nbsp; <span id="t169">Модель Prospector'а</span></h4>
+
+<p>Достоверность событий моделируется с помощью
+действительных чисел, заключенных в интервале
+между 0 и 1. Для простоты изложения мы будем
+называть их &quot;вероятностями&quot;, хотя более
+точный термин<a name="tn266"> &quot;субъективная
+уверенность&quot;. Отношения между событиями можно
+представить графически в форме <span id="t266">&quot;сети
+вывода&quot;</span>. На рис. 14.14 показан пример сети
+вывода. События изображаются прямоугольниками, а
+отношения между ними - стрелками. Овалами
+изображены комбинации событий (И, ИЛИ, НЕ).</p>
+
+<p>Мы будем считать, что отношения между событиями
+(стрелки) являются своего рода &quot;мягкими
+импликациями&quot;. Пусть имеются два события <em>E</em>
+&nbsp; и&nbsp; <em>H</em>,&nbsp; и пусть информация о том, что
+имело место событие <em>Е</em>,&nbsp; оказывает влияние
+на нашу уверенность в том, что произошло событие <em>H</em>.&nbsp;
+Если это влияние является &quot;категорической
+импликацией&quot;, то можно просто написать</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если <em>Е</em>&nbsp; то&nbsp; <em>H</em></p>
+
+<p>В случае же &quot;мягкой импликации&quot; это
+отношение может быть менее определенным, так что
+ему можно приписать некоторую &quot;силу&quot;, с
+которой оно действует:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если <em>E</em>&nbsp; то&nbsp; <em>H</em>
+&nbsp; с силой&nbsp; S</p>
+
+<p>Та сила, с которой достоверность <em>Е</em> &nbsp;
+влияет на уверенность в <em>H</em>, &nbsp; моделируется в
+системе Prospector при помощи двух параметров</a><a
+name="tn156">:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a><a name="tn154"><span id="t156"><em>N</em>&nbsp;
+= &nbsp; &quot;коэффициент необходимости&quot;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span id="t154"><em>S</em>&nbsp; = &nbsp;
+&quot;коэффициент достаточности&quot;</span></p>
+
+<p align="center"><img src="pic/fig14_14.gif" width="574" height="700"
+alt="fig14_14.gif (11089 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 14. 14.</strong>&nbsp; Сеть вывода
+системы AL/X (заимствовано<br>
+из Reiter (1980) ).<br>
+Числа, приписанные прямоугольникам, - априорные<br>
+вероятности событий; числами на стрелках
+задается<br>
+&quot;сила&quot; отношений между событиями.</small></p>
+
+<p>В сети вывода это изображается так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>E ------------&gt; H<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(N, S)</em></p>
+
+<p>Два события, участвующие в отношении, часто
+называют &quot;фактом&quot; и &quot;гипотезой&quot;
+соответственно. Допустим, что мы проверяем
+гипотезу <em>H</em>.&nbsp; Тогда мы будем искать такой
+факт&nbsp; </a><a name="tn155"><em>Е</em>,&nbsp; который мог бы
+подтвердить либо опровергнуть эту гипотезу.&nbsp; <em>S</em>
+&nbsp; говорит нам, в какой</a><a name="tn157"> степени <em><span
+id="t155">достаточно</span></em> факта&nbsp; <em>Е</em>&nbsp; для
+подтверждения гипотезы &nbsp; <em>H</em>;&nbsp; <em>N</em>&nbsp;
+-&nbsp; насколько <em><span id="t157">необходим</span></em> факт <em>Е</em>&nbsp;
+для подтверждения гипотезы&nbsp; <em>Н</em>. &nbsp; Если
+факт&nbsp; <em>Е</em>&nbsp; имел место, то чем больше&nbsp; <em>S</em>,&nbsp;
+тем больше уверенности в&nbsp; <em>H</em>. &nbsp; С другой
+стороны, если не верно, что имел место факт&nbsp; <em>Е</em>,&nbsp;
+то чем больше&nbsp; <em>N</em>, &nbsp; тем менее вероятно,
+что гипотеза&nbsp; <em>H</em> &nbsp; верна. В случае, когда
+степень достоверности &nbsp; <em>Е</em>&nbsp; находится
+где-то между полной достоверностью и
+невозможностью, степень достоверности&nbsp; <em>H</em>&nbsp;
+определяется при помощи интерполяции между
+двумя крайними случаями. Крайние случаи таковы:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; известно,
+что факта&nbsp; <em>Е</em>&nbsp; не было<br>
+&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; известно, что
+факт&nbsp; <em>Е</em>&nbsp; имел место<br>
+&nbsp;&nbsp;&nbsp; (3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ничего не
+известно относительно&nbsp; <em>Е</em></p>
+
+<p>Для каждого события&nbsp; <em>H</em>&nbsp; сети вывода
+существует априорная вероятность <em>р<sub>0</sub>(Н)</em>
+&nbsp;&nbsp; (безусловная) вероятность события&nbsp; <em>H</em>
+&nbsp; в состоянии, когда неизвестно ни одного
+положительного или отрицательного факта. Если
+становится известным какой-нибудь факт&nbsp; <em>E</em>,
+&nbsp; то вероятность&nbsp; <em>H</em>&nbsp; меняет свое
+значение с&nbsp; <em>р<sub>0</sub>(Н)</em>&nbsp; на&nbsp; <em>р(Н | Е)</em>.
+&nbsp; Величина изменения зависит от &quot;силы&quot;
+стрелки, ведущей из&nbsp; <em>E</em>&nbsp; в&nbsp; <em>H</em>. &nbsp;
+Итак, мы начинаем проверку гипотез, принимая их
+априорные вероятности. В дальнейшем происходит
+накопление</a><a name="tn259"> информации о фактах, что
+находит свое отражение в изменении вероятностей
+событий сети. <span id="t259">Эти изменения
+распространяются по сети</span> от события к
+событию в соответствии со связями между
+событиями. Например, рассмотрим рис. 14.14 и
+предположим, что получена информация о
+срабатывании индикатора открытия выпускного
+клапана. Эта информация повлияет на нашу
+уверенность в том, что выпускной клапан открылся,
+что, в свою очередь, повлияет на уверенность в
+том, что сместилась установка порогового
+давления.</p>
+
+<p align="center"><img src="pic/fig14_15.gif" width="481" height="611"
+alt="fig14_15.gif (4629 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 14. 15.</strong>&nbsp; Правила
+распространения вероятностей по сети,<br>
+принятые в системах Prospector и AL/X:&nbsp; (а) &nbsp;
+&quot;мягкая импликация&quot;</small><br>
+<small>с силой (<em>N</em>, <em>S</em>);&nbsp; (b) &nbsp; логические
+комбинации отношений.</small></p>
+
+<p>На рис. 14.15 показан один из способов реализации
+этого эффекта распространения информации по
+сети. Часть вычислений производится не над
+вероятностями, а над <em>шансами</em>. Это удобно,
+хотя в принципе и не обязательно. Между шансами и
+вероятностями имеет место простое соотношение:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>шанс = вер / </em>( 1<em> -
+вер</em>)<em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вер = шанс / </em>( 1<em> + шанс</em>)</p>
+
+<p>Пусть между&nbsp; <em>E</em>&nbsp; и&nbsp; <em>H</em> &nbsp;
+существует отношение &quot;мягкой импликации&quot;,
+тогда, в соответствии с рис. 14.15,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>шанс (Н | Е) = М * шанс (H)</em></p>
+
+<p>где множитель <em>М</em>&nbsp; определяется априорной
+и апостериорной вероятностями с учетом силы <em>( N,
+S)</em> связи между <em>E</em>&nbsp; и <em>H</em>. &nbsp;
+Предполагается, что правила Prospector'a (рис. 14.15) для
+вычисления вероятностей логических комбинаций
+событий (использующие <em>min</em> и <em>max</em>) правильно
+моделируют поведение человека при оценке
+субъективной уверенности в таких составных
+событиях.</p>
+</a><a name="p14_6_3">
+
+<hr>
+</a>
+
+<h4>14. 6. 3.&nbsp;&nbsp;&nbsp; Принципы реализации</h4>
+
+<p>Давайте сначала расширим правила языка, с тем
+чтобы получить возможность работать с
+неопределенностью. К каждому, правилу мы можем
+добавить &quot;силовой модификатор&quot;,
+определяемый двумя неотрицательными
+действительными числами&nbsp; <em>S</em>&nbsp; и&nbsp; <em>N</em>.
+&nbsp; Вот соответствующий формат:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Имя Правила:
+&nbsp;&nbsp;&nbsp;&nbsp; если<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Условие<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+то<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Заключение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+с<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Сила( N, S).</strong></p>
+
+<p>Примеры правил рис. 14.14 можно изобразить в этой
+форме так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>прав1 :
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+не давлоткр и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+открклап<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+то<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+открклрано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+с<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сила( 0.001, 2000).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; прав2 :
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сепзапвд<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+то<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+давлоткр<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+с<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сила( 0.05, 400).</strong></p>
+
+<p>Для того, чтобы произвести соответствующее
+расширение оболочки экспертной системы (разд.
+14.5), нам понадобится внести изменения в
+большинство процедур. Давайте сосредоточимся
+только на одной из них, а именно на процедуре</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>рассмотреть( Цель,
+Трасса, Ответ)</strong></p>
+
+<p>Мы предположим, что утверждение <strong>Цель</strong>
+не содержит переменных (как это сделано в Prospector'e
+и в AL/X). Это сильно упростит дело (особенно в
+процедуре <strong>ответпольз</strong>). Таким образом, <strong>Цель</strong>
+будет логической комбинацией элементарных
+утверждений. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>не давлоткр и
+открклап</strong></p>
+
+<p>Цепочку целей-предков и правил <strong>Трасса</strong>
+можно представить таким же способом, как это
+сделано в разд. 14.5. Однако форму представления
+объекта <strong>Ответ</strong> придется модифицировать
+для того, чтобы включить в нее вероятности. Цель и
+ее вероятность можно соединить в один терм
+следующим образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Цель : Вероятность</strong></p>
+
+<p>Получим такой пример объекта <strong>Ответ</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>индоткр : 1 было
+сказано</strong></p>
+
+<p>Смысл ответа: пользователь сообщил системе, что
+событие <strong>индоткр</strong> произошло, и что это
+абсолютно достоверно.</p>
+
+<p>Представление объекта <strong>Ответ</strong> требует
+еще одной модификации, в связи с тем, что в одно и
+то же событие могут вести несколько независимых
+связей, которые все окажут влияние на
+вероятность этого события - его шанс будет
+помножен (рис. 14.15) на все множители. В этом случае <strong>Ответ</strong>
+будет содержать список всех ветвей вывода
+заключения. Приведем пример ответа такого рода
+для сети рис. 14.14 (для наглядности расположенный
+на нескольких строках):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>давлоткр : 1 было
+'выведено по'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ прав2 из сепзапвд : 1 было сказано,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+прав5 из диагсеп : 1 было сказано ]</strong></p>
+
+<p>Процедура <strong>рассмотреть</strong>, выдающая
+ответы в такой форме, показана на рис. 14.16. Она
+обращается к предикату</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>импликация( Р0, Р,
+Сила, Вер0, Вер)</strong></p>
+
+<p>соответствующему отношению &quot;мягкой
+импликации&quot; (см. рис. 14.15).&nbsp; Р0&nbsp; - &nbsp;
+априорная вероятность события&nbsp; <em>Е</em>, &nbsp;
+а&nbsp; Р&nbsp; - его апостериорная вероятность. <strong>Сила</strong>
+- сила импликации, представленная как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сила( N, S)</strong></p>
+
+<p><strong>Вер0</strong> и <strong>Вер</strong> - соответственно
+априорная и апостериорная вероятности гипотезы
+&nbsp; <em>H</em>.</p>
+
+<p>Следует заметить, что наша реализация очень
+проста, она обеспечивает только изменение
+вероятностей при распространении информации по
+сети вывода и иногда ведет себя недостаточно
+разумно. Никакого внимания не уделяется отбору
+для анализа наиболее важной в данный момент
+информации. В более сложной версии следовало бы
+направлять процесс поиска ответа в сторону
+наиболее существенных фактов. Кроме того,
+необходимо стремиться к тому, чтобы пользователю
+задавалось как можно меньше вопросов.</p>
+
+<p>Наконец, несколько замечаний относительно
+новой версии процедуры <strong>ответпольз</strong>. Она
+будет проще, чем процедура рис. 14.11, так как в
+запросах, передаваемых пользователю, уже не
+будет переменных. На этот раз пользователь в
+качестве ответа введет некоторую вероятность
+(вместо &quot;да&quot; или &quot;нет&quot;). Если
+пользователю ничего неизвестно о событии,
+содержащемся в вопросе, то вероятность этого
+события не изменится. Пользователь может также
+задать вопрос &quot;почему&quot; и получить
+изображение объекта <strong>Трасса</strong> в качестве
+объяснения. Кроме того, следует разрешить
+пользователю задавать вопрос: &quot;Какова текущая
+вероятность моей гипотезы?&quot; Тогда, если он
+устал вводить новую информацию (или у него мало
+времени), он может прекратить консультационный
+сеанс, довольствуясь ответом системы, полученным
+на основании неполной информации.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>% Процедура<br>
+% рассмотреть( Цель, Трасса, Ответ)<br>
+%<br>
+% находит степень правдоподобия утверждения
+&quot;цель это правда&quot;.<br>
+% Оценка правдоподобия содержится в объекте
+Ответ. Трасса - это<br>
+% цепочка целей-предшественников и правил,
+которую можно<br>
+% использовать в объяснении типа &quot;почему&quot;</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>рассмотреть( Цель,
+Трасса, ( Цель: Вер) было<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+'выведено по' ПравОтв) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+bagof( Прав: если Условие то Цель с Сила, Правила),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Все правила, относящиеся к цели</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>априори( Цель, Вер0),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Априорная вероятность цели</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>модиф( Вер0, Правила, Трасса, Вер, ПравОтв).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Модифицировать априорные вероятности</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>рассмотреть( Цель1 и
+Цель2, Трасса,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( Цель1 и Цель2 : Вер было 'выведено из'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( Ответ1 и Ответ2) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+!,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+рассмотреть( Цель1, Трасса, Ответ1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+рассмотреть( Цель2, Трасса, Ответ2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вероятность( Ответ1, В1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вероятность( Ответ2, В2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+мин( В1, В2, Вер).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рассмотреть( Цель1
+или Цель2, Трасса,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( Цель или Цель2:Вер) было 'выведено из'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( Ответ1 и Ответ2) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+!,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+рассмотреть( Цель1, Трасса, Ответ1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+рассмотреть( Цель2, Трасса, Ответ2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вероятность( Ответ1, В1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вероятность( Ответ2, В2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+макс( В1, В2, Вер).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рассмотреть( не
+Цель, Трасса,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( не Цель:Вер) было 'выведено из' Ответ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+!,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+рассмотреть( Цель, Трасса, Ответ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вероятность( Ответ, В),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обратить( В, Вер).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рассмотреть( Цель,
+Трасса, ( Цель: Вер) было сказано) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ответпольз( Цель, Трасса, Вер).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</strong><small>% Ответ, выведенный пользователем</small></p>
+
+<p><small>% Отношение<br>
+%<br>
+% модиф( Вер0, Правила, Трасса, Вер, ПравОтв)<br>
+%<br>
+% Существует Цель с априорной вероятностью Вер0.
+Правила имеют<br>
+% отношение к утверждению Цель; суммарное влияние
+этих правил<br>
+% (точнее, их условных частей) на Вер0 приводит к
+тому,<br>
+% что Вер0 заменяется на апостериорную
+вероятность Вер;<br>
+% Трасса - список целей-предков и правил,
+использовавшихся<br>
+% при выводе утверждения Цель;<br>
+% ПравОтв - результаты анализа условных частей<br>
+% правил из списка Правила.</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>модиф( Вер0, [ ],
+Трасса, Вер0, [ ]).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Нет правил - нет модификации</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>модиф( Вер0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ Прав : если Усл то Цель с Сила | Правила],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Трасса, Вер, [Прав из Ответ | ПравОтв] ):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+рассмотреть( Усл, [Цель по Прав | Трасса], Ответ),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Условие из первого правила</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>априори( Усл, В0),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вероятность( Ответ, В),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+импликация( В0, В, Сила, Вер0, Вер1),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% &quot;Мягкая&quot; импликация</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>модиф( Вер1, Правила, Трасса, Вер, ПравОтв).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 14. 16.</strong>&nbsp; Определение
+степени правдоподобия гипотезы при помощи</small><br>
+<small>распространения информации об оценке
+уверенности по сети вывода.</small></p>
+
+<hr>
+
+<p align="center"><a href="ch14_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch14_7.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

@@ -1,0 +1,1047 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 13. Пункт 4</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch13_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch14_1.htm">Вперёд</a></p>
+<a name="tn136"><script language="JavaScript">double_line();</script>
+
+
+<h4>13. 4.&nbsp;&nbsp;&nbsp; <span id="t136">Поиск с предпочтением в
+И / ИЛИ-графах</span></h4>
+</a><a name="p13_4_1">
+
+<hr>
+</a>
+
+<h4>13. 4. 1.&nbsp;&nbsp;&nbsp; Эвристические оценки и
+алгоритм поиска</h4>
+
+<p>Базовые процедуры поиска предыдущего раздела
+производят систематический и полный просмотр И /
+ИЛИ-дерева, не руководствуясь при этом
+какими-либо эвристиками. Для сложных задач
+подобные процедуры весьма не эффективны из-за
+большой комбинаторной сложности пространства
+поиска. В связи с этим возникает необходимость в
+эвристическом управлении поиском, направленном
+на уменьшение комбинаторной сложности за счет
+исключения бесполезных альтернатив. Управление
+эвристиками, излагаемое в настоящем разделе,
+будет основано на численных эвристических
+оценках &quot;трудности&quot; задач, входящих в состав
+И / ИЛИ-графа. Программу, которую мы составим,
+можно рассматривать как обобщение программы
+поиска с предпочтением в пространстве состояний
+гл. 12.</p>
+
+<p>Начнем с того, что сформулируем критерий
+оптимальности, основанный на стоимостях дуг И /
+ИЛИ-графа. Во-первых, мы расширим наше
+представление И / ИЛИ-графов, дополнив его
+стоимостями дуг. Например, И / ИЛИ-граф рис. 13.4
+можно представить следующими предложениями:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а ---&gt; или : [b/1, с/3].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b ---&gt; и : [d/1, е/1].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; с ---&gt; и : [f/2, g/1].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; e ---&gt; или : [h/6].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f ---&gt; или : [h/2, i/3].</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цель( d).&nbsp; цель( g).
+&nbsp; цель( h).</strong></p>
+
+<p>Стоимость решающего дерева мы определим как
+сумму стоимостей его дуг. Цель оптимизации -
+найти решающее дерево минимальной стоимости. Как
+и раньше, иллюстрацией служит рис. 13.4.</p>
+
+<p>Будет полезным определить <em>стоимость вершины</em>
+И / ИЛИ-графа как стоимость оптимального
+решающего дерева для этой вершины. Стоимость
+вершины, определенная таким образом,
+соответствует &quot;трудности&quot; соответствующей
+задачи.</p>
+
+<p>Мы будем предполагать, что стоимости вершин И /
+ИЛИ-графа можно оценить (не зная соответствующих
+решающих деревьев) при помощи эвристической
+функции&nbsp; <em>h</em>.&nbsp; Эти оценки будут
+использоваться для управления поиском. Наша
+программа поиска начнет свою работу со стартовой
+вершины и, распространяя поиск из уже
+просмотренных вершин на их преемников, будет
+постепенно наращивать дерево поиска. Этот
+процесс будет строить дерево даже в том случае,
+когда сам И / ИЛИ-граф не является деревом; при
+этом граф будет разворачиваться в дерево за счет
+дублирования своих отдельных частей.</p>
+
+<p>Для продолжения поиска будет всегда выбираться
+&quot;наиболее перспективное&quot; решающее
+дерево-кандидат. Каким же образом используется
+функция&nbsp;&nbsp; <em>h</em>&nbsp;&nbsp; для оценки степени
+перспективности решающего дерева-кандидата или,
+точнее, вершины-кандидата - корня этого дерева?</p>
+
+<p align="center"><img src="pic/fig13_9.gif" width="368" height="349"
+alt="fig13_9.gif (2481 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 13. 9.</strong>&nbsp; Получение
+оценки&nbsp; <em>Н</em>&nbsp; трудности задач&nbsp; И /
+ИЛИ-графа.</small></p>
+
+<p>Обозначим через <em>Н( В)</em> оценку трудности
+вершины&nbsp; <em>В</em>.&nbsp; Для самой верхней вершины
+текущего дерева поиска&nbsp; <em>H( В)</em>&nbsp; просто
+совпадает с&nbsp; <em>h( В)</em>.&nbsp; С другой стороны, для
+оценки внутренней вершины дерева поиска нам не
+обязательно использовать непосредственно
+значение&nbsp; <em>h</em>,&nbsp; поскольку у нас есть
+некоторая дополнительная информация об этой
+вершине: мы знаем ее преемников. Следовательно,
+как показано на рис. 13.9, мы можем приближенно
+оценить трудность внутренней ИЛИ-вершины как</p>
+
+<p align="left"><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; H( B) = </em>min<em> ( c(
+B, B<sub>i</sub>) + H( B<sub>i</sub>) )<br>
+<sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+i</sup></em></p>
+
+<p>где&nbsp; <em>с( В, В)</em>&nbsp; -&nbsp; стоимость дуги,
+ведущей из&nbsp; <em>В</em>&nbsp; в&nbsp; <em>В<sub>i</sub></em>. &nbsp;
+Взятие минимума в этой формуле оправдано тем
+обстоятельством, что для того, чтобы решить
+задачу&nbsp; <em>В</em>,&nbsp; нам нужно решить только одну
+из ее задач-преемников. Трудность И-вершины&nbsp; <em>В</em>
+&nbsp; можно приближенно оценить так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="pic/fig13_9_1.gif"
+alt="fig13_9_1.gif (514 bytes)" width="191" height="36"></p>
+
+<p>Будем называть <em>H</em>-оценку внутренней вершины
+&quot;возвращенной&quot; (backed-up) оценкой.</p>
+
+<p>Более практичной с точки зрения использования
+в нашей программе поиска является другая
+величина&nbsp; <em>F</em>,&nbsp; которую можно определить в
+терминах&nbsp; <em>H</em>&nbsp; следующим образом. Пусть
+&nbsp; <em>В1</em>&nbsp; -&nbsp; вершина-предшественник
+вершины&nbsp; <em>В</em>&nbsp; в дереве поиска, причем
+стоимость дуги, ведущей из&nbsp; <em>В1</em>&nbsp; в&nbsp; <em>В</em>,
+&nbsp; равна&nbsp; <em>с( В1, В)</em>,&nbsp; тогда положим</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>F( B) = с( В1, В) + H( В)</em></p>
+
+<p>Пусть&nbsp; <em>В1</em>&nbsp; -&nbsp; родительская вершина
+вершины&nbsp; <em>В</em>,&nbsp; а&nbsp; <em>В<sub>1</sub></em>,&nbsp; <em>В<sub>2</sub></em>,
+&nbsp; ... - ее дочерние вершины, тогда, в соответствии
+с определениями&nbsp; <em>F</em>&nbsp; и&nbsp; <em>H</em>, имеем</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>F( B) = c( B1, B) + </em>min<em>F( B<sub>i</sub>),</em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>если&nbsp; <em>В</em>&nbsp;&nbsp;
+-&nbsp; ИЛИ-вершина</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<sup><em>i</em></sup></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="pic/fig13_9_2.gif" width="181"
+height="36" alt="fig13_9_2.gif (491 bytes)">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&nbsp;&nbsp;&nbsp;&nbsp;
+если&nbsp; <em>В</em> &nbsp;&nbsp; -&nbsp; И-вершина</small></p>
+
+<p>Хотя стартовая вершина&nbsp; А&nbsp; и не имеет
+предшественника, будем считать, что стоимость
+ведущей в нее (виртуальной) дуги равна 0. Если
+положить&nbsp; <em>h</em>&nbsp; равным 0 для всех вершин И /
+ИЛИ-дерева, то для любого найденного
+оптимального решающего дерева окажется, что его
+стоимость, т.е. сумма стоимостей его дуг, в
+точности равна&nbsp; <em>F( A)</em>.</p>
+
+<p>На любой стадии поиска каждый преемник
+ИЛИ-вершины соответствует некоторому
+альтернативному решающему дереву-кандидату.
+Процесс поиска всегда принимает решение
+продолжать просмотр того дерева-кандидата, для
+которого&nbsp; <em>F</em>-оценка минимальна. Вернемся
+еще раз к рис. 13.4 и посмотрим, как будет вести себя
+процесс, поиска на примере И / ИЛИ-графа,
+изображенного на этом рисунке. В начале дерево
+поиска состоит всего из одной вершины - стартовой
+вершины&nbsp; <em>а</em>, далее дерево постепенно
+&quot;растет&quot; до тех пор, пока не будет найдено
+решающее дерево. На рис. 13.10, показан ряд
+&quot;мгновенных снимков&quot;, сделанных в процессе
+роста дерева поиска. Для простоты мы предположим,
+что <em>h =</em> 0 для всех вершин. Числа, приписанные
+вершинам на рис. 13.10 - это их&nbsp; <em>F</em>-оценки
+(разумеется, по мере накопления информации в
+процессе поиска они изменяются). Ниже даются
+некоторые пояснительные замечания к рис. 13.10.</p>
+
+<p>После распространения поиска из
+первоначального дерева (снимок&nbsp; А) &nbsp;
+получается дерево&nbsp; В.&nbsp; Вершина&nbsp; <em>а</em> &nbsp;
+- это ИЛИ-вершина, поэтому мы имеем два решающих
+дерева-кандидата:&nbsp; <em>b</em>&nbsp; и&nbsp; <em>с</em>. &nbsp;
+Поскольку&nbsp; <em>F( b) = 1 &lt; 3 = F( c)</em>, для продолжения
+поиска выбирается альтернатива&nbsp; <em>b</em>. &nbsp;
+Насколько далеко может зайти процесс роста
+поддерева&nbsp; <em>b</em>? Этот процесс может
+продолжаться до тех пор, пока не произойдет одно
+из двух событий:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>F</em>-оценка
+вершины&nbsp; <em>b</em>&nbsp; станет больше, чем&nbsp; <em>F</em>-оценка
+ее конкурента&nbsp; <em>с</em>,&nbsp; или<br>
+&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обнаружится,
+что найдено решающее дерево.</p>
+
+<p>В связи с этим, начиная просмотр
+поддерева-кандидата&nbsp; <em>b</em>,&nbsp; мы
+устанавливаем верхнюю границу для&nbsp; <em>F( b)</em>:
+&nbsp; <em>F( b) &lt;= 3 = F( c)</em>. Сначала порождаются
+преемники&nbsp; <em>d</em>&nbsp; и&nbsp; <em>е</em>&nbsp; вершины&nbsp; <em>b</em>
+&nbsp;&nbsp; (снимок&nbsp; С), после чего&nbsp; <em>F</em>-оценка
+&nbsp; <em>b</em>&nbsp; возрастает до 3. Так как это значение
+не превосходит верхнюю границу, рост
+дерева-кандидата с корнем в&nbsp; <em>b</em> &nbsp;
+продолжается. Вершина&nbsp; <em>d</em> &nbsp; оказывается
+целевой вершиной, а после распространения поиска
+из вершины&nbsp; <em>е</em> &nbsp; на один шаг получаем
+дерево, показанное на снимке&nbsp; D.&nbsp; В этот
+момент выясняется, что&nbsp; <em>F( b)&nbsp; =&nbsp; 9&nbsp;&nbsp;
+&gt;&nbsp; 3</em>,&nbsp; и рост дерева&nbsp; <em>b</em></p>
+
+<p align="center"><img src="pic/fig13_10.gif" width="539" height="672"
+alt="fig13_10.gif (6390 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 13. 10.</strong>&nbsp; Трассировка
+процесса поиска с предпочтением в<br>
+И / ИЛИ-графе ( <em>h =</em> 0) при решении задачи рис. 13.4.</small></p>
+
+<p>прекращается. В результате процесс поиска не
+успевает &quot;осознать&quot;, что&nbsp; <em>h</em>&nbsp; - &nbsp;
+это тоже целевая вершина и что порождено
+решающее дерево. Вместо этого происходит
+переключение активности на конкурирующую
+альтернативу&nbsp; <em>с</em>.&nbsp; Поскольку в этот
+момент <em>F( b) =</em> 9, устанавливается верхняя
+граница для&nbsp; <em>F( c)</em>,&nbsp; равная 9.
+Дерево-кандидат с корнем&nbsp; <em>с</em> &nbsp;
+наращивается (с учетом установленного
+ограничения) до тех пор, пока не возникает
+ситуация, показанная на снимке&nbsp; Е.&nbsp; Теперь
+процесс поиска обнаруживает, что найдено
+решающее дерево (включающее в себя целевые
+вершины&nbsp; <em>h</em>&nbsp; и&nbsp; <em>g</em>),&nbsp; на чем поиск
+заканчивается. Заметьте, что в качестве
+результата процесс поиска выдает наиболее
+дешевое из двух возможных решающих деревьев, а
+именно решающее дерево рис. 13.4(с).</p>
+<a name="p13_4_2">
+
+<hr>
+</a>
+
+<h4>13. 4. 2.&nbsp;&nbsp;&nbsp; Программа поиска</h4>
+
+<p>Программа, в которой реализованы идеи
+предыдущего раздела, показана на рис. 13.12. Прежде,
+чем мы перейдем к объяснению отдельных деталей
+этой программы, давайте рассмотрим тот способ
+представления дерева поиска, который в ней
+используется.</p>
+
+<p>Существует несколько случаев, как показано на
+рис. 13.11. Различные формы представления
+поискового дерева возникают как комбинации
+следующих возможных вариантов, относящихся к
+размеру дерева и к его &quot;решающему статусу&quot;. 
+
+<ul>
+  <li>Размер:<br>
+    <br>
+    (1)&nbsp;&nbsp;&nbsp; дерево состоит из одной вершины
+    (листа)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; или<br>
+    (2)&nbsp;&nbsp;&nbsp; оно имеет корень и (непустые)
+    поддеревья.<br>
+  </li>
+  <li>Решающий статус:<br>
+    <br>
+    (1)&nbsp;&nbsp;&nbsp; обнаружено, что дерево соответствует<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решению задачи( т. е.
+    является решающим<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; деревом) или<br>
+    (2)&nbsp;&nbsp;&nbsp; оно все еще решающее дерево-<em>кандидат</em>.</li>
+</ul>
+
+<p>Основной функтор, используемый для
+представления дерева, указывает, какая из
+комбинаций этих воз-</p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><img src="pic/fig13_11.gif" width="428" height="1104"
+alt="fig13_11.gif (7263 bytes)"></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 13. 11.</strong>&nbsp; Представление
+дерева поиска.</small></p>
+
+<p>можностей имеется в виду. Это может быть одна из
+следующих комбинаций:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>лист &nbsp;&nbsp;&nbsp;
+решлист&nbsp;&nbsp;&nbsp; дер&nbsp;&nbsp;&nbsp; решдер</strong></p>
+
+<p>Далее, в представление дерева входят все или
+некоторые из следующих объектов: 
+
+<ul>
+  <li>корневая вершина дерева,</li>
+  <li><em>F</em>-оценка дерева,</li>
+  <li>стоимость&nbsp; С&nbsp; дуги И / ИЛИ-графа, ведущей в
+    корень дерева,</li>
+  <li>список поддеревьев,</li>
+  <li>отношение (И или ИЛИ) между поддеревьями.</li>
+</ul>
+
+<p>Список поддеревьев всегда упорядочен по
+возрастанию&nbsp; <em>F</em>-оценок. Поддеревья,
+являющиеся решающими деревьями, помещаются в
+конец списка.</p>
+
+<p>Обратимся теперь к программе рис. 13.12. Отношение
+самого высокого уровня - это</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>и_или( Верш, РешДер)</strong></p>
+
+<p>где <strong>Верш</strong> - стартовая вершина.
+Программа строит решающее дерево (если таковое
+существует), рассчитывая на то, что оно окажется
+оптимальным решением. Будет ли это решение в
+действительности<a name="tn119"> самым дешевым, зависит
+от той функции&nbsp; <em>h</em>,&nbsp; которую использует
+алгоритм. <span id="t119">Существует теорема, в которой
+говорится о том,</a> как оптимальность решения
+зависит от&nbsp; <em>h</em></span>.&nbsp; Эта теорема
+аналогична теореме о допустимости алгоритма
+поиска с предпочтением в пространстве состояний
+(гл. 12). Обозначим через&nbsp; <em>С( В)</em>&nbsp; стоимость
+оптимального решающего дерева для вершины&nbsp; <em>В</em>.
+&nbsp; Если для каждой вершины&nbsp; <em>В</em>&nbsp; И /
+ИЛИ-графа эвристическая оценка&nbsp; <em>h( B) &lt;= C( B)</em>,
+&nbsp; то гарантируется, что процедура&nbsp; <strong>и_или</strong>
+&nbsp; найдет оптимальное решение. Если же&nbsp; <em>h</em>
+&nbsp; не удовлетворяет этому условию, то найденное
+решение может оказаться субоптимальным.
+Существует тривиальная эвристическая функция,
+удовлетворяющая условию оптимальности, а именно
+&nbsp; <em>h =</em> 0&nbsp; для всех вершин. Ее недостатком
+является отсутствие эвристической силы.</p>
+
+<p>Основную роль в программе рис. 13.12 играет
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( Дер,
+Предел, Дер1, ЕстьРеш)</strong></p>
+
+<p><strong>Дер</strong> и <strong>Предел</strong> - его
+&quot;входные&quot; аргументы, а <strong>Дер1</strong> и <strong>ЕстьРеш</strong>
+- &quot;выходные&quot;. Аргументы имеют следующий
+смысл:</p>
+
+<p><strong>Дер</strong> - дерево поиска, подлежащее
+расширению.</p>
+
+<p><strong>Предел</strong> - предельное значени&nbsp; <em>F</em>-оценки,
+при котором еще разрешено наращивать дерево <strong>Дер</strong>.</p>
+
+<p><strong>ЕстьРеш</strong> - индикатор, значения которого
+указывают на то, какой из следующих трех случаев
+имеет место:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш
+= да</strong>:<strong> Дер</strong> можно &quot;нарастить&quot; (с
+учетом ограничения <strong>Предел</strong>) таким
+образом, чтобы образовалось решающее дерево <strong>Дер1</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш
+= нет</strong>: дерево <strong>Дер</strong> можно расширить до
+состояния <strong>Дер1</strong>, для которого <em>F</em>-оценка
+превосходит <strong>Предел</strong>, но прежде чем <em>F</em>-оценка
+превзошла <strong>Предел</strong>, решающее дерево не
+было обнаружено.</p>
+
+<p>&nbsp;&nbsp;&nbsp; (3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш
+= никогда</strong>: <strong>Дер</strong> не содержит решения.</p>
+
+<p>В зависимости от случая <strong>Дер1</strong> - это либо
+решающее дерево, либо <strong>Дер</strong>, расширенное
+до момента перехода через <strong>Предел</strong>; если <strong>ЕстьРеш
+= никогда</strong>, то переменная <strong>Дер1</strong>
+неинициализирована.</p>
+
+<p>Процедура</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширспис(
+Деревья, Предел, Деревья1, ЕстьРеш)</strong></p>
+
+<p>аналогична процедуре <strong>расширить</strong>. Так
+же, как и в процедуре <strong>расширить</strong>, <strong>Предел</strong>
+задает ограничение на рост дерева, а <strong>ЕстьРеш</strong>
+- это индикатор, указывающий, каков результат
+расширения (&quot;да&quot;, &quot;нет&quot; или
+&quot;никогда&quot;). Первый аргумент - это, на этот раз,
+список деревьев (И-список или ИЛИ-список):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Деревья = или:[Д1, Д2,
+...] или<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Деревья = и : [Д1, Д2, ...]</strong></p>
+
+<p>Процедура <strong>расширспис</strong> выбирает из
+списка <strong>Деревья</strong> наиболее перспективное
+дерево (исходя из <em>F</em>-оценок). Так как деревья в
+списке упорядочены, таким деревом является
+первый элемент списка. Наиболее перспективное
+дерево подвергается расширению с новым
+ограничением <strong>Предел1</strong>. Значение <strong>Предел1</strong>
+зависит от <strong>Предел</strong>, а также от других
+деревьев списка. Если <strong>Деревья</strong> - это
+ИЛИ-список, то <strong>Предел1</strong> устанавливается
+как наименьшая из двух величин: <strong>Предел</strong> и
+<em>F</em>-оценка следующего по &quot;качеству&quot;
+дерева из списка <strong>Деревья</strong>. Если <strong>Деревья</strong>
+- это И-дерево, то <strong>Предел1</strong>
+устанавливается равным <strong>Предел</strong> минус
+сумма <em>F</em>-оценок всех остальных деревьев из
+списка. Значение переменной <strong>Деревья1</strong>
+зависит от случая, задаваемого индикатором <strong>ЕстьРеш</strong>.
+Если <strong>ЕстьРеш = нет</strong>, то <strong>Деревья1</strong> -
+это то же самое, что и список <strong>Деревья</strong>,
+причем наиболее перспективное дерево расширено
+с учетом ограничения <strong>Предел1</strong>. Если <strong>ЕстьРеш
+= да</strong>, то <strong>Деревья1</strong> - это решение для
+всего списка <strong>Деревья</strong> (найденное без
+выхода за границы значения <strong>Предел</strong>). Если
+<strong>ЕстьРеш = никогда</strong>, то переменная <strong>Деревья1</strong>
+неинициализирована.</p>
+
+<p>Процедура <strong>продолжить</strong>, вызываемая
+после расширения списка деревьев, решает, что
+делать дальше, в зависимости от результата
+срабатывания процедуры <strong>расширить</strong>. Эта
+процедура либо строит решающее дерево, либо
+уточняет дерево поиска и продолжает процесс его
+наращивания, либо выдает сообщение
+&quot;никогда&quot; в случае, когда было обнаружено,
+что список деревьев не содержит решения.</p>
+<a name="tn137"><script language="JavaScript">line();</script>
+
+
+<p>/* <span id="t137">ПРОГРАММА И / ИЛИ-ПОИСКА С
+ПРЕДПОЧТЕНИЕМ</span></p>
+
+<p><small>Эта программа порождает только одно
+решение. Гарантируется, что это решение самое
+дешевое при условии, что используемая
+эвристическая функция является нижней гранью
+реальной стоимости решающих деревьев.</small></p>
+
+<p><small>Дерево поиска имеет одну из следующих форм:</small></p>
+
+<p><small>дер( Верш, F, С, Поддеревья)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+дерево-кандидат<br>
+лист( Верш, F, C)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+лист дерева поиска<br>
+решдер( Верш, F, Поддеревья)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решающее дерево<br>
+решлист( Верш, F)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+лист решающего дерева</small></p>
+
+<p><small>С - стоимость дуги, ведущей в Верш<br>
+F = С + Н, где Н - эвристическая оценка оптимального
+решающего дерева с корнем Верш</small></p>
+
+<p><small>Список Поддеревья упорядочен таким
+образом, что<br>
+(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решающие поддеревья
+находятся в конце списка;<br>
+(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; остальные поддеревья
+расположены в порядке возрастания F-оценок</small></p>
+
+<p><small>*/</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 500, xfx, :).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :- ор( 600, xfx, ---&gt;).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; и_или( Верш, РешДер)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( лист( Верш, 0, 0), 9999, РешДер, да).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Предполагается, что 9999&nbsp; &gt;&nbsp; любой
+F-оценки</small></p>
+
+<p><small>% Процедура расширить( Дер, Предел, НовДер,
+ЕстьРеш)<br>
+% расширяет Дер в пределах ограничения Предел<br>
+% и порождает НовДер с &quot;решающим статусом&quot;
+ЕстьРеш.</small></p>
+
+<p><small>% Случай 1:&nbsp; выход за ограничение</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( Дер,
+Предел, Дер, нет) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>f( Дер, F),&nbsp; F &gt; Предел,&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выход за ограничение</small></p>
+
+<p><small>% В остальных случаях&nbsp; F&nbsp; &lt;=&nbsp; Предел<br>
+% Случай 2:&nbsp; встретилась целевая вершина</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( лист(
+Верш, F, С), _, решлист( Верш, F), да) : -<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( Верш),&nbsp; !.</strong></p>
+
+<p><small>% Случай 3:&nbsp; порождение преемников листа</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( лист(
+Верш, F,C), Предел, НовДер, ЕстьРеш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расшлист( Верш, С, Дер1),&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( Дер1, Предел, НовДер, ЕстьРеш);</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>ЕстьРеш = никогда,&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Нет преемников, тупик</small></p>
+
+<p><small>% Случай 4:&nbsp; расширить дерево</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>расширить( дер( Верш, F, С, Поддеревья),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Предел, НовДер, ЕстьРеш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Предел1 is Предел - С,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширспис( Поддеревья, Предел1, НовПоддер,
+ЕстьРеш1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+продолжить( ЕстьРеш1, Верш, С, НовПоддер, Предел,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+НовДер, ЕстьРеш).</strong></p>
+
+<p><small>% расширспис( Деревья, Предел, Деревья1,
+ЕстьРеш)<br>
+% расширяет деревья из заданного списка с учетом<br>
+% ограничения Предел и выдает новый список
+Деревья1<br>
+% с &quot;решающим статусом&quot; ЕстьРеш.</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширспис(
+Деревья, Предел, Деревья1, ЕстьРеш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+выбор( Деревья, Дер, ОстДер, Предел, Предел1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( Дер, Предел1, НовДер, ЕстьРеш1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+собрать( ОстДер, НовДер, ЕстьРеш1, Деревья1,
+ЕстьРеш).</strong></p>
+
+<p><small>% &quot;продолжить&quot; решает, что делать после
+расширения<br>
+% списка деревьев</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>продолжить( да,
+Верш, С, Поддеревья, _,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решдер( Верш, F, Поддеревья), да): -<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценка( Поддеревья, Н), F is С + H,&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; продолжить(
+никогда, _, _, _, _, _, никогда) :-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; продолжить( нет,
+Верш, С, Поддеревья, Предел,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+НовДер, ЕстьРеш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценка( Поддеревья, Н), F is С + Н,&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( дер( Верш, F, С, Поддеревья), Предел,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+НовДер, ЕстьРеш).</strong></p>
+
+<p><small>% &quot;собрать&quot; соединяет результат
+расширения дерева со списком деревьев</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( или : _, Дер,
+да, Дер, да):-&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Есть решение
+ИЛИ-списка</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( или : ДД,
+Дер, нет, или : НовДД, нет) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>встав( Дер, ДД, НовДД),&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&nbsp;&nbsp;&nbsp;&nbsp;
+% Нет решения ИЛИ-списка</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( или : [ ], _,
+никогда, _, никогда) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % Больше нет
+кандидатов</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( или:ДД, _,
+никогда, или:ДД, нет) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % Есть еще
+кандидаты</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( и : ДД, Дер,
+да, и : [Дер Э ДД], да ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+всереш( ДД),&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % Есть решение И-списка</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( и : _, _,
+никогда, _, никогда) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % Нет решения
+И-списка</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( и : ДД, Дер,
+ДаНет, и : НовДД, нет) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( Дер, ДД, НовДД),&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+% Пока нет решения И-списка</small></p>
+
+<p><small>% &quot;расшлист&quot; формирует дерево из
+вершины и ее преемников</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расшлист( Верш, С,
+дер( Верш, F, С, Оп : Поддеревья)) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Верш---&gt; Оп : Преемники,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценить( Преемники, Поддеревья),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценка( Оп : Поддеревья, Н), F is С + Н.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оценить( [ ], [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оценить( [Верш/С |
+ВершиныСтоим], Деревья) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+h( Верш, Н), F is С + Н,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценить( ВершиныСтоим, Деревья1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( лист( Верш, F, С), Деревья1, Деревья).</strong></p>
+
+<p><small>% &quot;всереш&quot; проверяет, все ли деревья в
+списке &quot;решены&quot;</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>всереш([ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; всереш( [Дер |
+Деревья] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+реш( Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+всереш( Деревья).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; реш( решдер( _, _, _ ) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; реш( решлист( _ , _) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f( Дер, F) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+% Извлечь F-оценку дерева</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>arg( 2, Дер, F),&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+% F - это 2-й аргумент Дер</small></p>
+
+<p><small>% встав( Дер, ДД, НовДД) вставляет Дер в
+список<br>
+% деревьев ДД; результат - НовДД</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>встав( Д, [ ], [Д] ) :-
+&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Д, [Д1 | ДД], [Д,
+Д1 | ДД] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+реш( Д1),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Д, [Д1 | ДД], [Д1 |
+ДД1] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+реш( Д),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( Д, ДД, ДД1),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Д, [Д1 | ДД], [Д,
+Д1 | ДД] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f( Д, F), f( Д1, F1), F=&lt; F1,&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Д, [Д1 | ДД], [ Д1
+| ДД1] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( Д, ДД, ДД1).</strong></p>
+
+<p><small>% &quot;оценка&quot; находит &quot;возвращенную&quot;
+F-оценку И / ИЛИ-списка деревьев</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>оценка( или :[Дер | _ ],
+F) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Первое дерево ИЛИ-списка - наилучшее</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>f( Дер, F),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оценка( и :[ ], 0) :- &nbsp;
+!.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оценка( и : [Дер1 | ДД],
+F) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f( Дер1, F1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценка( и : ДД, F2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F is F1 + F2,&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; оценка( Дер, F) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f( Дер, F).</strong></p>
+
+<p><small>% Отношение выбор( Деревья, Лучшее,
+Остальные, Предел, Предел1):<br>
+% Остальные - И / ИЛИ-список Деревья без его
+&quot;лучшего&quot; дерева<br>
+% Лучшее; Предел - ограничение для Списка Деревья,
+Предел1 -<br>
+% ограничение для дерева Лучшее</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>выбор( Оп : [Дер], Дер,
+Оп : [ ], Предел, Предел) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Только один кандидат</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>выбор( Оп : [Дер | ДД],
+Дер, Оп : ДД, Предел, Предел1) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оценка( Оп : ДД, F),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( Оп = или,&nbsp; !,&nbsp; мин( Предел, F, Предел1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Оп = и, Предел1 is Предел - F).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; мин( А, В, А) :- А &lt; В,
+&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; мин( А, В, В).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 13. 12.</strong>&nbsp; Программа
+поиска с предпочтением в И / ИЛИ-графе.</small></p>
+
+<p>Еще одна процедура</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( ОстДер,
+НовДер, ЕстьРеш1, НовДеревья, ЕстьРеш)</strong></p>
+
+<p>связывает между собой несколько объектов, с
+которыми работает <strong>расширспис</strong>. <strong>НовДер</strong>
+- это расширенное дерево, взятое из списка
+деревьев процедуры <strong>расширспис</strong>, <strong>ОстДер</strong>
+- остальные, не измененные деревья из этого
+списка, а <strong>ЕстьРеш1</strong> указывает на
+&quot;решающий статус&quot; дерева <strong>НовДер</strong>.
+Процедура <strong>собрать</strong> имеет дело с
+несколькими случаями в зависимости от значения <strong>ЕстьРеш1</strong>,
+а также от того, является ли список деревьев
+И-списком или ИЛИ-списком. Например, предложение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( или : _, Дер,
+да, Дер, да).</strong></p>
+
+<p>означает: в случае, когда список деревьев - это
+ИЛИ-список и при только что проведенном
+расширении получено решающее дерево, считать,
+что задача, соответствующая всему списку
+деревьев, также решена, а ее решающее дерево и
+есть само дерево <strong>Дер</strong>. Остальные случаи
+легко понять из текста процедуры <strong>собрать</strong>.</p>
+
+<p>Для отображения решающего дерева можно
+определить процедуру, аналогичную процедуре <strong>отобр</strong>
+(рис. 13.8). Оставляем это читателю в качестве
+упражнения</a><a name="tn135">.</p>
+</a><a name="p13_4_3">
+
+<hr>
+</a>
+
+<h4>13. 4. 3.&nbsp;&nbsp;&nbsp; <span id="t135">Пример отношений,
+определяющих конкретную задачу: поиск маршрута</span></h4>
+
+<p>Давайте теперь сформулируем задачу нахождения
+маршрута как задачу поиска в И / ИЛИ-графе, причем
+сделаем это таким образом, чтобы наша
+формулировка могла бы быть непосредственно
+использована процедурой <strong>и_или</strong> рис. 13.12.
+Мы условимся, что карта дорог будет представлена
+при помощи отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>связь( Гор1, Гор2, Р)</strong></p>
+
+<p>означающего, что между городами <strong>Гор1</strong> и <strong>Гор2</strong>
+существует непосредственная связь, а
+соответствующее расстояние равно <strong>Р</strong>. &nbsp;
+Далее, мы допустим, что существует отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>клпункт( Гор1-Гор2,
+Гор3)</strong></p>
+
+<p>имеющее следующий смысл: для того, чтобы найти
+маршрут из <strong>Гор1</strong> в <strong>Гор2</strong>, следует
+рассмотреть пути, проходящие через <strong>Гор3</strong>
+( <strong>Гор3</strong> - это &quot;ключевой пункт&quot; между <strong>Гор1</strong>
+и <strong>Гор2</strong>). Например, на карте рис. 13.1&nbsp; <em>f</em>
+&nbsp; и&nbsp; <em>g</em>&nbsp; - это ключевые пункты между&nbsp; <em>а</em>
+&nbsp; и&nbsp; <em>z</em>: </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>клпункт( a-z, f).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+клпункт( a-z, g).</strong></p>
+
+<p>Мы реализуем следующий принцип построения
+маршрута:</p>
+
+<p>Для того, чтобы найти маршрут между городами
+&nbsp; X&nbsp; и&nbsp; Z,&nbsp; необходимо:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если между
+&nbsp; X&nbsp; и&nbsp; Z&nbsp; имеются ключевые пункты&nbsp; Y1,
+&nbsp; Y2,&nbsp; ...,&nbsp; то найти один из путей: 
+
+<ul>
+  <li>путь из&nbsp; X&nbsp; в&nbsp; Z&nbsp; через&nbsp; Y1,&nbsp; или</li>
+  <li>путь из&nbsp; X&nbsp; в&nbsp; Z&nbsp; через&nbsp; Y2,&nbsp; или<br>
+    ...</li>
+</ul>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если между
+&nbsp; X&nbsp; и&nbsp; Z&nbsp; нет ключевых пунктов, то найти
+такой соседний с&nbsp; X&nbsp;&nbsp; город&nbsp; Y,&nbsp; что
+существует маршрут из&nbsp; Y&nbsp; в&nbsp; Z.</p>
+
+<p>Таким образом, мы имеем два вида задач, которые
+мы будем представлять как</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X-Z</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+найти маршрут из&nbsp; X&nbsp; в&nbsp; Z</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X-Z через
+Y</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+найти маршрут из&nbsp; X&nbsp; в&nbsp; Z,&nbsp; проходящий
+через &nbsp; Y</p>
+
+<p>Здесь 'через' - это инфиксный оператор более
+высокого приоритета, чем '-', и более низкого, чем
+'---&gt;'. Теперь можно определить соответствующий И
+/ ИЛИ-граф явным образом при помощи следующего
+фрагмента программы:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 560, xfx, через)</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Правила задачи X-Z,
+когда между&nbsp; X&nbsp; и&nbsp; Z</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% имеются ключевые
+пункты,</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% стоимости всех дуг
+равны 0</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X-Z ---&gt; или :
+СписокЗадач</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :- bagof( ( X-Z через Y)/0,
+клпункт( X-Z, Y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+СписокЗадач), &nbsp; !.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Правила для задачи
+X-Z без ключевых пунктов</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X-Z ---&gt; или :
+СписокЗадач</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :- bagof( ( Y-Z)/P, связь( X,
+Y, Р), СписокЗадач).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Сведение задачи
+типа ''через&quot; к подзадачам,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % связанным
+отношением И</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X-Z через Y---&gt; и : [(
+X-Y)/0, ( Y-Z)/0].</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цель( Х-Х)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Тривиальная задача:
+попасть из X в X</small></p>
+
+<p>Функцию&nbsp; <em>h</em>&nbsp; можно определить,
+например, как расстояние, которое нужно
+преодолеть при воздушном сообщении между
+городами.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>13. 4.</strong>&nbsp;&nbsp;&nbsp; Напишите процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>отобр2( РешДер)</strong></p>
+
+<p>для отображения решающего дерева, найденного
+программой <strong>и_или</strong> рис. 13.12. Формат
+отображения пусть будет аналогичен тому, что
+применялся в процедуре <strong>отобр</strong> (рис. 13.8),
+так что процедуру <strong>отобр2</strong> можно получить,
+внеся в <strong>отобр</strong> изменения, связанные с
+другим представлением деревьев. Другая полезная
+модификация - заменить в <strong>отобр</strong> цель <strong>write(
+Верш)</strong> на процедуру, определяемую
+пользователем</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>печверш( Верш, H)</strong></p>
+
+<p>которая выведет <strong>Верш</strong> в удобной для
+пользователя форме, а также конкретизирует&nbsp; <strong>Н</strong>
+&nbsp; в соответствии с количеством символов,
+необходимом для представления <strong>Верш</strong> в
+этой форме. В дальнейшем&nbsp; <strong>Н</strong>&nbsp; будет
+использоваться как величина отступа для
+поддеревьев.</p>
+
+<h3>Резюме</h3>
+
+<ul>
+  <li>И / ИЛИ-граф - это формальный аппарат для
+    представления задач. Такое представление
+    является наиболее естественным и удобным для
+    задач, которые разбиваются на независимые
+    подзадачи. Примером могут служить игры.</li>
+  <li>Вершины И / ИЛИ-графа бывают двух типов: И-
+    вершины и ИЛИ-вершины.</li>
+  <li>Конкретная задача определяется стартовой
+    вершиной и целевым условием. Решение задачи
+    представляется решающим деревом.</li>
+  <li>Для моделирования оптимизационных задач в И /
+    ИЛИ-граф можно ввести стоимости дуг и вершин.</li>
+  <li>Процесс решения задачи, представленной И /
+    ИЛИ-графом, включает в себя поиск в графе.
+    Стратегия поиска в глубину предусматривает
+    систематический просмотр графа и легко
+    программируется. Однако эта стратегия может
+    привести к неэффективности из-за комбинаторного
+    взрыва.</li>
+  <li>Для оценки трудности задач можно применить
+    эвристики, а для управления поиском - принцип
+    эвристического поиска с предпочтением. Эта
+    стратегия более трудна в реализации.</li>
+  <li>В данной главе были разработаны прологовские
+    программы для поиска в глубину и поиска с
+    предпочтением в И / ИЛИ-графах.</li>
+  <li>Были введены следующие понятия:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; И / ИЛИ-графы<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; И-дуги, ИЛИ-дуги<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; И-вершины, ИЛИ-вершины<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решающий путь, решающее
+    дерево<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; стоимость дуг и вершин<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; эвристические оценки в И /
+    ИЛИ-графах<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;возвращенные&quot;
+    оценки<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; поиск в глубину в И /
+    ИЛИ-графах<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; поиск с предпочтением в И
+    / ИЛИ-графах</li>
+</ul>
+
+<h4>Литература</h4>
+
+<p>И / ИЛИ-графы и связанные с ними алгоритмы
+поиска являются частью классических механизмов
+искусственного интеллекта для решения задач и
+реализации машинных игр. Ранним примером
+прикладной задачи, использующей эти методы,
+может служить программа символического
+интегрирования (Slagle 1963). И / ИЛИ-поиск
+используется в самой пролог-системе. Общее
+описание И / ИЛИ-графов и алгоритма можно найти в
+учебниках по искусственному интеллекту (Nilsson 1971;
+Nilsson 1980). Наша программа поиска с предпочтением -
+это один из вариантов алгоритма, известного под
+названием АО* . Формальные свойства АО* -алгоритма
+(включая его допустимость) изучались несколькими
+авторами. Подробный обзор полученных
+результатов можно найти в книге Pearl (1984).</p>
+
+<p>Nilsson N.J. (1971). <em>Problem-Solving Methods in Artificial Intelligence</em>.
+McGraw-Hill.</p>
+
+<p>Nilsson N.J. (1980). <em>Principles of Artificial Intelligence</em>. Tioga; also
+Springer-Verlag.</p>
+
+<p>Pearl J. (1984). <em>Heuristics: Intelligent Search Strategies for Computer Problem
+Solving</em>. Addison-Wesley.</p>
+
+<p>Slagle J.R. (1963). A heuristic program that solves symbolic integration problems in
+freshman calculus. In: <em>Computers and Thought</em> (E. Feigenbaum, J. Feldman, eds.).
+McGraw-Hill.</p>
+
+<hr>
+
+<p align="center"><a href="ch13_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch14_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

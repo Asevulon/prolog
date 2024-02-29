@@ -1,0 +1,832 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 8. Пункт 5</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch8_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch9_1.htm">Вперёд</a></p>
+<a name="tn164"><script language="JavaScript">double_line();</script>
+
+
+<h4>8. 5.&nbsp;&nbsp;&nbsp; <span id="t164">Эффективность</span></h4>
+
+<p>Существует несколько аспектов эффективности
+программ, включая такие наиболее общие, как время
+выполнения и требования по объему памяти. Другим
+аспектом является время, необходимое
+программисту для разработки программы.</p>
+
+<p>Традиционная архитектура вычислительных машин
+не очень хорошо приспособлена для реализации
+прологовского способа выполнения программ,
+предусматривающего достижение целей из
+некоторого списка. Поэтому ограниченность
+ресурсов по времени и пространству сказывается в
+Прологе, пожалуй, в большей степени, чем в
+большинстве других языков программирования.
+Вызовет ли это трудности в практических
+приложениях, зависит от задачи. Фактор времени
+практически не имеет значения, если
+пролог-программа, которую запускают по несколько
+раз в день, занимает 1 секунду процессорного
+времени, а соответствующая программа на
+каком-либо другом языке, скажем на Фортране, - 0.1
+секунды. Разница в эффективности становится
+существенной, если эти две программы требуют 50 и 5
+минут соответственно.</p>
+
+<p>С другой стороны, во многих областях применения
+Пролога он может существенно сократить время
+разработки программ. Программы на Прологе,
+вообще говоря, легче писать, легче понимать и
+отлаживать, чем программы, написанные на
+традиционных языках. Задачи, тяготеющие к
+&quot;царству Пролога&quot;, включают в себя обработку
+символьной, нечисловой информации,
+структурированных объектов данных и отношений
+между ними. Пролог успешно применяется, в
+частности. в таких областях, как символьное
+решение уравнений, планирование, базы данных,
+автоматическое решение задач, машинное
+макетирование, реализация языков
+программирования, дискретное и аналоговое
+моделирование, архитектурное проектирование,
+машинное обучение, понимание естественного
+языка, экспертные системы и другие задачи
+искусственного интеллекта. С другой стороны,
+применение Пролога в области вычислительной
+математики вряд ли можно считать </a><a name="tn195">естественным</a>.</p>
+
+<p>Прогон<a name="tn240"> <span id="t195"><em>откомпилированной</em>
+программы</span> обычно имеет большую
+эффективность, чем <em><span id="t240">интерпретация</span></em>.
+Поэтому, если пролог-система содержит как
+интерпретатор, так и компилятор, следует
+пользоваться компилятором, если время
+выполнения критично.</p>
+
+<p>Если программа страдает неэффективностью, то
+ее обычно можно кардинально улучшить, изменив
+сам алгоритм. Однако для того, чтобы это сделать,
+необходимо изучить процедурные аспекты
+программы. Простой способ сокращения времени
+выполнения состоит в нахождении более удачного
+порядка предложений в процедуре и целей - в телах
+процедур. Другой, относительно простой метод
+заключается в управлении действиями системы
+посредством отсечений.</p>
+
+<p>Полезные идеи, относящиеся к повышению
+эффективности, обычно возникают только при
+достижении более глубокого понимания задачи.
+Более эффективный алгоритм может, вообще говоря,
+привести к улучшениям двух видов: 
+
+<ul>
+  <li>Повышение эффективности поиска путем
+    скорейшего отказа от ненужного перебора и от
+    вычисления бесполезных вариантов.</li>
+  <li>Применение cтруктур данных, более
+    приспособленных для представления объектов
+    программы, с целью реализовать операции над ними
+    более эффективно.</li>
+</ul>
+
+<p>Мы изучим оба вида улучшений на примерах. Кроме
+того, мы рассмотрим на примере еще один метод
+повышения эффективности. Этот метод основан на
+добавлении в базу данных тех промежуточных
+результатов, которые с большой вероятностью
+могут потребоваться для дальнейших вычислений.
+Вместо того, чтобы вычислять их снова, программа
+просто отыщет их в базе данных как уже известные
+факты.</p>
+</a><a name="p8_5_1">
+
+<hr>
+</a>
+
+<h4>8. 5. 1.&nbsp;&nbsp;&nbsp; Повышение эффективности
+решения задачи о восьми ферзях</h4>
+
+<p>В качестве простого примера повышения
+эффективности давайте вернемся к задаче о восьми
+ферзях (см. рис. 4.7). В этой программе Y-координаты
+ферзей перебираются последовательно - для
+каждого ферзя пробуются числа от 1 до 8. Этот
+процесс был запрограммирован в виде цели</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( Y, [1, 2, 3,
+4, 5, 6, 7, 8] )</strong></p>
+
+<p>Процедура <strong>принадлежит</strong> работает так:
+вначале пробует Y = 1, затем Y = 2, Y = 3 и т.д. Поскольку
+ферзи расположены один за другим в смежных
+вертикалях доски, очевидно, что такой порядок
+перебора не является оптимальным. Дело в том, что
+ферзи, расположенные в смежных вертикалях будут
+бить друг друга, если они не будут разнесены по
+вертикали на расстояние, превышающее, по крайней
+мере одно поле. В соответствии с этим наблюдением
+можно попытаться повысить эффективность, просто
+изменив порядок рассмотрения
+координат-кандидатов. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( Y, [1, 5, 2,
+6, 3, 7, 4, 8] )</strong></p>
+
+<p>Это маленькое изменение уменьшит время,
+необходимое для нахождения первого решения, в 3-4
+раза.</p>
+
+<p>В следующем примере такая же простая идея,
+связанная с изменением порядка, превращает
+практически неприемлемую временную сложность в
+тривиальную.</p>
+<a name="p8_5_2">
+
+<hr>
+</a>
+
+<h4>8. 5. 2.&nbsp;&nbsp;&nbsp; Повышение эффективности
+программы раскраски <a name="tn258">карты</h4>
+
+<p><span id="t258">Задача раскраски карты</span> состоит в
+приписывании каждой стране на заданной карте
+одного из четырех заданных цветов с таким
+расчетом, чтобы ни одна пара соседних стран не
+была окрашена в одинаковый цвет. Существует
+теорема, которая гарантирует, что это всегда
+возможно.</p>
+
+<p>Пусть карта задана отношением соседства</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>соседи( Страна,
+Соседи)</strong></p>
+
+<p>где <strong>Соседи</strong> - список стран, граничащих
+со страной <strong>Страна</strong>. При помощи этого
+отношения карта Европы с 20-ю странами будет
+представлена (в алфавитном порядке) так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>соседи( австрия,
+[венгрия, запгермания, италия,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+лихтенштейн, чехословакия,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+швейцария, югославия]),</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; соседи( албания,
+[греция, югославия]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; соседи( андорра,
+[испания, франция]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>Решение представим в виде списка пар вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Страна / Цвет</strong></p>
+
+<p>которые устанавливают цвет для каждой страны
+на данной карте. Для каждой карты названия стран
+всегда известны заранее, так что задача состоит в
+нахождении цветов. Таким образом, для Европы
+задача сводится к отысканию подходящей
+конкретизации переменных C1, C2, СЗ и т.д. в списке</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[австрия/C1,
+албания/С2, андорра/С3, . . .]</strong></p>
+
+<p>Теперь определим предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>цвета(
+СписЦветСтран)</strong></p>
+
+<p>который истинен, если <strong>СписЦветСтран</strong>
+удовлетворяет тем ограничениям, которые
+наложены на раскраску отношением <strong>соседи</strong>.
+Пусть четырьмя цветами будут желтый, синий,
+красный и зеленый. Условие запрета раскраски
+соседних стран в одинаковый цвет можно
+сформулировать на Прологе так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>цвета( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цвета( [Страна/Цвет |
+Остальные] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цвета( Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит(
+Цвет, [желтый, синий, красный, зеленый]),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not(
+принадлежит( Страна1/Цвет, Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сосед( Страна, Страна1) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сосед( Страна,
+Страна1) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+соседи( Страна, Соседи),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( Страна1, Соседи).</strong></p>
+
+<p>Здесь <strong>принадлежит( X, L)</strong> - как всегда,
+отношение принадлежности к списку. Для простых
+карт с небольшим числом стран такая программа
+будет работать. Что же касается Европы, то здесь
+результат проблематичен. Если считать, что мы
+располагаем встроенным предикатом <strong>setof</strong>,
+то можно попытаться раскрасить карту Европы
+следующим образом. Определим сначала
+вспомогательное отношение:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>страна( С) :- соседи(
+С, _ ).</strong></p>
+
+<p>Тогда вопрос для раскраски карты Европы можно
+сформулировать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; sеtоf( Стр/Цвет,
+страна( Стр), СписЦветСтран),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цвета(
+СписЦветСтран).</strong></p>
+
+<p>Цель <strong>setof</strong> - построить &quot;шаблон&quot;
+списка <strong>СписЦветСтран</strong>, в котором в
+элементах вида страна/ цвет вместо цветов будут
+стоять неконкретизированные переменные.
+Предполагается, что после этого цель <strong>цвета</strong>
+конкретизирует их. Такая попытка скорее всего
+потерпит неудачу вследствие неэффективности
+работы программы.</p>
+
+<p>Тщательное исследование способа, при помощи
+которого пролог-система пытается достичь цели <strong>цвета</strong>,
+обнаруживает источник неэффективности. Страны
+расположены в списке в алфавитном порядке, а он
+не имеет никакого отношения к их географическим
+связям. Порядок, в котором странам приписываются
+цвета, соответствует порядку их расположения в
+списке (с конца к началу), что в нашем случае никак
+не связано с отношением <strong>соседи</strong>. Поэтому
+процесс раскраски начинается в одном конце
+карты, продолжается в другой и т.д., перемещаясь
+по ней более или менее случайно. Это легко может
+привести к ситуации, когда при попытке
+раскрасить очередную страну окажется, что она
+окружена странами, уже раскрашенными во все
+четыре доступных цвета. Подобные ситуации
+приводят к возвратам, снижающим эффективность.</p>
+
+<p>Ясно поэтому, что эффективность зависит от
+порядка раскраски стран. Интуиция подсказывает
+простую стратегию раскраски, которая должна быть
+лучше, чем случайная: начать со страны, имеющей
+иного соседей, затем перейти к ее соседям, затем -
+к соседям соседей и т.д. В случае Европы хорошим
+кандидатом для начальной страны является
+Западная Германия (как имеющая наибольшее
+количество соседей - 9). Понятно, что при
+построении шаблона списка элементов вида
+страна/цвет Западную Германию следует поместить
+в конец этого списка, а остальные страны -
+добавлять со стороны его начала. Таким образом,
+алгоритм раскраски, который начинает работу с
+конца списка, в начале займется Западной
+Германией и продолжит работу, переходя от соседа
+к соседу.</p>
+
+<p>Новый способ упорядочивания списка стран резко
+повышает эффективность по отношению к исходному,
+алфавитному порядку, и теперь возможные
+раскраски карты Европы будут получены без труда.</p>
+
+<p>Можно было бы построить такой правильно
+упорядоченный список стран вручную, но в этом нет
+необходимости. Эту работу выполнит процедура <strong>создспис</strong>.
+Она начинает построение с некоторой указанной
+страны (в нашем случае - с Западной Германии) и
+собирает затем остальные страны в список под
+названием <strong>Закрытый</strong>. Каждая страна
+сначала попадает в другой список, названный <strong>Открытый</strong>,
+а потом переносится в <strong>Закрытый</strong>. Всякий
+раз, когда страна переносится из <strong>Открытый</strong>
+в <strong>Закрытый</strong>, ее соседи добавляются в <strong>Открытый</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>создспис( Спис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+собрать( [запгермания], [ ], Спис ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+собрать( [ ], Закрытый, Закрытый).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Кандидатов в Закрытый больше нет</small></p>
+</a>
+
+<p><a name="tn258">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( [X |
+Открытый], Закрытый, Спис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( Х | Закрытый),&nbsp; !,</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Х уже собран ?</small></a></p>
+<a name="tn258">
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрaть( Открытый,
+Закрытый, Спис).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Отказаться от Х</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>собрать( [X |
+Открытый], Закрытый, Спис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+соседи( X, Соседи),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Найти соседей Х</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>конк( Соседи, Открытый, Открытый1),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Поместить их в Открытый</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>собрать( Открытый1, [X | Закрытый], Спис).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Собрать остальные</small></p>
+
+<p>Отношение <strong>конк</strong> - как всегда - отношение
+конкатенации списков.</p>
+</a><a name="p8_5_3">
+
+<hr>
+</a>
+
+<h4>8. 5. 3.&nbsp;&nbsp;&nbsp; Повышение эффективности
+конкатенации списков за счет совершенствования
+структуры данных</h4>
+
+<p>До сих пор в наших программах конкатенация была
+определена так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [ ], L, L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( [X | L1], L2, [X | L3] )
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( L1, L2, L3 ).</strong></p>
+
+<p>Эта процедура неэффективна, если первый список
+- длинный. Следующий пример объясняет, почему это
+так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; конк( [а, b, с], [d,
+e], L).</strong></p>
+
+<p>Этот вопрос порождает следующую
+последовательность целей:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [а, b, с], [d, e], L)</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк(
+[b, с], [d, e], L')
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+где L = [a | L']</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( [с], [d, e], L&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+где L' = [b | L&quot;]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( [ ], [d, e], L'&quot;)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+где L&quot; = [c | L''']</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+true</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(истина)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>где L'&quot; = [d, е]</strong></p>
+
+<p>Ясно, что программа фактически сканирует весь
+первый список, пока не обнаружит его конец.</p>
+
+<p>А нельзя ли было бы проскочить весь первый
+список за один шаг и сразу подсоединить к нему
+второй список, вместо того, чтобы постепенно
+продвигаться вдоль него? Но для этого необходимо
+знать, где расположен конец списка, а
+следовательно, мы нуждаемся в другом его
+представлении. Один из вариантов - представлять
+список парой списков. Например, список</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[а, b, с]</strong></p>
+
+<p>можно представить следующими двумя списками:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>L1 = [a, b, c, d, e]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [d, e]</strong></p>
+
+<p>Подобная пара списков,<a name="tn295"> записанная для
+краткости как <strong>L1-L2</strong>, представляет собой <span
+id="t295">&quot;разность&quot;</span> между L1 и L2. Это
+представление работает только при том условии,
+что L2 - &quot;конечный участок&quot; списка L1. Заметим,
+что один и тот же список может быть представлен
+несколькими &quot;разностными парами&quot;. Поэтому
+список <strong>[а, b, с]</strong> можно представить как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[а, b, с]-[ ]</strong><br>
+или<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[a, b, c, d, e]-[d, e]</strong><br>
+или<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[a, b, c, d, e | T]-[d, e | T]</strong><br>
+или<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[а, b, с | Т]-Т</strong></p>
+
+<p>где Т - произвольный список, и т.п. Пустой список
+представляется любой парой <strong>L-L</strong>.</p>
+
+<p>Поскольку второй член пары указывает на конец
+списка, этот конец доступен сразу. Это можно
+использовать для эффективной реализации
+конкатенации. Метод показан на рис. 8.1.
+Соответствующее отношение конкатенации
+записывается на Прологе в виде факта</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конкат( A1-Z1, Z1-Z2, A1-Z2).</strong></p>
+
+<p>Давайте используем <strong>конкат</strong> для
+конкатенации двух списков: списка <strong>[а, b, с]</strong>,
+представленного парой <strong>[а, b, с | Т1]-Т1</strong>, и
+списка <strong>[d, e]</strong>, представленного парой <strong>[d,
+e |&nbsp; Т2]-Т2 :</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; конкат( [а, b, с |
+Т1]-T1, [d, е | Т2]-Т2, L ).</strong></p>
+
+<p>Оказывается, что для выполнения конкатенации
+достаточно простого сопоставления этой цели с
+предложением <strong>конкат</strong>. Результат
+сопоставления:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>T1 = [d, e | Т2]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [a, b, c, d, e | T2]-T2</strong></p>
+
+<p align="center"><img src="pic/fig8_1.gif" width="363" height="139"
+alt="fig8_1.gif (1322 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 8. 1.</strong>&nbsp; Конкатенация
+списков, представленных в виде разностных пар.</small><br>
+<small><strong>L1</strong> представляется как <strong>A1-Z1</strong>, <strong>L2</strong>
+как <strong>A2-Z2</strong> и результат <strong>L3</strong> - как <strong>A1-Z2</strong>.</small><br>
+<small>При этом должно выполняться равенство <strong>Z1 =
+А2</strong>.</small></p>
+</a><a name="p8_5_4">
+
+<hr>
+</a>
+
+<h4>8. 5. 4.&nbsp;&nbsp;&nbsp; Повышение эффективности зa счет
+добавления вычисленных фактов к базе данных</h4>
+
+<p>Иногда в процессе вычислений приходится одну и
+ту же цель достигать снова и снова. Поскольку в
+Прологе отсутствует специальный механизм
+выявления этой ситуации, соответствующая
+цепочка вычислений каждый раз повторяется
+заново.</p>
+
+<p>В качестве примера рассмотрим программу
+вычисления N-го числа Фибоначчи для некоторого
+заданного N. Последовательность Фибоначчи имеет
+вид:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp; 1,&nbsp; 2,&nbsp; 3,&nbsp; 5,
+&nbsp; 8,&nbsp; 13,&nbsp; ...</p>
+
+<p>Каждый член последовательности, за исключением
+первых двух, представляет собой сумму предыдущих
+двух членов. Для вычисления N-гo числа Фибоначчи F
+определим предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб( N, F)</strong></p>
+
+<p>Нумерацию чисел последовательности начнем с N =
+1. Программа для <strong>фиб</strong> обрабатывает
+сначала первые два числа Фибоначчи как два
+особых случая, а затем определяет общее правило
+построения последовательности Фибоначчи:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб( 1, 1).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% 1-е число Фибоначчи</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб( 2, 1).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% 2-е число Фибоначчи</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб( N, F) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% N-е число Фиб., N &gt; 2</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>N &gt; 2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N1 is N - 1, фиб( N1, F1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N2 is N - 2, фиб( N2, F2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F is F1 + F2.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+N-e число есть сумма двух</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% предыдущих</small></p>
+
+<p>Процедура <strong>фиб</strong> имеет тенденцию к
+повторению вычислений. Это легко увидеть, если
+трассировать цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; фиб( 6, F).</strong></p>
+
+<p>На рис. 8.2 показано, как протекает этот
+вычислительный процесс. Например, третье число
+Фибоначчи f( 3) понадобилось в трех местах, и были
+повторены три раза одни и те же вычисления.</p>
+
+<p>Этого легко избежать, если запоминать каждое
+вновь вычисленное число. Идея состоит в
+применении встроенной процедуры <strong>assert</strong>
+для добавления этих (промежуточных) результатов
+в базу данных в виде фактов. Эти факты должны
+предшествовать другим предложениям, чтобы
+предотвратить применение общего правила в
+случаях, для которых результат уже известен.
+Усовершенствованная процедура <strong>фиб2</strong>
+отличается от <strong>фиб</strong> только этим
+добавлением:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб2( 1, 1).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% 1-е число Фибоначчи</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб2( 2, 1).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% 2-е число Фибоначчи</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб2( N, F) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% N-e число Фиб., N &gt; 2</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>N &gt; 2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nl is N - 1, фиб2( N1, F1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N2 is N - 2, фиб2( N2, F2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F is F1 + F2,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% N-e число есть сумма</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% двух предыдущих</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>asserta( фиб2( N, F) ).</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Запоминание N-го числа</small></p>
+
+<p>Эта программа, при попытке достичь какую-либо
+цель, будет смотреть сперва на накопленные об
+этом отношении факты и только после этого
+применять общее правило. В результате, после
+вычисления цели <strong>фиб2( N, F)</strong>, все числа
+Фибоначчи вплоть до N-го будут сохранены. На рис.
+8.3 показан процесс вычислении 6-го числа при
+помощи <strong>фиб2</strong>. Сравнение этого рисунка с
+рис. 8.2. показывает, на сколько уменьшилась
+вычислительная сложность. Для больших N такое
+уменьшение еще более ощутимо.</p>
+
+<p>Запоминание промежуточных результатов -
+стандартный метод, позволяющий избегать
+повторных вычислений. Следует, однако, заметить,
+что в случае чисел Фибоначчи повторных
+вычислений можно избежать еще и применением
+другого алгоритма, а не только запоминанием
+промежуточных результатов.</p>
+
+<p align="center"><img src="pic/fig8_2.gif" width="514" height="452"
+alt="fig8_2.gif (2820 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 8. 2.</strong>&nbsp; Вычисление 6-го
+числа Фибоначчи процедурой <strong>фиб</strong>.</small></p>
+
+<p align="center"><img src="pic/fig8_3.gif" width="514" height="452"
+alt="fig8_3.gif (2414 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 8. 3.</strong>&nbsp; Вычисление 6-го
+числа Фибоначчи при помощи процедуры <strong>фиб2</strong>,
+которая запоминает предыдущие результаты. По
+сравнению с процедурой <strong>фиб</strong> здесь
+вычислений меньше (см. рис. 8.2).</small></p>
+
+<p>Этот новый алгоритм позволяет создать
+программу более трудную для понимания, зато
+более эффективную. Идея состоит на этот раз не в
+том, чтобы определить N-e число Фибоначчи просто
+как сумму своих предшественников по
+последовательности, оставляя рекурсивным
+вызовам организовать вычисления &quot;сверху
+вниз&quot; вплоть до самых первых двух чисел. Вместо
+этого можно работать &quot;снизу вверх&quot;: начать с
+первых двух чисел и продвигаться вперед,
+вычисляя члены последовательности один за
+другим. Остановиться нужно в тот момент, когда
+будет достигнуто N-e число. Большая часть работы в
+такой программе выполняется процедурой</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фибвперед( М, N, F1, F2,
+F)</strong></p>
+
+<p>Здесь F1 и F2 - (М - 1)-е и М-е числа, а F - N-e число
+Фибоначчи. Рис. 8.4 помогает понять отношение <strong>фибвперед</strong>.
+В соответствии с этим рисунком <strong>фибвперед</strong>
+находит последовательность преобразований для
+достижения конечной конфигурации (в которой М = N)
+из некоторой заданной начальной конфигурации.
+При запуске <strong>фибвперед</strong> все его
+аргументы, кроме F, должны быть конкретизированы,
+а М должно быть меньше или равно N. Вот эта
+программа:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фиб3( N, F) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+фибвперед( 2, N, 1, 1, F).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Первые два числа Фиб. равны 1</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фибвперед( М, N, F1, F2,
+F2) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+М &gt;= N.</strong>&nbsp;&nbsp;&nbsp;&nbsp; <small>% N-e число достигнуто</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>фибвперед( M, N, F1, F2, F)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+M &lt; N,</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% N-e число еще не
+достигнуто</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>СледМ is М + 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+СледF2 is F1 + F2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+фибвперед( СледМ, N, F2, СледF2, F).</strong></p>
+
+<p align="center"><img src="pic/fig8_4.gif" width="482" height="185"
+alt="fig8_4.gif (2898 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 8. 4.</strong>&nbsp; Отношения в
+последовательности Фибоначчи.
+&quot;Конфигурация&quot; изображается</small><br>
+<small>здесь в виде большого круга и определяется
+тремя параметрами: индексом М</small> <small>и двумя</small><br>
+<small>последовательными числами f( M-1) и f( М).</small></p>
+
+<h4>Упражнения</h4>
+
+<p><strong>8. 1.</strong>&nbsp;&nbsp;&nbsp; Все показанные ниже
+процедуры <strong>подсп1</strong>, <strong>подсп2</strong> и <strong>подсп3</strong>
+реализуют отношение взятия подсписка. Отношение <strong>подсп1</strong>
+имеет в значительной мере процедурное
+определение, тогда как <strong>подсп2</strong> и <strong>подсп3</strong>
+написаны в декларативном стиле. Изучите
+поведение этих процедур на примерах нескольких
+списков, обращая внимание на эффективность
+работы. Две из них ведут себя одинаково и имеют
+одинаковую эффективность. Какие? Почему
+оставшаяся процедура менее эффективна?</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подсп1( Спис,
+Подспис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+начало( Спис, Подспис).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; подсп1( [ _ | Хвост],
+Подспис) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Подспис - подсписок хвоста</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>подсп1( Хвост, Подспис).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; начало( _, [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; начало( [X | Спис1], [X |
+Спис2] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+начало( Спис1, Спис2).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; подсп2( Спис,
+Подспис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( Спис1, Спис2, Спис),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( Спис3, Подспис, Cпис1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; подсп3( Спис,
+Подспис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( Спис1, Спис2, Спис),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( Подспис, _, Спис2).</strong></p>
+
+<p><strong>8. 2.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить_в_конец(
+Список, Элемент, НовыйСписок)</strong></p>
+
+<p>добавляющее <strong>Элемент</strong> в конец списка <strong>Список</strong>;
+результат - <strong>НовыйСписок</strong>. Оба списка
+представляйте разностными парами.</p>
+
+<p><a href="javascript:fa('8_2')">Посмотреть ответ</a></p>
+
+<p><strong>8. 3.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>обратить( Список,
+ОбращенныйСписок)</strong></p>
+
+<p>где оба списка представлены разностными
+парами.</p>
+
+<p><a href="javascript:fa('8_3')">Посмотреть ответ</a></p>
+
+<p><strong>8. 4.</strong>&nbsp;&nbsp;&nbsp; Перепищите процедуру <strong>собрать</strong>
+из разд. 8.5.2, используя разностное представление
+списков, чтобы конкатенация выполнялась
+эффективнее.</p>
+
+<h4>Резюме</h4>
+
+<ul>
+  <li>Для оценки качества программы существует
+    несколько критериев:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; правильность<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; эффективность<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; простота, читабельность<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удобство модификации<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; документированность<br>
+  </li>
+  <li>Принцип <em>пошаговой детализации</em> - хороший
+    способ организации процесса разработки
+    программ. Пошаговая детализация применима к
+    отношениям, алгоритмам и структурам данных.</li>
+  <li>Следующие методы часто помогают находить идеи
+    для совершенствования программ на Прологе:<br>
+    <br>
+    <em>Применение рекурсии</em>:&nbsp; выявить граничные и
+    общие случаи рекурсивного определения.<br>
+    <br>
+    <em>Обобщение</em>:&nbsp; рассмотреть такую более общую
+    задачу, которую проще решить, чем исходную.<br>
+    <br>
+    <em>Использование рисунков</em>:&nbsp; графическое
+    представление помогает в выявлении важных
+    отношений.<br>
+  </li>
+  <li>Полезно следовать некоторым стилистическим
+    соглашениям для уменьшения опасности внесения
+    ошибок в программы и создания программ, легких
+    для чтения, отладки и модификации.</li>
+  <li>В пролог-системах обычно имеются средства
+    отладки. Наиболее полезными являются средства
+    трассировки программ.</li>
+  <li>Существует много способов повышения
+    эффективности программы. Наиболее простые
+    способы включают в себя:<br>
+    <br>
+    изменение порядка целей и предложений<br>
+    <br>
+    управляемый перебор при помощи введения
+    отсечений<br>
+    <br>
+    запоминание (с помощью <strong>assert</strong>) решений,
+    которые иначе пришлось бы перевычислять</li>
+</ul>
+
+<p>Более тонкие и радикальные методы связаны с
+улучшением алгоритмов (особенно, в части
+повышения эффективности перебора) и с
+совершенствованием структур данных.</p>
+
+<hr>
+
+<p align="center"><a href="ch8_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch9_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

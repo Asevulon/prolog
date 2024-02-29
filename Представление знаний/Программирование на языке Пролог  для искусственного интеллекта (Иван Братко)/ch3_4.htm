@@ -1,0 +1,556 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 3. Пункт 4</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch3_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_1.htm">Вперёд</a></p>
+<a name="tn9"><script language="JavaScript">double_line();</script>
+
+
+<h4><span id="t9">3. 4.&nbsp;&nbsp;&nbsp; Арифметические действия</span></h4>
+
+<p>Пролог рассчитан главным образом на обработку
+символьной информации, при которой потребность в
+арифметических вычислениях относительно мала.
+Поэтому и средства для таких вычислений довольно
+просты. Для осуществления основных
+арифметических действий можно воспользоваться </a><a
+name="tn10">несколькими предопределенными <span id="t10">операторами</span>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; сложение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp;&nbsp; вычитание<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp; умножение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&nbsp;&nbsp;&nbsp; деление<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>mod</strong> &nbsp;&nbsp;&nbsp;
+модуль, остаток от целочисленного деления</p>
+
+<p>Заметьте, что это как раз тот исключительный
+случай. когда оператор может и в самом деле
+произвести некоторую операцию. Но даже и в этом
+случае требуется дополнительное указание на
+выполнение действия. Пролог-система знает, как
+выполнять вычисления, предписываемые такими
+операторами, но этого недостаточно для их
+непосредственного использования. Следующий
+вопрос - наивная попытка произвести
+арифметическое действие:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; Х = 1 + 2.</strong></p>
+
+<p>Пролог-система &quot;спокойно&quot; ответит</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>&nbsp; Х = 1 + 2</strong></p>
+
+<p>а не&nbsp; <strong>X = 3</strong>,&nbsp; как, возможно,
+ожидалось. Причина этого проста: выражение&nbsp; 1 + 2
+&nbsp; обозначает лишь прологовский терм, в котором
+&nbsp; +&nbsp; является функтором, а&nbsp; 1&nbsp; и&nbsp; 2&nbsp; -
+его аргументами.</a><a name="tn36"> В вышеприведенной
+цели нет ничего, что могло бы заставить </a><a name="tn60">систему
+выполнить операцию сложения. <span id="t36">Для этого в
+Прологе</span> существует <span id="t60">специальный
+оператор&nbsp; <strong>is</strong></span> &nbsp; (есть). Этот
+оператор заставит систему выполнить вычисление.
+Таким образом, чтобы правильно активизировать
+арифметическую операцию, надо написать: </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; Х&nbsp; is&nbsp; 1 + 2.</strong></p>
+
+<p>Вот теперь ответ будет</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = 3</strong></p>
+
+<p>Сложение здесь выполняется специальной
+процедурой, связанной с оператором&nbsp;&nbsp; +.
+&nbsp;&nbsp; Мы будем называть такие процедуры <em>встроенными</em>.</p>
+
+<p>В Прологе не существует общепринятой нотации
+для записи арифметических действий, поэтому в
+разных реализациях она может слегка различаться.
+Например, оператор&nbsp; '/'&nbsp; может в одних
+реализациях обозначать целочисленное деление, а
+в других - вещественное. В данной книге под&nbsp; '/'
+&nbsp; мы подразумеваем вещественное деление, для
+целочисленного же будем использовать оператор <strong>div</strong>.
+&nbsp; В соответствии с этим, на вопрос </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- Х&nbsp; is&nbsp; 3/2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y&nbsp; is&nbsp; 3 div
+2.</strong></p>
+
+<p>ответ должен быть такой:</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = 1.5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y = 1</strong></p>
+
+<p>Левым аргументом оператора&nbsp; <strong>is</strong> &nbsp;
+является простой объект. Правый аргумент -
+арифметическое выражение, составленное с
+помощью арифметических операторов, чисел и
+переменных. Поскольку оператор&nbsp; <strong>is</strong> &nbsp;
+запускает арифметические вычисления, к моменту
+начала вычисления этой цели все ее переменные
+должны быть уже конкретизированы какими-либо
+числами. Приоритеты этих предопределенных
+арифметических операторов (см. рис. 3.8) выбраны с
+таким расчетом, чтобы операторы применялись к
+аргументам в том порядке, который принят в
+математике. Чтобы изменить обычный порядок
+вычислений, применяются скобки (тоже, как в
+математике). Заметьте, что&nbsp; +,&nbsp; -,&nbsp; *, &nbsp;&nbsp;
+/&nbsp; и&nbsp; <strong>div</strong>&nbsp; определены, как &nbsp; <strong>yfx</strong>,&nbsp;
+что определяет порядок их выполнения слева
+направо. Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp; is&nbsp; 5 - 2 - 1</strong></p>
+
+<p>понимается как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X&nbsp; is&nbsp; (5 - 2) - 1</strong></p>
+
+<p>Арифметические операции используются также и
+при <em>сравнении</em> числовых величин. Мы можем,
+например, проверить, что больше - 10000 или
+результат умножения 277 на 37, с помощью цели</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; 277 * 37 &gt; 10000.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (да)</p>
+
+<p>Заметьте, что точно так же, как и <strong>is</strong>, &nbsp;
+оператор&nbsp; '&gt;'&nbsp; вызывает выполнение
+вычислений.</p>
+
+<p>Предположим, у нас есть программа, в которую
+входит отношение <strong>рожд</strong>, связывающее имя
+человека с годом его рождения. Тогда имена людей,
+родившихся между 1950 и 1960 годами включительно,
+можно получить при помощи такого вопроса:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; рожд( Имя, Год),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Год &gt;=
+1950,<br>
+</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+name="tn37">Год &lt;= 1960.</strong></p>
+
+<p>Ниже перечислены <span id="t37">операторы сравнения</span>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp;&nbsp;&nbsp; &gt;
+&nbsp;&nbsp;&nbsp; Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Х больше Y</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp;&nbsp;&nbsp; &lt;
+&nbsp;&nbsp;&nbsp; Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Х меньше Y</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp;&nbsp;&nbsp; &gt;=
+&nbsp;&nbsp;&nbsp; Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Х больше или равен Y</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp;&nbsp;&nbsp; =&lt;
+&nbsp;&nbsp;&nbsp; Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Х меньше или равен Y</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp;&nbsp;&nbsp; =:=
+&nbsp;&nbsp;&nbsp; Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+величины Х и Y совпадают (равны)</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х&nbsp;&nbsp;&nbsp; =\=
+&nbsp;&nbsp;&nbsp; Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+величины Х и Y не равны</p>
+
+<p>Обратите внимание на разницу между операторами
+сравнения '=' и '=:=', например, в таких целях как <strong>X
+= Y</strong> и <strong>Х =:= Y</strong>. Первая цель вызовет
+сопоставление объектов Х и Y, и, если Х и Y
+сопоставимы, возможно, приведет к конкретизации
+каких-либо переменных в этих объектах. Никаких
+вычислений при этом производиться не будет. С
+другой стороны, <strong>Х =:= Y</strong> вызовет
+арифметическое вычисление и не может привести к
+конкретизации переменных. Это различие можно
+проиллюстрировать следующими примерами:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp;&nbsp;&nbsp; 1 + 2 =:= 2 +
+1.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &gt;-&nbsp;&nbsp;&nbsp; 1 + 2 = 2 +
+1.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp;&nbsp;&nbsp; 1 + А = В +
+2.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; А = 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В = 1</strong></p>
+
+<p>Давайте рассмотрим использование
+арифметических операций на двух простых
+примерах. В первом примере ищется наибольший
+общий делитель; во втором - определяется
+количество элементов в некотором списке.</p>
+
+<p>Если заданы два целых числа Х и Y, то их
+наибольший общий делитель Д можно найти,
+руководствуясь следующими тремя правилами:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х и Y равны, то Д
+равен X.</p>
+</a>
+
+<p><a name="tn37">(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х &gt; Y, то
+Д равен наибольшему общему делителю Х разности Y -
+X.</a></p>
+
+<p><a name="tn37">(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Y &lt; X, то
+формулировка аналогична правилу (2), если Х и Y
+поменять в нем местами.</a></p>
+<a name="tn37">
+
+<p>На примере легко убедиться, что эти правила
+действительно позволяют найти наибольший общий
+делитель. Выбрав, скажем, Х = 20 и Y = 25, мы,
+руководствуясь приведенными выше правилами,
+после серии вычитаний получим Д = 5.</p>
+
+<p>Эти правила легко сформулировать в виде
+прологовской программы, определив
+трехаргументное отношение, скажем</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>нод( X , Y, Д)</strong></p>
+
+<p>Тогда наши три правила можно выразить тремя
+предложениями так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>нод( X, X, X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; нод( X, Y, Д) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х &lt; Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y1 is Y -
+X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; нод( X,
+Y1, Д),</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; нод( X, Y, Д) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y &lt; X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; нод( Y,
+X, Д).</strong></p>
+
+<p>Разумеется, с таким же успехом можно последнюю
+цель в третьем предложении заменить двумя:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>X1 is Х - Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; нод( X1, Y, Д)</strong></p>
+
+<p>В нашем следующем примере требуется произвести
+некоторый подсчет, для чего, как правило,</a><a
+name="tn285"> необходимы арифметические действия.
+Примером такой задачи может служить <span id="t285">вычисление
+длины какого-либо списка</span>; иначе говоря,
+подсчет числа его элементов. Определим процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>длина( Список, N)</strong></p>
+
+<p>которая будет подсчитывать элементы списка <strong>Список</strong>
+и конкретизировать <strong>N</strong> полученным числом.
+Как и раньше, когда речь шла о списках, полезно
+рассмотреть два случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если список пуст, то
+его длина равна 0.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если он не пуст, то <strong>Список
+= [Голова1 | Хвост]</strong> и его длина равна 1 плюс
+длина хвоста <strong>Хвост</strong>.</p>
+
+<p>Эти два случая соответствуют следующей
+программе:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>длина( [ ], 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; длина( [ _ | Хвост], N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; длина(
+Хвост, N1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N is 1 +
+N1.</strong></p>
+
+<p>Применить процедуру <strong>длина</strong> можно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- длина( [a, b, [c, d], e],
+N).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N = 4</strong></p>
+
+<p>Заметим, что во втором предложении этой
+процедуры две цели его тела нельзя поменять
+местами. Причина этого состоит в том, что
+переменная N1 должна быть конкретизирована до
+того, как начнет вычисляться цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>N is 1 + N1</strong></p>
+
+<p>Таким образом мы видим, что введение встроенной
+процедуры <strong>is</strong> привело нас к примеру
+отношения, чувствительного к порядку обработки
+предложений и целей. Очевидно, что процедурные
+соображения для подобных отношений играют
+жизненно важную роль.</p>
+
+<p>Интересно посмотреть, что произойдет, если мы
+попытаемся запрограммировать отношение <strong>длина</strong>
+без использования <strong>is</strong>. Попытка может быть
+такой:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>длина1( [ ], 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; длина1( [ _ | Хвост], N)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+длина1( Хвост, N1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N = 1 + N1.</strong></p>
+
+<p>Теперь уже цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- длина1( [a, b, [c, d], e],
+N).</strong></p>
+
+<p>породит ответ:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>N = 1+(1+(1+(1+0)))</strong></p>
+
+<p>Сложение ни разу в действительности не
+запускалось и поэтому ни разу не было выполнено.
+Но в процедуре <strong>длина1</strong>, в отличие от
+процедуры <strong>длина</strong>, мы можем поменять
+местами цели во втором предложении:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>длина1( _ | Хвост], N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N = 1 + N1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+длина1( Хвост, N1).</strong></p>
+
+<p>Такая версия <strong>длина1</strong> будет давать те же
+результаты, что и исходная. Ее можно записать
+короче:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>длина1( [ _ | Хвост], 1 +
+N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+длина1( Хвост, N).</strong></p>
+
+<p>и она и в этом случае будет давать те же
+результаты. С помощью <strong>длина1</strong>, впрочем,
+тоже можно вычислять количество элементов
+списка:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- длина( [а, b, с], N),
+Длина is N.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N = 1+(1+(l+0))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Длина = 3</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Итак: 
+
+<ul>
+  <li>Для выполнения арифметических действий
+    используются встроенные процедуры.</li>
+  <li>Арифметические операции необходимо явно
+    запускать при помощи встроенной процедуры <strong>is</strong>.
+    Встроенные процедуры связаны также с
+    предопределенными операторами&nbsp; <strong>+</strong>,&nbsp; <strong>-</strong>,
+    &nbsp; <strong>*</strong>,&nbsp; <strong>/</strong>,&nbsp; <strong>div</strong>&nbsp; и
+    &nbsp; <strong>mod</strong>. </li>
+  <li>К моменту выполнения операций все их аргументы
+    должны быть конкретизированы числами.</li>
+  <li>Значения арифметических выражений можно
+    сравнивать с помощью таких операторов, как&nbsp; &lt;,
+    &nbsp; =&lt;&nbsp; и т.д. Эти операторы вычисляют значения
+    своих аргументов.</li>
+</ul>
+
+<h4>Упражнения</h4>
+
+<p><strong>3. 16.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>mах( X, Y, Мах)</strong></p>
+
+<p>так, чтобы <strong>Мах</strong> равнялось наибольшому
+из двух чисел Х и Y.</p>
+</a>
+
+<p><a href="javascript:fa('3_16')">Посмотреть ответ</a></p>
+
+<p><strong>3. 17.</strong>&nbsp;&nbsp;&nbsp; Определите предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>максспис( Список,
+Мах)</strong></p>
+
+<p>так, чтобы <strong>Мах</strong> равнялось наибольшему
+из чисел, входящих в <strong>Список</strong>.</p>
+
+<p><a href="javascript:fa('3_17')">Посмотреть ответ</a></p>
+
+<p><strong>3. 18.</strong>&nbsp;&nbsp;&nbsp; Определите предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумспис( Список,
+Сумма)</strong></p>
+
+<p>так, чтобы <strong>Сумма</strong> равнялось сумме
+чисел, входящих в <strong>Список</strong>.</p>
+
+<p><a href="javascript:fa('3_18')">Посмотреть ответ</a></p>
+
+<p><strong>3. 19.</strong>&nbsp;&nbsp;&nbsp; Определите предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>упорядоченный(
+Список)</strong></p>
+
+<p>который принимает значение истина, если <strong>Список</strong>
+представляет собой упорядоченный список чисел.
+Например: <strong>упорядоченный [1, 5, 6, 6, 9, 12] )</strong>.</p>
+
+<p><a href="javascript:fa('3_19')">Посмотреть ответ</a></p>
+
+<p><strong>3. 20.</strong>&nbsp;&nbsp;&nbsp; Определите предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подсумма( Множ,
+Сумма, ПодМнож)</strong></p>
+
+<p>где <strong>Множ</strong> это список чисел, <strong>Подмнож</strong>
+подмножество этих чисел, а сумма чисел из <strong>ПодМнож</strong>
+равна <strong>Сумма</strong>. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- подсумма( [1, 2. 5. 3.
+2], 5, ПМ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ПМ = [1, 2, 2];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ПМ = [2, 3];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ПМ = [5];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p><a href="javascript:fa('3_20')">Посмотреть ответ</a></p>
+
+<p><strong>3. 21.</strong>&nbsp;&nbsp;&nbsp; Определите процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>между( Nl, N2, X)</strong></p>
+
+<p>которая, с помощью перебора, порождает все
+целые числа X, отвечающие условию Nl &lt;=X &lt;=N2.</p>
+
+<p><a href="javascript:fa('3_21')">Посмотреть ответ</a></p>
+
+<p><strong>3. 22.</strong>&nbsp;&nbsp;&nbsp; Определите операторы
+'если', 'то', 'иначе' и ':=&quot; таким образом, чтобы
+следующее выражение стало правильным термом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>если Х &gt; Y то Z := Х
+иначе Z := Y</strong></p>
+
+<p>Выберите приоритеты так, чтобы&nbsp; 'если' стал
+главным функтором. Затем определите отношение
+'если' так, чтобы оно стало как бы маленьким
+интерпретатором выражений типа 'если-то-иначе'.
+Например, такого</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>если Вел1 &gt; Вел2 то
+Перем := Вел3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе Перем := Вел4</strong></p>
+
+<p>где <strong>Вел1</strong>, <strong>Вел2</strong>, <strong>Вел3</strong> и <strong>Вел4</strong>
+- числовые величины (или переменные,
+конкретизированные числами), а <strong>Перем</strong> -
+переменная. Смысл отношения 'если' таков: если
+значение <strong>Вел1</strong> больше значения <strong>Вел2</strong>,
+тогда <strong>Перем</strong> конкретизируется значением
+<strong>Вел3</strong>, в противном случае - значением <strong>Вел4</strong>.
+Приведем пример использования такого
+интерпретатора:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; Х = 2, Y = 3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Вел2 is 2*X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Вел4 is 4*X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если
+Y&gt;Вел2 то Z:=Y иначе Z:=Вел4.</strong></p>
+
+<p><strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Z &gt; 5
+то W := 1 иначе W :=0.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = 2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y = 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z = 8<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; W = 1</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Вел2 = 4<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Вел4 = 8</strong></p>
+
+<p><a href="javascript:fa('3_22')">Посмотреть ответ</a></p>
+
+<h4>Резюме</h4>
+
+<ul>
+  <li>Список - часто используемая структура. Он либо
+    пуст, либо состоит из <em>головы</em> и <em>хвоста</em>,
+    который в свою очередь также является списком.
+    Для списков в Прологе имеется специальная
+    нотация.</li>
+  <li>В данной главе рассмотрены следующие операции
+    над списками: принадлежность к списку,
+    конкатенация, добавление элемента, удаление
+    элемента, удаление подсписка.</li>
+  <li><em>Операторная запись</em> позволяет программисту
+    приспособить синтаксис программ к своим
+    конкретным нуждам. С помощью операторов можно
+    значительно повысить наглядность программ.</li>
+  <li>Новые операторы определяются с помощью
+    директивы <strong>ор</strong>, в которой указываются его
+    имя, тип и приоритет.</li>
+  <li>Как правило, с оператором не связывается
+    никакой операции; оператор это просто
+    синтаксическое удобство, обеспечивающее
+    альтернативный способ записи термов.</li>
+  <li>Арифметические операции выполняются с помощью
+    встроенных процедур. Вычисление арифметических
+    выражений запускается процедурой <strong>is</strong>, а
+    также предикатами сравнения &lt;, =&lt; и т.д.</li>
+  <li>Понятия, введенные в данной главе:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; список, голова списка,
+    хвост списка<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; списковая нотация<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; операторы, операторная
+    нотация<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; инфиксные, префиксные и
+    постфиксные<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    операторы<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; приоритет операторов<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; арифметические
+    встроенные процедуры </li>
+</ul>
+
+<hr>
+
+<p align="center"><a href="ch3_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

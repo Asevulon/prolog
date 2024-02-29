@@ -1,0 +1,352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 5. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch5_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch5_3.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>5. 2.&nbsp;&nbsp;&nbsp; Примеры, использующие отсечение</h4>
+<a name="p5_2_1">
+
+<hr>
+</a>
+
+<h4>5. 2. 1.&nbsp;&nbsp;&nbsp; Вычисление максимума</h4>
+
+<p>Процедуру нахождения наибольшего из двух чисел
+можно запрограммировать в виде отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>mах( X, Y, Мах)</strong></p>
+
+<p>где&nbsp; Мах = X,&nbsp; если&nbsp; Х&nbsp; больше или равен
+&nbsp; Y,&nbsp; и&nbsp; Мах&nbsp; есть&nbsp; Y,&nbsp; если&nbsp; Х &nbsp;
+меньше&nbsp; Y.&nbsp; Это соответствует двум таким
+предложениям:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>mах( X, Y, X) :- Х &gt;= Y.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max( X, Y, Y) :- Х &lt; Y.</strong></p>
+
+<p>Эти правила являются взаимно исключающими.
+Если выполняется первое, второе обязательно
+потерпит неудачу. Если неудачу терпит первое,
+второе обязательно должно выполниться. Поэтому
+возможна более экономная формулировка,
+использующая понятие &quot;иначе&quot;:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если Х &gt;= Y, то Мах = X,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе Мах = Y.</p>
+
+<p>На Прологе это записывается при помощи
+отсечения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>mах( X, Y, X) :- Х &gt;= Y,&nbsp;
+!.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mах( X, Y, Y)<a name="tn293">.</strong></p>
+</a><a name="p5_2_2">
+
+<hr>
+</a>
+
+<h4>5. 2. 2.&nbsp;&nbsp;&nbsp; <span id="t293">Процедура проверки
+принадлежности списку, дающая единственное
+решение</span></h4>
+
+<p>Для того, чтобы узнать, принадлежит ли Х списку
+L, мы пользовались отношением</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( X, L)</strong></p>
+
+<p>Программа была следующей:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( X, [X | L]
+).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит X, [Y | L] )
+:- принадлежит( X, L).</strong></p>
+
+<p>Эта программа дает &quot;недетерминированный&quot;
+ответ: если Х встречается в списке несколько раз,
+то будет найдено каждое его вхождение. Исправить
+этот недостаток не трудно: нужно только
+предотвратить дальнейший перебор сразу же после
+того, как будет найден первый X, а это произойдет,
+как только в первом предложении наступит успех.
+Измененная программа выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( X, [X | L] )
+:- &nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( X, [Y | L] )
+:- принадлежит( X, L).</strong></p>
+
+<p>Эта программа породит только одно решение.
+Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; принадлежит( X,
+[а, b, с] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = а;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a name="tn287">(нет)</p>
+</a><a name="p5_2_3">
+
+<hr>
+</a>
+
+<h4>5. 2. 3.&nbsp;&nbsp;&nbsp; <span id="t287">Добавление элемента к
+списку, если он в нем отсутствует (добавление без
+дублирования)</span></h4>
+
+<p>Часто требуется добавлять элемент Х в список L
+только в том случае, когда в списке еще нет такого
+элемента. Если же Х уже есть в L, тогда L необходимо
+оставить без изменения, поскольку нам не нужны
+лишние дубликаты X. Отношение <strong>добавить</strong>
+имеет три аргумента:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( X, L, L1)</strong></p>
+
+<p>где Х - элемент, который нужно добавить, L -
+список, в который его нужно добавить, L1 -
+результирующий новый список. Правила добавления
+можно сформулировать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если Х принадлежит к L,
+то L1 = L,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе L1 - это список L с
+добавленным к нему<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; элементом X.</p>
+
+<p>Проще всего добавлять Х в начало списка L так,
+чтобы Х стал головой списка L1. Запрограммировать
+это можно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( X, L, L) :-
+принадлежит( X, L),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; добавить( X, L, [X | L] ).</strong></p>
+
+<p>Поведение этой процедуры можно
+проиллюстрировать следующим примером:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; добавить( а,
+[b,с], L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [a, b, c]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; до6авить( X, [b,
+с], L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [b, с]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = b</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; добавить( а, [b,
+с, X], L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [b, с, а]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = а</strong></p>
+
+<p>Этот пример поучителен, поскольку мы не можем
+легко запрограммировать &quot;недублирующее
+добавление&quot;, не используя отсечения или
+какой-либо другой конструкции, полученной из
+него. Если мы уберем отсечение в только что
+рассмотренной программе, то отношение <strong>добавить</strong>
+будет добавлять дубликаты элементов, уже
+имеющихся в списке. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; добавить( a, [a, b,
+c], L),</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [а, b, с]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [а, а, b, с]</strong></p>
+
+<p>Поэтому отсечение требуется здесь для
+правильного определения отношения, а не только
+для повышения эффективности. Этот момент
+иллюстрируется также и следующим примером.</p>
+<a name="p5_2_4">
+
+<hr>
+</a>
+
+<h4>5. 2. 4.&nbsp;&nbsp;&nbsp; Задача классификации объектов</h4>
+
+<p>Предположим, что у нас есть база данных,
+содержащая результаты теннисных партий,
+сыгранных членами некоторого клуба. Подбор пар
+противников для каждой партия не подчинялся
+какой-либо системе, просто каждый игрок
+встречался с несколькими противниками.
+Результаты представлены в программе в виде
+фактов, таких как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>победил( том, джон).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; победил( энн, том).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; победил( пат, джим).</strong></p>
+
+<p>Мы хотим определить</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>отношение класс(
+Игрок, Категория)</strong></p>
+
+<p>которое распределяет игроков по категориям. У
+нас будет три категории:</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>победитель</strong> - любой игрок,
+победивший во всех сыгранных им играх</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>боец</strong> - любой игрок, в
+некоторых играх победивший, а в некоторых
+проигравший </p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>спортсмен</strong> - любой игрок,
+проигравший во всех сыгранных им партиях</p>
+
+<p>Например, если в нашем распоряжении есть лишь
+приведенные выше результаты, то ясно, что Энн и
+Пат - победители. Том - боец и Джим - спортсмен.</p>
+
+<p>Легко сформулировать правило для бойца:</p>
+
+<p>&nbsp;&nbsp;&nbsp; Х - боец, если существует некоторый Y,
+такой, что Х победил<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y, и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; существует некоторый Z,
+такой, что Z победил<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X.</p>
+
+<p>Теперь правило для победителя:</p>
+
+<p>&nbsp;&nbsp;&nbsp; Х - победитель, если<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X победил некоторого Y и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х не был побежден никем.</p>
+
+<p>Эта формулировка содержит отрицание &quot;не&quot;,
+которое нельзя впрямую выразить при помощи тех
+возможностей Пролога, которыми мы располагаем к
+настоящему моменту. Поэтому оказывается, что
+формулировка отношения <strong>победитель</strong>
+должна быть более хитрой. Та же проблема
+возникает и при формулировке правил для
+отношения <strong>спортсмен</strong>. Эту проблему можно
+обойти, объединив определения отношений <strong>победитель</strong>
+и <strong>боец</strong> и использовав связку
+&quot;иначе&quot;. Вот такая формулировка:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х победил кого-либо
+и Х был кем-то<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+побежден,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; то Х - боец,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе,&nbsp;&nbsp;&nbsp; если Х
+победил кого-либо,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+то Х - победитель,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+иначе, &nbsp;&nbsp;&nbsp; если Х был кем-то побежден,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+то Х - спортсмен.</p>
+
+<p>Такую формулировку можно сразу перевести на
+Пролог. Взаимные исключения трех альтернативных
+категорий выражаются при помощи отсечений:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>класс( X, боец) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; победил(
+X, _ ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; победил(
+_, X),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( X, победитель)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; победил(
+X, _ ),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( X, спортсмен)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;победил(
+_, X).</strong></p>
+
+<p>Заметьте, что использование отсечения в
+предложении для категории <strong>победитель</strong>
+не обязательно, что связано с особенностями
+наших трех классов.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>5. 1.</strong>&nbsp;&nbsp;&nbsp; Пусть есть программа:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>р( 1).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; р( 2) :-&nbsp; !.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; р( 3).</strong></p>
+
+<p>Напишите все ответы пролог-системы на
+следующие вопросы:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; р(
+X).</strong><br>
+&nbsp;&nbsp;&nbsp; (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; р( X),
+&nbsp; p(Y).</strong><br>
+&nbsp;&nbsp;&nbsp; (c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; р( X),
+&nbsp; !,&nbsp; p(Y).</strong></p>
+
+<p><a href="javascript:fa('5_1')">Посмотреть ответ</a></p>
+
+<p><strong>5. 2.</strong>&nbsp;&nbsp;&nbsp; Следующие отношения
+распределяют числа на три класса - положительные,
+нуль и отрицательные:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>класс( Число,
+положительные) :- Число &gt; 0.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( 0, нуль).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( Число,
+отрицательные) :- Число &lt; 0.</strong></p>
+
+<p>Сделайте эту процедуру более эффективной при
+помощи отсечений.</p>
+
+<p><a href="javascript:fa('5_2')">Посмотреть ответ</a></p>
+
+<p><strong>5. 3.</strong>&nbsp;&nbsp;&nbsp; Определите процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>разбить( Числа,
+Положительные, Отрицательные)</strong></p>
+
+<p>которая разбивает список чисел на два списка:
+список, содержащий положительные числа (и нуль), и
+список отрицательных чисел. Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>разбить( [3, -1, 0, 5, -2],
+[3, 0, 5], [-1, -2] )</strong></p>
+
+<p>Предложите две версии: одну с отсечением,
+другую - без.</p>
+
+<p><a href="javascript:fa('5_3')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch5_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch5_3.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

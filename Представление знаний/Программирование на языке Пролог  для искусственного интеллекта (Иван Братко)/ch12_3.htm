@@ -1,0 +1,561 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 12. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch12_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch13_1.htm">Вперёд</a></p>
+<a name="tn210"><script language="JavaScript">double_line();</script>
+
+
+<h4>12. 3.&nbsp;&nbsp;&nbsp; Применение поиска с
+предпочтением к <span id="t210">планированию
+выполнения задач</span></h4>
+
+<p>Рассмотрим следующую задачу планирования. Дана
+совокупность <em>задач t<sub>1</sub></em>, <em>t<sub>2</sub></em>, ...,
+имеющих времена выполнения соответственно <em>T1</em>,
+<em>Т2</em>, ... . Все эти задачи нужно решить на&nbsp; <em>m</em>
+&nbsp; идентичных процессорах. Каждая задача может
+быть решена на любом процессоре, но в каждый
+данный момент каждый процессор решает только
+одну из задач. Между задачами существует
+отношение предшествования, определяющее, какие
+задачи (если таковые есть) должны быть завершены,
+прежде чем данная задача может быть запущена.
+Необходимо распределить задачи между
+процессорами без нарушения отношения
+предшествования, причем таким образом, чтобы вся
+совокупность задач была решена за минимальное
+время. Время, когда последняя задача в
+соответствии с выработанным планом завершает
+свое решение, называется <em>временем окончания</em>
+плана. Мы хотим минимизировать время окончания
+по всем возможным планам.</p>
+
+<p>На рис. 12.8 показан пример задачи планирования, а
+также приведено два корректных плана, один из
+которых оптимален. Из примера видно, что
+оптимальный план обладает одним интересным
+свойством, а именно в нем может
+предусматриваться &quot;время простоя&quot;
+процессоров. В оптимальном плане рис. 12.8
+процессор&nbsp; 1,&nbsp; выполнив задачу&nbsp; <em>t</em>, &nbsp;
+ждет в течение двух квантов времени, несмотря на
+то, что он мог бы начать выполнение задачи&nbsp; <em>t</em>.</p>
+
+<p>Один из способов построить план можно грубо
+сформулировать так. Начинаем с пустого плана (с
+незаполненными временными промежутками для
+каждого процессора) и постепенно включаем в него
+задачи</p>
+
+<p align="center"><img src="pic/fig12_8.gif" width="496" height="371"
+alt="fig12_8.gif (4006 bytes)"></p>
+
+<blockquote>
+  <p><small><strong>Рис. 12. 8.</strong>&nbsp; Планирование
+  прохождения задач в многопроцессорной системе
+  для 7 задач и 3 процессоров. Вверху показано
+  предшествование задач и величины
+  продолжительности их решения. Например, задача <em>t<sub>5</sub></em>&nbsp;
+  требует 20 квантов времени, причем ее выполнение
+  может начаться только после того, как будет
+  завершено решение трех других задач &nbsp; <em>t<sub>1</sub></em>,&nbsp;
+  <em>t<sub>2</sub></em>&nbsp; и&nbsp; <em>t<sub>3</sub></em>. &nbsp; Показано
+  два корректных плана: оптимальный план с
+  временем окончания&nbsp; 24&nbsp; и субоптимальный - с
+  временем окончания&nbsp; 33.&nbsp; В данной задаче
+  любой оптимальный план должен содержать время
+  простоя.<br>
+  Coffman/ Denning, <em>Operating Systems Theory</em>, © 1973, p.86. Приведено с
+  разрешения Prentice-Hall, Englewood Cliffs, New Jersey.</small></p>
+</blockquote>
+
+<p>одну за другой, пока все задачи не будут
+исчерпаны. Как правило, на каждом шагу мы будем
+иметь несколько различных возможностей,
+поскольку окажется, что одновременно несколько
+задач-кандидатов ждут своего выполнения. Таким
+образом, для составления плана потребуется
+перебор. Мы можем сформулировать задачу
+планирования в терминах пространства состояний
+следующим образом: 
+
+<ul>
+  <li>состояния - это частично составленные планы;</li>
+  <li>преемник частичного плана получается
+    включением в план еще одной задачи; другая
+    возможность - оставить процессор, только что
+    закончивший свою задачу, в состоянии простоя;</li>
+  <li>стартовая вершина - пустой план;</li>
+  <li>любой план, содержащий все задачи, - целевое
+    состояние;</li>
+  <li>стоимость решения (подлежащая минимизации)
+    -время окончания целевого плана;</li>
+  <li>стоимость перехода от одного частичного плана к
+    другому равна <em>К<sub>2</sub> - К<sub>1</sub></em>&nbsp; где&nbsp; <em>К<sub>1</sub></em>,
+    &nbsp; <em>К<sub>2</sub></em>&nbsp; -&nbsp; времена окончания этих
+    планов.</li>
+</ul>
+
+<p>Этот грубый сценарий требует некоторых
+уточнений. Во-первых, мы решим заполнять план в
+порядке возрастания времен, так что задачи будут
+включаться в него слева направо. Кроме того, при
+добавлении каждой задачи следует проверять,
+выполнены ли ограничения, связанные с
+отношениями предшествования. Далее, не имеет
+смысла оставлять процессор бездействующим на
+неопределенное время, если имеются задачи,
+ждущие своего запуска. Поэтому мы разрешим
+процессору простаивать только до того момента,
+когда какой-нибудь другой процессор завершит
+выполнение своей задачи. В этот момент мы еще раз
+вернемся к свободному процессору с тем, чтобы
+рассмотреть возможность приписывания ему
+какой-нибудь задачи.</p>
+
+<p>Теперь нам необходимо принять решение
+относительно представления проблемных ситуаций,
+т.е. частичных планов. Нам понадобится следующая
+информация:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; список ждущих задач
+вместе с их временами выполнения;</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; текущая загрузка
+процессоров задачами.</p>
+
+<p>Добавим также для удобства программирования</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; время окончания
+(частичного) плана, т.е. самое последнее время
+окончания задачи среди всех задач, приписанных
+процессорам.</p>
+
+<p>Список ждущих задач вместе с временами их
+выполнения будем представлять в программе при
+помощи списка вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ Задача1/Т1,
+Задача2/Т2, ... ]</strong></p>
+
+<p>Текущую загрузку процессоров будем
+представлять как список решаемых задач, т. е.
+список пар вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[
+Задача/ВремяОкончания ]</strong></p>
+
+<p>В списке&nbsp; <em>m</em>&nbsp; таких пар, по одной на
+каждый процессор. Новая задача будет добавляться
+к плану в момент, когда закончится первая задача
+из этого списка. В связи с этим мы должны
+постоянно поддерживать упорядоченность списка
+загрузки по возрастанию времен окончания. Эти
+три компоненты частичного плана (ждущие задачи,
+текущая загрузка и время окончания плана) будут
+объединены в одно выражение вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Ждущие * Активные *
+ВремяОкончания</strong></p>
+
+<p>Кроме этой информации у нас есть ограничения,
+налагаемые отношениями предшествования, которые
+в программе будут выражены в форме отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предш( ЗадачаX,
+ЗадачаY)</strong></p>
+
+<p>Рассмотрим теперь эвристическую оценку. Мы
+будем использовать довольно примитивную
+эвристическую функцию, которая не сможет
+обеспечить высокую эффективность управления
+алгоритмом поиска. Эта функция допустима, так что
+получение оптимального плана будет
+гарантировано. Однако следует заметить, что для
+решения более серьезных задач планирования
+потребуется более мощная эвристика.</p>
+
+<p>Нашей эвристической функцией будет
+оптимистическая оценка времени окончания
+частичного плана с учетом всех ждущих задач.
+Оптимистическая оценка будет вычисляться в
+предположении, что два из ограничений,
+налагаемых на действительно корректный план,
+ослаблены:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; не учитываются
+отношения предшествования;</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; делается (не реальное)
+допущение, что возможно распределенное
+выполнение задачи одновременно на нескольких
+процессорах, причем сумма времен выполнения
+задачи на процессорах равна исходному времени
+выполнения этой задачи на одном процессоре.</p>
+
+<p>Пусть времена выполнения ждущих задач равны
+&nbsp;<em>Т<sub>1</sub></em>, <em>Т<sub>2</sub></em>,&nbsp;...,&nbsp; а времена
+окончания задач, выполняемых на процессорах -&nbsp; <em>К<sub>1</sub></em>,&nbsp;
+<em>К<sub>2</sub></em>,&nbsp; ... . &nbsp; Тогда оптимистическая
+оценка времени <em>ОбщКон</em> окончания всех
+активных к настоящему моменту, а также всех
+ждущих задач имеет вид:</p>
+
+<p align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="pic/fig12_8_1.gif"
+width="192" height="45" alt="fig12_8_1.gif (632 bytes)"></p>
+
+<p>где&nbsp; <em>m</em> -&nbsp; число процессоров. Пусть
+время окончания текущего частичного плана равно</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Кон = </em>maх<em>(K<sub>j</sub>).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<sup>j</sup></em><br>
+Тогда эвристическая оценка&nbsp; <em>Н</em> &nbsp;
+(дополнительное время для включения в частичный
+план ждущих задач) определяется следующим
+выражением:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if&nbsp;&nbsp;&nbsp; <em>ОбщКон&gt;Кон</em>
+&nbsp;&nbsp;&nbsp; then&nbsp;&nbsp;&nbsp; <em>Н = ОбщКон-Кон</em>
+&nbsp;&nbsp;&nbsp; else&nbsp;&nbsp;&nbsp; <em>H=</em>0</p>
+
+<p>Программа, содержащая определения отношений,
+связанных с пространством состояний нашей
+задачи планирования, приведена полностью на рис.
+12.9. Эта программа включает в себя также
+спецификацию конкретной задачи планирования,
+показанной на рис. 12.3. Одно из оптимальных
+решений, полученных в процессе поиска с
+предпочтением в определенном таким образом
+пространстве состояний, показано на рис. 12.8.</p>
+
+<h4>Проект</h4>
+
+<p>Вообще говоря, задачи планирования
+характеризуются значительной комбинаторной
+сложностью. Наша простая эвристическая функция
+не обеспечивает высокой эффективности
+управления поиском. Предложите другие
+эвристические функции и проведите с ними
+эксперименты.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>/* Отношения для задачи планирования.<br>
+Вершины пространства состояний - частичные
+планы,<br>
+записываемые как</small></p>
+
+<p><small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ Задача1/Т1,
+Задача2/Т2, ...]*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ Задача1/К1, Задача2/К2, ...]*
+ВремяОкончания</small></p>
+
+<p><small>В первом списке указываются ждущие задачи и
+продолжительности их выполнения; во втором -
+текущие решаемые задачи и их времена окончания,
+упорядоченные так, чтобы выполнялись
+неравенства K1&lt;=K2, K2&lt;=K3, ... . Время окончания
+плана - самое последнее по времени время
+окончания задачи.<br>
+*/</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>после( Задачи1*[ _ /К |
+Акт1]*Кон1, Задачи2*Акт2*Кон2,Ст):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( Задача/Т, Задачи1, Задачи2),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Взять ждущую задачу</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>not( принадлежит( Здч1/_, Задачи2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+раньше( ЗДЧ, Задача) ),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Проверить предшествование</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>not( принадлежит( Здч1/К1, Акт1), К1&lt;К2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+раньше( К1, Задача) ),</strong>&nbsp;&nbsp;&nbsp; <small>% Активные
+задачи</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Время is К + Т,</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Время окончания работающей задачи</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>встав( ЗадачаВремя, Акт1, Акт2, Кон1, Кон2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ст is Кон2 - Кон1.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; после( Задачи*[ _ /К |
+Акт1]*Кон, Задачи2*Акт2*Кон, 0):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вставпростой( К, Акт1, Акт2).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Оставить процессор бездействующим</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>раньше( Задача1,
+Задача2) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% В соответствии с предшествованием</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>предш( Задача1, Задача2).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Задача1 раньше, чем Задача2</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>раньше( Здч1, Здч2) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+предш( Здч, Здч2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+раньше( Здч1, Здч).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Здч/А, [Здч1/В |
+Спис], [Здч/А, Здч1/В | Спис], К, К):-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Список задач упорядочен</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>А =&lt; В,&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Здч/А, [Здч1/В |
+Спнс], [Здч1/В | Спис1], К1, К2) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( Здч/А, Спис, Спис1, Kl, К2).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( Здч/А, [ ],
+[Здч/А], _, А).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вставпростой( А,
+[Здч/В | Спис], [простой/В, Здч/В | Спис]):-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Оставить процессор бездействующим</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>А &lt; В,&nbsp; !</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+До ближайшего времени окончания</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вставпростой( А,
+[Здч/В | Спис], [Здч/В | Спис1]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вставпростой( А, Спис, Спис1 ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( А, [А | Спис],
+Спис ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Удалить элемент из списка</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( А, [В | Спис],
+[В | Спис1] ):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( А, Спис, Спис1 ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цель( [ ] *_*_ ).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Целевое
+состояние: нет ждущих задач</small></p>
+
+<p><small>% Эвристическая оценка частичного плана
+основана на<br>
+% оптимистической оценке последнего времени
+окончания<br>
+% этого частичного плана,<br>
+% дополненного всеми остальными ждущими
+задачами.</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>h( Задачи *
+Процессоры * Кон, Н) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сумвремя( Задачи, СумВремя),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Суммарная продолжительность</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% ждущих задач</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>всепроц( Процессоры, КонВремя, N),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% КонВремя - сумма времен окончания</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% для процессоров, N - их количество</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>ОбщКон is ( СумВремя + КонВремя)/N,</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( ОбщКон &gt; Кон,&nbsp; !,&nbsp; H is ОбщКон - Кон; Н = 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сумвремя( [ ], 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сумвремя( [ _ /Т |
+Задачи], Вр) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+сумвремя( Задачи, Вр1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Вр is Bp1 + Т.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; всепроц( [ ], 0, 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; всепроц( [ _ /T |
+СписПроц], КонВр, N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+всепроц( СписПроц, КонВр1, N1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N is N1 + 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+КонВр is КонВр1 + Т.</strong></p>
+
+<p><small>% Граф предшествования задач</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предш( t1, t4).
+&nbsp;&nbsp;&nbsp; предш( t1, t5).&nbsp;&nbsp;&nbsp; предш( t2, t4).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предш( t2, t5).
+&nbsp;&nbsp;&nbsp; предш( t3, t5).&nbsp;&nbsp;&nbsp; предш( t3, t6).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предш( t3, t7).</strong></p>
+
+<p><small>% Стартовая вершина</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>старт( [t1/4, t2/2, t3/2,
+t4/20, t5/20, t6/11, t7/11] *<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[простой/0, простой/0, простой/0] * 0 ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 12. 9.</strong>&nbsp; Отношения для
+задачи планирования. Даны также</small><br>
+<small>определения отношений для конкретной задачи
+планирования с</small><br>
+<small>рис. 12.8: граф предшествования и исходный
+(пустой) план в</small><br>
+<small>качестве стартовой вершины.</small></p>
+
+<h4>Резюме</h4>
+
+<ul>
+  <li>Для оценки степени удаленности некоторой
+    вершины пространства состояний от ближайшей
+    целевой вершины можно использовать
+    эвристическую информацию. В этой главе были
+    рассмотрены численные эвристические оценки.</li>
+  <li>Эвристический принцип поиска с предпочтением
+    направляет процесс поиска таким образом, что для
+    продолжения поиска всегда выбирается вершина,
+    наиболее перспективная с точки зрения
+    эвристической оценки.</li>
+  <li>В этой главе был запрограммирован алгоритм
+    поиска, основанный на указанном принципе и
+    известный в литературе как А*-алгоритм.</li>
+  <li>Для того, чтобы решить конкретную задачу при
+    помощи А*-алгоритма, необходимо определить
+    пространство состояний и эвристическую функцию.
+    Для сложных задач наиболее трудным моментом
+    является подбор хорошей эвристической функции.</li>
+  <li><em>Теорема о допустимости</em> помогает
+    установить, всегда ли А*-алгоритм, использующий
+    некоторую конкретную эвристическую функцию,
+    находит оптимальное решение.</li>
+</ul>
+
+<h4>Литература</h4>
+
+<p>Программа поиска с предпочтением,
+представленная в настоящей главе, - это один из
+многих вариантов похожих друг на друга программ,
+из которых А*-алгоритм наиболее популярен. Общее
+описание А*-алгоритма можно найти в книгах Nillson
+(1971, 1980) или Winston (1984). Теорема о допустимости
+впервые доказана авторами статьи Hart, Nilsson, and Raphael
+(1968). Превосходное и строгое изложение многих
+разновидностей алгоритмов поиска с
+предпочтением и связанных с ними математических
+результатов дано в книге Pearl (1984). В статье Doran and
+Michie (1966) впервые изложен поиск с предпочтением,
+управляемый оценкой расстояния до цели.</p>
+
+<p>Головоломка &quot;игра в восемь&quot;
+использовалась многими исследователями в
+области искусственного интеллекта в качестве
+тестовой задачи при изучении эвристических
+принципов (см., например, Doran and Michie (1966), Michie and Ross
+(1970) и Gaschnig (1979) ).</p>
+
+<p>Задача планирования, рассмотренная в настоящей
+главе, также как и многие ее разновидности,
+возникает во многих прикладных областях в
+ситуации, когда необходимо спланировать
+обслуживание запросов на ресурсы. Один из
+примеров - операционные системы вычислительных
+машин. Задача планирования со ссылкой на это
+конкретное приложение изложена в книге Coffman and
+Denning (1973).</p>
+
+<p>Найти хорошую эвристику - дело важное и трудное,
+поэтому изучение эвристик - одна из центральных
+тем в искусственном интеллекте. Существуют,
+однако, некоторые границы, за которые невозможно
+выйти, двигаясь в направлении улучшения качества
+эвристик. Казалось бы, все, что необходимо для
+эффективного решения комбинаторной задачи - это
+найти мощную эвристику. Однако есть задачи (в том
+числе многие задачи планирования), для которых не
+существует универсальной эвристики,
+обеспечивающей во всех случаях как
+эффективность, так и допустимость. Многие
+теоретические результаты, имеющие отношение к
+этому ограничению, собраны в работе Garey and Johnson
+(1979).</p>
+
+<p>Coffman E.G. and Denning P.J. (1973). <em>Operating Systems Theory.</em> Prentice-Hall.</p>
+
+<p>Doran J. and Michie D. (1966). Experiments with the graph traverser program. <em>Proc.
+Royal Socieiy of London</em> <strong>294(A)</strong>: 235-259.</p>
+
+<p>Garey M. R. and Johnson D. S. (1979). <em>Computers and Intractability</em>. W. H.
+Freeman. [Имеется перевод: Гэри M., Джонсон Д. С-
+Вычислительные машины и труднорешаемые задачи.-
+M.: Мир, 1982.]</p>
+
+<p>Gaschnig J. (1979). Performance measurement and analysis of certain search algorithms.
+Carnegie-Mellon University: Computer Science Department-Technical Report CMU-CS-79-124
+(Ph. D. Thesis).</p>
+
+<p>Hart P.E., Nilsson N.J. and Raphael B. (1968). A formal basis for the heuristic
+determination of minimum cost paths. <em>IEEE Transactions on Systems Sciences and
+Cybernetics</em> <strong>SSC-4(2)</strong>:100-107</p>
+
+<p>Michie D. and Ross R. (1970). Experiments with the adaptive graph traverser. <em>Machine
+Intelligence</em> <strong>5</strong>: 301-308.</p>
+
+<p>Nilsson N.J. (1971). <em>Problem - Solving Methods in Artificial Intelligence</em>.
+McGraw-Hill. [Имеется перевод: Нильсон H. Искусственный
+интеллект. Методы поиска решений. - M: Мир, 1973.]</p>
+
+<p>Nilsson N. J. (1980). <em>Principles of Artificial Intelligence</em>. Tioga; also
+Springer-Verlag.</p>
+
+<p>Pearl J. (1984). <em>Heuristics: Intelligent Search Strategies for Computer Problem
+Solving</em>. Addison-Wesley.</p>
+
+<p>Winston P. H. (1984). <em>Artificial Intelligence</em> (second edition).
+Addison-Wesley. [Имеется перевод первого издания:
+Уинстон П. Искусственный интеллект. - M.: Мир, 1980.]</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch12_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch13_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

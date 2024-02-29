@@ -1,0 +1,818 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 3. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch3_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch3_3.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>3. 2.&nbsp;&nbsp;&nbsp; Некоторые операции над списками</h4>
+
+<p>Списки можно применять для представления
+множеств, хотя и существует некоторое различие
+между этими понятиями: порядок элементов
+множества не существенен, в то время как для
+списка этот порядок имеет значение; кроме того,
+один н тот же объект может встретиться в списке
+несколько раз. Однако наиболее часто
+используемые операции над списками аналогичны
+операциям над множествами. Среди них 
+
+<ul>
+  <li>проверка, является ли некоторый объект
+    элементом списка, что соответствует проверке
+    объекта на принадлежность множеству;</li>
+  <li>конкатенация (сцепление) двух списков, что
+    соответствует объединению множеств;</li>
+  <li>добавление нового объекта в список или удаление
+    некоторого объекта из него.</li>
+</ul>
+
+<p>В оставшейся части раздела мы покажем
+программы, реализующие эти и некоторые другие
+операции над списками<a name="tn292">.</p>
+</a><a name="p3_2_1">
+
+<hr>
+</a>
+
+<h4>3. 2. 1.&nbsp;&nbsp;&nbsp; <span id="t292">Принадлежность к
+списку</span></h4>
+
+<p>Мы представим отношение принадлежности как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( X, L)</strong></p>
+
+<p>где Х - объект, а L - список. Цель <strong>принадлежит(
+X, L)</strong> истинна, если элемент Х встречается в L.
+Например, верно что</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( b, [а, b,
+с] )</strong></p>
+
+<p>и, наоборот, не верно, что</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит b, [а, [b,
+с] ] )</strong></p>
+
+<p>но</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит [b, с], [а,
+[b, с]] )</strong></p>
+
+<p>истинно. Составление программы для отношения
+принадлежности может быть основано на следующих
+соображениях:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х есть
+голова L, либо</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х
+принадлежит хвосту L.</p>
+
+<p>Это можно записать в виде двух предложений,
+первое из которых есть простой факт, а второе -
+правило:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит( X, [X |
+Хвост ] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит ( X,
+[Голова | Хвост ] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( X, Хвост)<a name="tn148">.</strong></p>
+</a><a name="p3_2_2">
+
+<hr>
+</a>
+
+<h4>3. 2. 2.&nbsp;&nbsp;&nbsp; <span id="t148">Сцепление (
+конкатенация)</span></h4>
+
+<p>Для сцепления списков мы определим отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( L1, L2, L3)</strong></p>
+
+<p>Здесь L1 и L2 - два списка, a L3 - список, получаемый
+при их сцеплении. Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [а, b], [c, d], [a, b, c,
+d] )</strong></p>
+
+<p>истинно, а</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [а, b], [c, d], [a, b, a,
+c, d] )</strong></p>
+
+<p>ложно. Определение отношения <strong>конк</strong>, как
+и раньше, содержит два случая в зависимости от
+вида первого аргумента L1:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если первый аргумент
+пуст, тогда второй и третий аргументы
+представляют собой один и тот же список (назовем
+его L), что выражается в виде следующего
+прологовского факта:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [ ], L, L ).</strong></p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если первый аргумент
+отношения <strong>конк</strong> не пуст, то он имеет
+голову и хвост в выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[X | L1]</strong></p>
+
+<p>На рис. 3.2 показано, как производится сцепление
+списка <strong>[X | L1]</strong> с произвольным списком L2.
+Результат сцепления - список <strong>[X | L3]</strong>, где L3
+получен после сцепления списков L1 и L2. На прологе
+это можно записать следующим образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [X | L1, L2, [X | L3]):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк(
+L1, L2, L3).</strong></p>
+
+<p align="center"><img src="pic/fig3_2.gif" width="377" height="281"
+alt="fig3_2.gif (1890 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 3. 2.</strong>&nbsp; Конкатенация
+списков.</small></p>
+
+<p>Составленную программу можно теперь
+использовать для сцепления заданных списков,
+например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- конк( [a, b, с], [1, 2, 3],
+L ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [a, b, c, 1, 2, 3]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?- конк( [а, [b, с], d], [а,
+[ ], b], L ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [a, [b, c], d, а, [ ], b]</strong></p>
+
+<p>Хотя программа для <strong>конк</strong> выглядит
+довольно просто, она обладает большой гибкостью
+и ее можно использовать многими другими<a name="tn294">
+способами. Например, ее можно применять как бы в
+обратном направлении для <span id="t294"><em>разбиения</em>
+заданного списка на две части</span>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- конк( L1, L2, [а, b, с] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L1 = [ ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [а, b, c];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L1 = [а]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [b, с];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L1 = [а, b]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [c];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L1 = [а, b, с]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [ ];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (нет)</p>
+
+<p>Список&nbsp; <strong>[а, b, с]</strong>&nbsp; разбивается на
+два списка четырьмя способами, и все они были
+обнаружены нашей программой при помощи
+механизма автоматического перебора. </p>
+
+<p>Нашу программу можно также применить для
+поиска в списке комбинации элементов, отвечающей
+некоторому условию, задаваемому в виде шаблона
+или образца. Например, можно найти все месяцы,
+предшествующие данному, и все месяцы, следующие
+за ним, сформулировав такую цель:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- конк( До, [май |
+После ],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[янв, фев, март, апр, май, июнь,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+июль, авг, сент, окт, ноябрь, дек]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; До = [янв, фев, март,
+апр]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; После = [июнь, июль,
+авг, сент, окт, ноябрь, дек].</strong></p>
+
+<p>Далее мы сможем найти месяц, непосредственно
+предшествующий маю, и месяц, непосредственно
+следующий за ним, задав вопрос:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- конк( _, [Месяц1,
+май, Месяц2 | _ ],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[янв, февр, март, апр, май, июнь,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+июль, авг, сент, окт, ноябрь, дек]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Месяц1 = апр<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Месяц2 = июнь</strong></p>
+
+<p>Более того, мы сможем, например, удалить из
+некоторого списка L1 все, что следует за тремя
+последовательными вхождениями элемента z в L1
+вместе с этими тремя z. Например, это можно
+сделать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- L1 = [a, b, z, z, c, z, z, z, d,
+e],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( L2, [z, z, z
+| _ ], L1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L1 = [a, b, z, z, c, z, z, z, d, e]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [a, b, z, z, c]</strong></p>
+
+<p>Мы уже запрограммировали отношение
+принадлежности. Однако, используя <strong>конк</strong>,
+можно было бы определить это отношение следующим
+эквивалентным способом: </p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>принадлежит1( X, L) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( L1, [X | L2], L).</strong></p>
+
+<p align="center"><img src="pic/fig3_3.gif" width="397" height="493"
+alt="fig3_3.gif (4898 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 3. 3.</strong>&nbsp; Процедура <strong>принадлежит1</strong>
+находит элемент в заданном</small><br>
+<small>списке, производя по нему последовательный
+поиск.</small></p>
+
+<p>В этом предложении сказано: &quot;X принадлежит L,
+если список L можно разбить на два списка таким
+образом, чтобы элемент Х являлся головой второго
+из них. Разумеется, <strong>принадлежит1</strong>
+определяет то же самое отношение, что и <strong>принадлежит</strong>.
+Мы использовали другое имя только для того, чтобы
+различать таким образом две разные реализации
+этого отношения, Заметим, что, используя
+анонимную переменную, можно записать
+вышеприведенное предложение так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит1( X, L) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( _, [X | _ ], L).</strong></p>
+
+<p>Интересно сравнить между собой эти две
+реализации отношения принадлежности. <strong>Принадлежит</strong>
+имеет довольно очевидный процедурный смысл:</p>
+
+<p>&nbsp;&nbsp;&nbsp; Для проверки, является ли Х элементом
+списка L, нужно</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp; сначала проверить, не
+совпадает ли голова списка L с X, а затем</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp; проверить, не
+принадлежит ли Х хвосту списка L.</p>
+
+<p>С другой стороны, <strong>принадлежит1</strong>,
+наоборот, имеет очевидный декларативный смысл,
+но его процедурный смысл не столь очевиден.</p>
+
+<p>Интересным упражнением было бы следующее:
+выяснить, как в действительности <strong>принадлежит1</strong>
+что-либо вычисляет. Некоторое представление об
+этом мы получим, рассмотрев запись всех шагов
+вычисления ответа на вопрос:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; принадлежит1( b,
+[а, b, с] ).</strong></p>
+
+<p>На рис. 3.3 приведена эта запись. Из нее можно
+заключить, что <strong>принадлежит1</strong> ведет себя
+точно так же, как и <strong>принадлежит</strong>. Он
+просматривает список элемент за элементом до тех
+пор, пока не найдет нужный или пока не кончится
+список.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>3. 1.</strong>&nbsp;&nbsp;&nbsp; (а)&nbsp;&nbsp;&nbsp; Используя
+отношение <strong>конк</strong>, напишите цель,
+соответствующую вычеркиванию трех последних
+элементов списка L, результат - новый список L1.
+Указание: L - конкатенация L1 и трехэлементного
+списка.</p>
+
+<p>(b)&nbsp;&nbsp;&nbsp; Напишите последовательность целей
+для порождения списка L2, получающегося из списка
+L вычеркиванием его трех первых и трех последних
+элементов.</p>
+</a>
+
+<p><a href="javascript:fa('3_1')">Посмотреть ответ</a></p>
+
+<p><strong>3. 2.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>последний( Элемент,
+Список)</strong></p>
+
+<p>так, чтобы <strong>Элемент</strong> являлся последним
+элементом списка <strong>Список</strong>. Напишите два
+варианта определения:&nbsp;&nbsp;&nbsp; (а)&nbsp;&nbsp;&nbsp; с
+использованием отношения <strong>конк</strong>,
+&nbsp;&nbsp;&nbsp; (b)&nbsp;&nbsp;&nbsp; без использования этого
+отношения<a name="tn286">.</p>
+</a>
+
+<p><a href="javascript:fa('3_2')">Посмотреть ответ</a></p>
+<a name="p3_2_3">
+
+<hr>
+</a>
+
+<h4>3. 2. 3.&nbsp;&nbsp;&nbsp; <span id="t286">Добавление элемента</span></h4>
+
+<p>Наиболее простой способ добавить элемент в
+список - это вставить его в самое начало так,
+чтобы он стал его новой головой. Если Х - это новый
+элемент, а список, в который Х добавляется - L,
+тогда результирующий список - это просто</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[X | L]</strong></p>
+
+<p>Таким образом, для того, чтобы добавить новый
+элемент в начало списка, не надо использовать
+никакой процедуры. Тем не менее, если мы хотим
+определить такую процедуру в явном виде, то ее
+можно представить в форме такого факта:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( X, L, [X | L] )<a
+name="tn297">.</strong></p>
+</a><a name="p3_2_4">
+
+<hr>
+</a>
+
+<h4>3. 2. 4.&nbsp;&nbsp;&nbsp; <span id="t297">Удаление элемента</span></h4>
+
+<p>Удаление элемента Х из списка L можно
+запрограммировать в виде отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( X, L, L1)</strong></p>
+
+<p>где L1 совпадает со списком L, у которого удален
+элемент X. Отношение <strong>удалить</strong> можно
+определить аналогично отношению принадлежности.
+Имеем снова два случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х является
+головой списка, тогда результатом удаления будет
+хвост этого списка.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х находится в
+хвосте списка, тогда его нужно удалить оттуда.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( X, [X | Хвост],
+Хвост).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( X, [Y | Хвост],
+[ Y | Хвост1]&nbsp; ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+удалить( X, Хвост, Хвост1).</strong></p>
+
+<p>как и <strong>принадлежит</strong>, отношение <strong>удалить</strong>
+по природе своей недетерминировано. Если в
+списке встречается несколько вхождений элемента
+X, то <strong>удалить</strong> сможет исключить их все при
+помощи возвратов. Конечно, вычисление по каждой
+альтернативе будет удалять лишь одно вхождение X,
+оставляя остальные в неприкосновенности.
+Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- удалить( а, [а, b, а,
+а], L].</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [b, а, а];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [а, b, а];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [а, b, а];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(нет)</p>
+
+<p>При попытке исключить элемент, не содержащийся
+в списке, отношение <strong>удалить</strong> потерпит
+неудачу.</p>
+
+<p>Отношение <strong>удалить</strong> можно использовать
+в обратном направлении для того, чтобы добавлять
+элементы в список, вставляя их в произвольные
+места. Например, если мы хотим во все возможные
+места списка [1, 2, 3]&nbsp; вставить атом <strong>а</strong>,&nbsp;
+то мы можем это сделать, задав вопрос: &quot;Каким
+должен быть список L, чтобы после удаления из него
+элемента <strong>а</strong> &nbsp; получился список&nbsp; [1, 2,
+3]?&quot;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- удалить( а, L, [1, 2, 3]
+).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [а, 1, 2, 3];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [1, а, 2, 3];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [1, 2, а, 3];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [1, 2, 3, а];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a name="tn283">(нет)</p>
+
+<p>Вообще <span id="t283">операция по внесению Х в
+произвольное место некоторого списка</span> <strong>Список</strong>,
+дающее в результате <strong>БольшийСписок</strong>,
+может быть определена предложением:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>внести( X, Список,
+БольшийСписок) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( X, БольшийСписок, Список).</strong></p>
+
+<p>В <strong>принадлежит1</strong> мы изящно реализовали
+отношение принадлежности через <strong>конк</strong>.
+Для проверки на принадлежность можно также
+использовать и <strong>удалить</strong>. Идея простая:
+некоторый Х принадлежит списку <strong>Список</strong>,
+если Х можно из него удалить:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит2( X,
+Список) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( X, Список, _ )</a><a name="tn290">.</strong></p>
+</a><a name="p3_2_5">
+
+<hr>
+</a>
+
+<h4>3. 2. 5.&nbsp;&nbsp;&nbsp; <span id="t290">Подсписок</span></h4>
+
+<p>Рассмотрим теперь отношение <strong>подсписок</strong>.
+Это отношение имеет два аргумента - список L и
+список S, такой, что S содержится в L в качестве
+подсписка. Так отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подсписок( [c, d, e], [a,
+b, c, d, e, f] )</strong></p>
+
+<p>имеет место, а отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подсписок( [c, e], [a, b,
+c, d, e, f] )</strong></p>
+
+<p>нет. Пролог-программа для отношения <strong>подсписок</strong>
+может основываться на той же идее, что и <strong>принадлежит1</strong>,
+только на этот раз отношение более общо (см. рис.
+3.4).</p>
+
+<p align="center"><img src="pic/fig3_4.gif" width="496" height="281"
+alt="fig3_4.gif (2429 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 3. 4.</strong>&nbsp; Отношения <strong>принадлежит</strong>
+и <strong>подсписок</strong>.</small></p>
+
+<p>Его можно сформулировать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp; S является подсписком L, если</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L можно
+разбить на два списка L1 и L2 и</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 можно
+разбить на два списка S и L3.</p>
+
+<p>Как мы видели раньше, отношение <strong>конк</strong>
+можно использовать для разбиения списков.
+Поэтому вышеприведенную формулировку можно
+выразить на Прологе так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подсписок( S, L) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( L1, L2, L),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( S, L3, L2).</strong></p>
+
+<p>Ясно, что процедуру <strong>подсписок</strong> можно
+гибко использовать различными способами. Хотя
+она предназначалась для проверки, является ли
+какой-либо список подсписком другого, ее можно
+использовать, например, для нахождения всех
+подсписков данного списка:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; подсписок( S, [а,
+b, с] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [ ];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [a];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [а, b];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [а, b, с];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [b];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . <a name="tn209">.</strong></p>
+</a><a name="p3_2_6">
+
+<hr>
+</a>
+
+<h4>3. 2. 6.&nbsp;&nbsp;&nbsp; <span id="t209">Перестановки</span></h4>
+
+<p>Иногда бывает полезно построить все
+перестановки некоторого заданного списка. Для
+этого мы определим отношение <strong>перестановка</strong>
+с двумя аргументами. Аргументы - это два списка,
+один из которых является перестановкой другого.
+Мы намереваемся порождать перестановки списка с
+помощью механизма автоматического перебора,
+используя процедуру <strong>перестановка</strong>,
+подобно тому, как это делается в следующем
+примере:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- перестановка( [а, b,
+с], Р).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [а, b, с];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [а, с, b];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [b, а, с];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p align="center"><img src="pic/fig3_5.gif" width="380" height="213"
+alt="fig3_5.gif (2071 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 3. 5.</strong>&nbsp; Один из
+способов построения перестановки списка <strong>[X |
+L]</strong>.</small></p>
+
+<p>Программа для отношения <strong>перестановка</strong>
+в свою очередь опять может основываться на
+рассмотрении двух случаев в зависимости от вида
+первого списка:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если первый список
+пуст, то и второй список должен быть пустым.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если первый список не
+пуст, тогда он имеет вид [Х | L], и перестановку
+такого списка можно построить так, как Это
+показано на рис. 3.5: вначале получить список L1 -
+перестановку L, а затем внести Х в произвольную
+позицию L1.</p>
+
+<p>Два прологовских предложения, соответствующих
+этим двум случаям, таковы:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>перестановка( [ ], [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перестановка( [X | L ],
+Р) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+перестановка( L, L1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+внести( X, L1, Р).</strong></p>
+
+<p>Другой вариант этой программы мог бы
+предусматривать удаление элемента Х из первого
+списка, перестановку оставшейся его части -
+получение списка Р, а затем добавление Х в начало
+списка Р. Соответствующая программа такова:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>перестановка2( [ ], [
+]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перестановка2( L, [X |
+Р] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( X, L, L1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+перестановка2( L1, Р).</strong></p>
+
+<p>Поучительно проделать несколько экспериментов
+с нашей программой перестановки. Ее нормальное
+использование могло бы быть примерно таким:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; перестановка(
+[красный, голубой, зеленый], Р).</strong></p>
+
+<p>Как и предполагалось, будут построены все шесть
+перестановок:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Р = [ красный,
+голубой, зеленый];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [ красный, зеленый,
+голубой];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [ голубой, красный,
+зеленый];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [ голубой, зеленый,
+красный];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [ зеленый, красный,
+голубой];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р = [ зеленый, голубой,
+красный];</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nо</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(нет)</p>
+
+<p>Приведем другой вариант использования
+процедуры <strong>перестановка</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; перестановка(
+L, [а, b, с] ).</strong></p>
+
+<p>Наша первая версия, <strong>перестановка</strong>,
+произведет успешную конкретизацию L всеми шестью
+перестановками. Если пользователь потребует
+новых решений, он никогда не получит ответ
+&quot;нет&quot;, поскольку программа войдет в
+бесконечный цикл, пытаясь отыскать новые
+несуществующие перестановки. Вторая версия, <strong>перестановка2</strong>,
+в этой ситуации найдет только первую (идентичную)
+перестановку, а затем сразу зациклится.
+Следовательно, при использовании этих отношений
+требуется соблюдать осторожность.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>3. 3.</strong>&nbsp;&nbsp;&nbsp; Определите два предиката</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>четнаядлина(
+Список)</strong>&nbsp;&nbsp;&nbsp; и&nbsp;&nbsp;&nbsp; <strong>нечетнаядлина(
+Список)</strong></p>
+
+<p>таким образом, чтобы они были истинными, если их
+аргументом является список четной или нечетной
+длины соответственно. Например, список [а, b, с, d]
+имеет четную длину, a [a, b, c] - нечетную.</p>
+
+<p><a href="javascript:fa('3_3')">Посмотреть ответ</a></p>
+
+<p><strong>3. 4.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>обращение( Список,
+ОбращенныйСписок),</strong></p>
+
+<p>которое обращает списки. Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>обращение( [a, b, c, d],
+[d, c, b, a] ).</strong></p>
+
+<p><a href="javascript:fa('3_4')">Посмотреть ответ</a></p>
+
+<p><strong>3. 5.</strong>&nbsp;&nbsp;&nbsp; Определите предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>палиндром( Список).</strong></p>
+
+<p>Список называется палиндромом, если он
+читается одинаково, как слева направо, так и
+справа налево. Например,&nbsp; <strong>[м, а, д, а, м]</strong>.</p>
+
+<p><a href="javascript:fa('3_5')">Посмотреть ответ</a></p>
+
+<p><strong>3. 6.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сдвиг( Список1,
+Список2)</strong></p>
+
+<p>таким образом, чтобы <strong>Список2</strong>
+представлял собой <strong>Список1</strong>,
+&quot;циклически сдвинутый&quot; влево на один символ.
+Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; сдвиг( [1, 2, 3, 4,
+5], L1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сдвиг1( LI,
+L2)</strong></p>
+
+<p>дает</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>L1 = [2, 3, 4, 5, 1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L2 = [3, 4, 5, 1, 2]</strong></p>
+
+<p><a href="javascript:fa('3_6')">Посмотреть ответ</a></p>
+
+<p><strong>3. 7.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>перевод( Список1,
+Список2)</strong></p>
+
+<p>для перевода списка чисел от 0 до 9 в список
+соответствующих слов. Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>перевод( [3, 5, 1, 3],
+[три, пять, один, три] )</strong></p>
+
+<p>Используйте в качестве вспомогательных
+следующие отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>означает( 0, нуль).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; означает( 1, один).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; означает( 2, два).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p><a href="javascript:fa('3_7')">Посмотреть ответ</a></p>
+
+<p><strong>3. 8.</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Определите
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подмножество(
+Множество, Подмножество)</strong></p>
+
+<p>где <strong>Множество</strong> и <strong>Подмножество</strong>
+- два списка представляющие два множества.
+Желательно иметь возможность использовать это
+отношение не только для проверки включения
+одного множества в другое, но и для порождения
+всех возможных подмножеств заданного множества.
+Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; подмножество(
+[а, b, с], S ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [a, b, c];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [b, c];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [c];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [ ];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [a, c];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [a];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p><a href="javascript:fa('3_8')">Посмотреть ответ</a></p>
+
+<p><strong>3. 9.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>разбиениесписка(
+Список, Список1, Список2)</strong></p>
+
+<p>так, чтобы оно распределяло элементы списка
+между двумя списками <strong>Список1</strong> и <strong>Список2</strong>
+и чтобы эти списки были примерно одинаковой
+длины. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>разбиениесписка( [а,
+b, с, d, e], [a, с, е], [b, d]).</strong></p>
+
+<p><a href="javascript:fa('3_9')">Посмотреть ответ</a></p>
+
+<p><strong>3. 10.</strong>&nbsp;&nbsp;&nbsp; Перепишите программу об
+обезьяне и бананах из главы 2 таким образом, чтобы
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>можетзавладеть(
+Состояние, Действия)</strong></p>
+
+<p>давало не только положительный или
+отрицательный ответ, но и порождало
+последовательность действий обезьяны,
+приводящую ее к успеху. Пусть <strong>Действия</strong>
+будет такой последовательностью, представленной
+в виде списка ходов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Действия = [ перейти(
+дверь, окно),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+передвинуть( окно, середина),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+залезть, схватить ]</strong></p>
+
+<p><a href="javascript:fa('3_10')">Посмотреть ответ</a></p>
+
+<p><strong>3. 11.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>линеаризация(
+Список, ЛинейныйСписок)</strong></p>
+
+<p>где <strong>Список</strong> может быть списком списков,
+а <strong>ЛинейныйСписок</strong> - это тот же список, но
+&quot;выровненный&quot; таким образом, что элементы
+его подсписков составляют один линейный список.
+Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>? - линеаризация( [а,
+d, [с, d], [ ], [[[е]]], f, L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [a, b, c, d, e, f]</strong></p>
+
+<p><a href="javascript:fa('3_11')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch3_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch3_3.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

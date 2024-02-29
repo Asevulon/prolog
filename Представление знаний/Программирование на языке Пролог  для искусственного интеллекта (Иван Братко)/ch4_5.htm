@@ -1,0 +1,771 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 4. Пункт 5</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch4_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch5_1.htm">Вперёд</a></p>
+<a name="tn122"><script language="JavaScript">double_line();</script>
+
+
+<h4>4. 5.&nbsp;&nbsp;&nbsp; <span id="t122">Задача о восьми ферзях</span></h4>
+
+<p>Эта задача состоит в отыскании такой
+расстановки восьми ферзей на пустой шахматной
+доске, в которой ни один из ферзей не находится
+под боем другого. Решение мы запрограммируем в
+виде унарного отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( Поз)</strong></p>
+
+<p>которое истинно тогда и только тогда, когда <strong>Поз</strong>
+изображает позицию, в которой восемь ферзей не
+бьют друг друга. Будет интересно сравнить
+различные идеи, лежащие в основе
+программирования этой задачи. Поэтому мы
+приведем три программы, основанные на слегка
+различающихся ее представлениях.</p>
+</a><a name="p4_5_1">
+
+<hr>
+</a>
+
+<p><strong>4. 5. 1.&nbsp;&nbsp;&nbsp; Программа 1</strong></p>
+
+<p>Вначале нужно выбрать способ представления
+позиции на доске. Один из наиболее естественных
+способов - представить позицию в виде списка из
+восьми элементов, каждый из которых
+соответствует одному из ферзей. Каждый такой
+элемент будет описывать то поле доски, на которой
+стоит соответствующий ферзь. Далее, каждое поле
+доски можно описать с помощью пары координат ( Х и
+Y), где каждая координата - целое число от 1 до 8. В
+программе мы будем записывать такую пару в виде</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Х / Y</strong></p>
+
+<p>где оператор &quot;/&quot; обозначает, конечно, не
+деление, а служит лишь для объединения координат
+поля в один элемент списка. На рис. 4.6 показано
+одно из решений задачи о восьми ферзях и его
+запись в виде списка.</p>
+
+<p>После того. как мы выбрали такое представление,
+задача свелась к нахождению списка вида:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[Xl/Yl, X2/Y2, X3/Y3, X4/Y4, X5/Y5,
+X6/Y6, X7/Y7, X8/Y8]</strong></p>
+
+<p>удовлетворяющего требованию отсутствия
+нападений. Наша процедура <strong>решение</strong>
+должна будет найти подходящую конкретизацию
+переменных <strong>X1</strong>, <strong>Y1</strong>, <strong>Х2</strong>, <strong>Y2</strong>,
+<strong>...</strong>, <strong>Х8</strong>, <strong>Y8</strong>. Поскольку мы
+знаем, что все ферзи должны находиться на разных
+вертикалях во избежание нападений по
+вертикальным линиям, мы можем сразу же
+ограничить перебор, чтобы облегчать поиск
+решения. Можно поэтому сразу зафиксировать
+Х-координаты так, чтобы список, изображающий
+решение, удовлетворял следующему, более
+конкретному шаблону:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[1/Y1, 2/Y2, 3/Y3, 4/Y4, 5/Y5, 6/Y6,
+7/Y7, 8/Y8]</strong></p>
+
+<p align="center"><img src="pic/fig4_6.gif" width="192" height="171"
+alt="fig4_6.gif (1501 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 6.</strong>&nbsp; Решение задачи
+о восьми ферзях. Эта позиция может</small> <small>быть</small><br>
+<small>представлена в виде списка <strong>[1/4,&nbsp; 2/2,&nbsp;
+3/7, &nbsp; 4/3,&nbsp; 5/6,&nbsp; 6/8,&nbsp; 7/5,&nbsp; 8/1]</strong>.</small></p>
+
+<p>Нас интересует решение для доске размером 8х8.
+Однако, как это часто бывает в программировании,
+ключ к решению легче найти, рассмотрев более
+общую постановку задачи. Как это ни
+парадоксально, но часто оказывается, что решение
+более общей задачи легче сформулировать, чем
+решение более частной, исходной задачи; после
+этого исходная задача решается просто как
+частный случай общей задачи.</p>
+
+<p>Основная часть работы при таком подходе
+ложится на нахождение правильного обобщения
+исходной задачи. В нашем случае хорошей является
+идея обобщать задачу в отношении количества
+ферзей (количества вертикалей в списке), разрешив
+количеству ферзей принимать любое значение,
+включая нуль. Тогда отношение решение можно
+сформулировать, рассмотрев два случая:</p>
+
+<p><em>Случай 1</em>.&nbsp;&nbsp;&nbsp; Список ферзей пуст.
+Пустой список без сомнения является решением,
+поскольку нападений в этом случае нет.</p>
+
+<p><em>Случай 2</em>.&nbsp;&nbsp;&nbsp; Список ферзей не пуст.
+Тогда он выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ X/Y | Остальные ]</strong></p>
+
+<p>В случае 2 первый ферзь находится на поле <strong>Х /
+Y</strong>, а остальные - на полях, указанных в списке <strong>Остальные</strong>.
+Если мы хотим, чтобы это было решением, то должны
+выполняться следующие условия:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ферзи, перечисленные в
+списке <strong>Остальные</strong>, не должны бить друг
+друга; т. е. список <strong>Остальные</strong> сам должен
+быть решением.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х и Y должны быть
+целыми числами от 1 до 8.</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ферзь, стоящий на поле <strong>X
+/ Y</strong>, не должен бить ни одного ферзя из списка <strong>Остальные</strong>.</p>
+
+<p>Чтобы запрограммировать первое условие, можно
+воспользоваться самим отношением <strong>решение</strong>.
+Второе условие можно сформулировать так: Y должен
+принадлежать списку целых чисел от 1 до 8. т. е. <strong>[1,
+2, 3, 4, 5, 6, 7, 8]</strong>. С другой стороны, о координате Х
+можно не беспокоиться, поскольку список-решение
+должен соответствовать шаблону, у которого
+Х-координаты уже определены. Поэтому Х
+гарантированно получит правильное значение от 1
+до 8. Третье условие можно обеспечить с помощью
+нового отношения <strong>небьет</strong>. Все это можно
+записать на Прологе так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( [X/Y |
+Остальные] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решение( Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( Y, [1, 2, 3, 4, 5, 6, 7, 8] ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+небьет( X/Y, Остальные).</strong></p>
+
+<p>Осталось определить отношение <strong>небьет</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>небьет( Ф, Фспис)</strong></p>
+
+<p>И снова его описание можно разбить на два
+случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если список <strong>Фспис</strong>
+пуст, то отношение, конечно, выполнено, потому что
+некого бить (нет ферзя, на которого можно было бы
+напасть).</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если <strong>Фспис</strong> не
+пуст, то он имеет форму</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[Ф1 | Фспис1]</strong></p>
+
+<p>и должны выполняться два условия:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (а)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ферзь на поле Ф не должен
+бить ферзя на поле Ф1 и</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (b)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ферзь на поле Ф не должен
+бить ни одного ферзя из списка <strong>Фспис1</strong>.</p>
+
+<p>Выразить требование, чтобы ферзь, находящийся
+на некотором поле, не бил другое поле, довольно
+просто: эти поля не должны находиться на одной и
+той же горизонтали, вертикали или диагонали: Наш
+шаблон решения гарантирует, что все ферзи
+находятся на разных вертикалях, поэтому остается
+только обеспечить, чтобы 
+
+<ul>
+  <li>Y-координаты ферзей были различны и</li>
+  <li>ферзи не находились на одной диагонали, т.е.
+    расстояние между полями по направлению Х не
+    должно равняться расстоянию между ними по Y.</li>
+</ul>
+
+<p>На рис. 4.7 приведен полный текст программы.
+Чтобы облегчить ее использование, необходимо
+добавить список-шаблон. Это можно сделать в
+запросе на генерацию решений. Итак:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; шаблон( S),
+решение( S).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>решение( [ ] ).</strong></p>
+
+<p><strong>решение( [X/Y | Остальные ] ) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Первый ферзь на поле X/Y,</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% остальные ферзи на полях из списка <strong>Остальные</strong></small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит Y, [1, 2, 3, 4, 5, 6, 7,
+8] ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; небьет( X/Y | Остальные).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Первый ферзь не бьет остальных</small></p>
+
+<p><strong>небьет( _, [ ]).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Некого бить</small></p>
+
+<p><strong>небьет( X/Y, [X1/Y1 | Остальные] ) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Y =\= Y1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Разные Y-координаты</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Y1-Y =\= X1-X</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Разные диагонали</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Y1-Y =\= X-X1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; небьет( X/Y,
+Остальные).</strong></p>
+
+<p><strong>принадлежит( X, [X | L] ).</strong></p>
+
+<p><strong>принадлежит( X, [Y | L] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит(
+X, L).</strong></p>
+
+<p><small>% Шаблон решения</small></p>
+
+<p><strong>шаблон( [1/Y1, 2/Y2, 3/Y3, 4/Y4, 5/Y5, 6/Y6, 7/Y7, 8/Y8]).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 4. 7.</strong>&nbsp; Программа1 для
+задачи о восьми ферзях.</small></p>
+
+<p>Система будет генерировать решения в таком
+виде:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>S = [1/4, 2/2, 3/7, 4/3, 5/6, 6/8,
+7/5, 8/1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [1/5, 2/2, 3/4, 4/7, 5/3, 6/8, 7/6, 8/1];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [1/3, 2/5, 3/2, 4/8, 5/6, 6/4, 7/7, 8/1].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<h4>Упражнение</h4>
+
+<p><strong>4. 6.</strong>&nbsp;&nbsp;&nbsp; При поиске решения
+программа, приведенная на рис. 4.7, проверяет
+различные значения Y-координат ферзей. В каком
+месте программы задается порядок перебора
+альтернативных вариантов? Как можно без труда
+модифицировать программу, чтобы этот порядок
+изменился? Поэкспериментируйте с разными
+порядками, имея в виду выяснить, как порядок
+перебора альтернатив влияет на эффективность
+программы. </p>
+<a name="p4_5_2">
+
+<hr>
+</a>
+
+<h4>4. 5. 2.&nbsp;&nbsp;&nbsp; Программа 2</h4>
+
+<p>В соответствии с принятым в программе 1
+представлением доски каждое решение имело вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[1/Y1, 2/Y2, 3/Y3, ..., 8/Y8]</strong></p>
+
+<p>так как ферзи расставлялись попросту в
+последовательных вертикалях. Никакая информация
+не была бы потеряна, если бы Х-координаты были
+пропущены. Поэтому можно применить более
+экономное представление позиции на доске,
+оставив в нем только Y-координаты ферзей:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[Y1, Y2, Y3, ..., Y8]</strong></p>
+
+<p>Чтобы не было нападений по горизонтали, никакие
+два ферзя не должны занимать одну и ту же
+горизонталь. Это требование накладывает
+ограничение на Y-координаты: ферзи должны
+занимать все горизонтали с 1-й по 8-ю. Остается
+только выбрать <em>порядок</em> следования этих
+восьми номеров. Каждое решение представляет
+собой поэтому одну из перестановок списка:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[1, 2, 3, 4, 5, 6, 7, 8]</strong></p>
+
+<p>Такая перестановка S является решением, если
+каждый ферзь в ней не находится под боем (список S
+- &quot;безопасный&quot;). Поэтому мы можем написать:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( S) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+перестановка( [1, 2, 3, 4, 5, 6, 7, 8], S),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+безопасный( S).</strong></p>
+
+<p align="center"><img src="pic/fig4_8.gif" width="487" height="186"
+alt="fig4_8.gif (2925 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 8.</strong>&nbsp;&nbsp;&nbsp; (а)
+&nbsp;&nbsp;&nbsp; Расстояние по Х между <strong>Ферзь</strong> и <strong>Остальные</strong>
+равно 1.</small><br>
+<small>(b)&nbsp;&nbsp;&nbsp; Расстояние по Х между <strong>Ферзь</strong>
+и <strong>Остальные</strong> равно 3</small></p>
+
+<p>Отношение <strong>перестановка</strong> мы уже
+определила в гл. 3, а вот отношение <strong>безопасный</strong>
+нужно еще определить. Это определение можно
+разбить на два случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S - пустой список. Тогда
+он, конечно, безопасный, ведь нападать не на кого.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S - непустой список
+вида <strong>[Ферзь | Остальные]</strong>. Он безопасный,
+если список <strong>Остальные</strong> - безопасный и <strong>Ферзь</strong>
+не бьет ни одного ферзя из списка <strong>Остальные</strong>.</p>
+
+<p>На Прологе это выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>безопасный( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; безопасный( [Ферзь |
+Остальные ] :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+безопасный( Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+небьет(Ферзь | Остальные).</strong></p>
+
+<p>В этой программе отношение <strong>небьет</strong>
+более хитрое.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>решение( Ферзи) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перестановка( [1, 2, 3, 4, 5, 6, 7,
+8], Ферзи),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; безопасный( Ферзи).</strong></p>
+
+<p><strong>перестановка( [ ], [ ]).</strong></p>
+
+<p><strong>перестановка( [Голова | Хвост], СписПер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перестановка( Хвост,
+ХвостПер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( Голова, СписПер,
+ХвостПер).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Вставка головы в переставленный хвост</small></p>
+
+<p><strong>удалить( А, [А | Список).</strong></p>
+
+<p><strong>удалять( А, [В | Список], [В, Список1] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( А, Список,
+Список1).</strong></p>
+
+<p><strong>безопасный( [ ]).</strong></p>
+
+<p><strong>безопасный( [Ферзь | Остальные]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; безопасный( Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; небьет( Ферзь, Остальные,
+1).</strong></p>
+
+<p><strong>небьет( _, [ ], _ ).</strong></p>
+
+<p><strong>небьет( Y, [Y1 | СписY], РасстХ) :-<br>
+&nbsp;&nbsp;&nbsp; Y1-Y =\= РасстХ,<br>
+&nbsp;&nbsp;&nbsp; Y-Y1 =\= РасстХ,<br>
+&nbsp;&nbsp;&nbsp; Расст1 is РасстХ + 1,<br>
+&nbsp;&nbsp;&nbsp; небьет( Y, СписY, Расст1).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 4. 9.</strong>&nbsp; Программа 2 для
+задачи о восьми ферзях.</small></p>
+
+<p>Трудность состоит в том, что расположение
+ферзей определяется только их Y-координатами, а
+Х-координаты в представлении позиции не
+присутствуют в явном виде. Этой трудности можно
+избежать путем небольшого обобщения отношения <strong>небьет</strong>,
+как это показано на рис. 4.8. Предполагается, что
+цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>небьет( Ферзь,
+Остальные)</strong></p>
+
+<p>обеспечивает отсутствие нападении ферзя <strong>Ферзь</strong>
+на поля списка <strong>Остальные</strong> в случае, когда
+расстояние по Х между <strong>Ферзь</strong> и <strong>Остальные</strong>
+равно 1. Остается рассмотреть более общий случай
+произвольного расстояния. Для этого мы добавим
+его в отношение <strong>небьет</strong> в качестве
+третьего аргумента:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>небьет( Ферзь,
+Остальные, РасстХ)</strong></p>
+
+<p>Соответственно и цель <strong>небьет</strong> в
+отношении <strong>безопасный</strong> должна быть
+изменена на</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>небьет( Ферзь,
+Остальные, 1)</strong></p>
+
+<p>Теперь отношение <strong>небьет</strong> может быть
+сформулировано в соответствии с двумя случаями,
+в зависимости от списка <strong>Остальные</strong>: если
+он пуст, то бить некого и, естественно, нет
+нападений; если же он не пуст, то <strong>Ферзь</strong>
+не должен бить первого ферзя из списка <strong>Остальные</strong>
+(который находится от ферзя <strong>Ферзь</strong> на
+расстоянии <strong>РасстХ</strong> вертикалей), а также
+ферзей из хвоста списка <strong>Остальные</strong>,
+находящихся от него на расстоянии <strong>РасстХ + 1</strong>.
+Эти соображения приводят к программе,
+изображенной на рис. 4.9.</p>
+<a name="p4_5_3">
+
+<hr>
+</a>
+
+<h4>4. 5. 3.&nbsp;&nbsp;&nbsp; Программа 3</h4>
+
+<p>Наша третья программа для задачи о восьми
+ферзях опирается на следующие соображения.
+Каждый ферзь должен быть размещен на некотором
+поле, т. е. на некоторой вертикали, некоторой
+горизонтали, а также на пересечении каких-нибудь
+двух диагоналей. Для того, чтобы была обеспечена
+безопасность каждого ферзя, все они должны
+располагаться в разных вертикалях, разных
+горизонталях и в разных диагоналях (как идущих
+сверху вниз, так и идущих снизу вверх).
+Естественно поэтому рассмотреть более богатую
+систему представления с четырьмя координатами:</p>
+
+<p>&nbsp;&nbsp;&nbsp; <em>x</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вертикали<br>
+&nbsp;&nbsp;&nbsp; <em>у</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+горизонтали<br>
+&nbsp;&nbsp;&nbsp; <em>u</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+диагонали, идущие снизу вверх<br>
+&nbsp;&nbsp;&nbsp; <em>v</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+диагонали, идущие сверху вниз</p>
+
+<p>Эти координаты не являются независимыми: при
+заданных&nbsp; <em>х</em>&nbsp; и&nbsp; <em>у</em>,&nbsp; <em>u</em>&nbsp; и
+&nbsp; <em>v</em>&nbsp; определяются однозначно (пример на
+рис.4.10). Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp; <em>u = х - у</em><br>
+&nbsp;&nbsp;&nbsp; <em>v = х + у</em></p>
+
+<p align="center"><img src="pic/fig4_10.gif" width="410" height="354"
+alt="fig4_10.gif (3362 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 4. 10.</strong>&nbsp; Связь между
+вертикалями, горизонталями и диагоналями.</small> <small>Помеченное</small><br>
+<small>поле имеет следующие координаты:</small> <small><em>x</em>
+= 2,&nbsp; <em>у</em> = 4,&nbsp; <em>u</em> = 2 - 4 = -2,&nbsp; <em>v</em> = 2 + 4 = 6.</small></p>
+
+<p>Области изменения всех четырех координат
+таковы:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Dx = [1, 2, 3, 4, 5, 6, 7, 8]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Dy = [1, 2, 3, 4, 5, 6, 7, 8]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Du = [-7, -6, -5, -4, -3, -2, -1, 0,
+1, 2, 3, 4, 5, 6, 7]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Dv = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+14, 15, 16]</strong></p>
+
+<p>Задачу о восьми ферзях теперь можно
+сформулировать следующим образом: выбрать
+восемь четверок (X, Y, U, V), входящих в области
+изменения (X в Dx, Y в Dy и т.д.), так, чтобы ни один их
+элемент не выбирался дважды из одной области.
+Разумеется, выбор Х и Y определяет выбор U и V.
+Решение при такой постановке задачи может быть
+вкратце таким: при заданных 4-х областях
+изменения выбрать позицию для первого ферзя,
+вычеркнуть соответствующие элементы из 4-х
+областей изменения, а затем использовать
+оставшиеся элементы этих областей для
+размещения остальных ферзей. Программа,
+основанная на таком подходе, показана на рис. 4.11.
+Позиция на доске снова представляется списком
+Y-координат. Ключевым отношением в этой программе
+является отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>peш( СписY, Dx, Dy, Du, Dv)</strong></p>
+
+<p>которое конкретизирует Y-координаты (в <strong>СписY</strong>)
+ферзей, считая, что они размещены в
+последовательных вертикалях, взятых из Dx. Все
+Y-координаты и соответствующие координаты U и V
+берутся из списков Dy, Du и Dv. Главную процедуру <strong>решение</strong>
+можно запустить вопросом</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; решение( S)</strong></p>
+
+<p>Это вызовет запуск <strong>реш</strong> с полными
+областями изменения координат, что
+соответствует пространству</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>решение( СписY) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>реш( СписY,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Y-координаты ферзей</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[1, 2, 3, 4, 5, 6, 7, 8],</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Область изменения Y-координат</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[1, 2, 3, 4, 5, 6, 7, 8],</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Область изменения Х-координат</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Диагонали, идущие снизу вверх</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 15, 16] ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Диагонали, идущие сверху вниз</small><br>
+<strong>реш([ ], [ ], Dy, Du, Dv).</strong></p>
+
+<p><strong>реш( [Y | СписY], [X | Dx1], Dy, Du, Dv) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( Y, Dy, Dy1),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Выбор
+Y-координаты</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>U is X-Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Соответствующая диагональ вверх</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( U, Du, Du1),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Ее
+удаление</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>V is X+Y</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Соответствующая диагональ вниз</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( V, Dv, Dv1),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Ее
+удаление</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>реш( СписY, Dх1, Dy1, Du1,
+Dv1).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор из оставшихся значений</small></p>
+
+<p><strong>удалить( А, [А | Список], Список).</strong></p>
+
+<p><strong>удалить(A, [В | Список ], [В | Список1 ] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( А, Список,
+Список1).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 4. 11.</strong>&nbsp; Программа 3 для
+задачи о восьми ферзях.</small></p>
+
+<p>задачи о восьми ферзях.</p>
+
+<p>Процедура <strong>реш</strong> универсальна в том
+смысле, что ее можно использовать для решения
+задачи об N ферзях (на доске размером N х N). Нужно
+только правильно задеть области Dx, Dy и т.д.</p>
+
+<p>Удобно автоматизировать получение этих
+областей. Для этого нам потребуется процедура</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>генератор( Nl, N2,
+Список)</strong></p>
+
+<p>которая для двух заданных целых чисел Nl и N2
+порождает список</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Список = [Nl, Nl + 1, Nl + 2,
+..., N2 - 1, N2]</strong></p>
+
+<p>Вот она:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>генератор( N, N, [N]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; генератор( Nl, N2, [Nl |
+Список]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nl &lt; N2,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+М is Nl + 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+генератор( М, N2, Список).</strong></p>
+
+<p>Главную процедуру решение нужно
+соответствующим образом обобщить:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( N, S)</strong></p>
+
+<p>где N - это размер доски, а S - решение,
+представляемое в виде списка Y-координат N ферзей.
+Вот обобщенное отношение <strong>решение</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( N, S) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+генератор( 1, N, Dxy),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nu1 is 1 - N, Nu2 is N - 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+генератор( Nu1, Nu2, Du),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nv2 is N + N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+генератор( 2, Nv2, Dv),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+реш( S, Dxy, Dxy, Du, Dv).</strong></p>
+
+<p>Например, решение задачи о 12 ферзях будет
+получено с помощью:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; решение( 12, S).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = [1, 3, 5, 8, 10, 12, 6, 11, 2,
+7, 9, 4]</strong></p>
+<a name="p4_5_4">
+
+<hr>
+</a>
+
+<h4>4. 5. 4.&nbsp;&nbsp;&nbsp; Заключительные замечания</h4>
+
+<p>Три решения задачи о восьми ферзях показывают,
+как к одной и той же задаче можно применять
+различные подходы. Мы варьировали также и
+представление данных. В одних случаях это
+представление было более экономным, в других -
+более наглядным и, до некоторой степени,
+избыточным. К недостаткам более экономного
+представления можно отнести то, что какая-то
+информация всякий раз, когда она требовалась,
+должна была перевычисляться.</p>
+
+<p>В некоторых случаях основным шагом к решению
+было обобщение задачи. Как ни парадоксально, но
+при рассмотрении более общей задачи решение
+оказывалось проще сформулировать. Принцип
+такого обобщения - стандартный прием
+программирования, и его можно часто применять.</p>
+
+<p>Из всех трех программ третья лучше всего
+показывает, как подходить к общей задаче
+построения структуры из заданного множества
+элементов при наличии ограничений. </p>
+
+<p>Возникает естественный вопрос: &quot; Какая из
+трех программ наиболее эффективна?&quot; В этом
+отношение программа 2 значительно хуже двух
+других, а эти последние - одинаковы. Причина в том,
+что основанная на перестановках программа 2
+строит все перестановки, тогда как две другие
+программы способны отбросить плохую
+перестановку не дожидаясь, пока она будет
+полностью построена. Программа 3 наиболее
+эффективна. Она избегает некоторых
+арифметических вычислений, результаты которых
+уже сразу заложены в избыточное представление
+доски, используемое этой программой.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>4. 7.</strong>&nbsp;&nbsp;&nbsp; Пусть поля доски
+представлены парами своих координат в виде <strong>X/Y</strong>,
+где как X, так и Y принимают значения от 1 до 8.</p>
+
+<p>(а)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Определите отношение <strong>ходконя(
+Поле1, Поле2)</strong>, соответствующее ходу коня на
+шахматной доске. Считайте, что <strong>Поле1</strong>
+имеет всегда конкретизированные координаты, в то
+время, как координаты поля <strong>Поле2</strong> могут и
+не быть конкретизированы. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- ходконя( 1/1, S).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = 3/2;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = 2/3;</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (нет)</p>
+
+<p>(b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Определите отношение <strong>путьконя(
+Путь)</strong>, где <strong>Путь</strong> - список полей,
+представляющих соответствующую правилам игры
+последовательность ходов коня по пустой доске.</p>
+
+<p>(с)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Используя отношение <strong>путьконя</strong>,
+напишите вопрос для нахождения любого пути,
+состоящего из 4-х ходов, и начинающегося с поля 2/1,
+а заканчивающегося на противоположном крае
+доски (Y= 8). Этот путь должен еще проходить после
+второго хода через поле 5/4.</p>
+
+<p><a href="javascript:fa('4_7')">Посмотреть ответ</a></p>
+
+<h4>Резюме</h4>
+
+<p>Примеры, рассмотренные в данном разделе,
+иллюстрируют некоторые достоинства и
+характерные черты программирования на Прологе: 
+
+<ul>
+  <li>Базу данных можно естественным образом
+    представить в виде множества прологовских
+    фактов.</li>
+  <li>Такие механизмы Пролога, как вопросы и
+    сопоставление, можно гибко использовать для
+    получения информации из базы данных. Кроме этого
+    можно использовать вспомогательные
+    процедуры-утилиты, еще больше облегчающие
+    взаимодействие с конкретной базой данных.</li>
+  <li><em>Абстракцию данных</em> можно рассматривать как
+    метод программирования, который облегчает
+    работу со сложными структурами данных и вносит
+    большую ясность и наглядность в программы. В
+    Прологе легко соблюдать основные принципы
+    абстракции данных.</li>
+  <li>Часто легко можно осуществить перевод
+    абстрактных математических конструкций, таких
+    как автоматы, на язык определений Пролога,
+    готовых к выполнению.</li>
+  <li>Как это было в случае восьми ферзей, многие
+    задачи допускают различные подходы, связанные с
+    разными представлениями этих задач. Часто
+    внесение избыточности в представление экономит
+    вычисления. Происходит как бы проигрыш в рабочем
+    пространстве, но выигрыш во времени.</li>
+  <li>Часто основным шагом на пути к решению
+    оказывается обобщение задачи. Парадоксально, но
+    рассмотрение более общей задачи позволяет
+    облегчить формулировку решения.</li>
+</ul>
+
+<hr>
+
+<p align="center"><a href="ch4_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch5_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

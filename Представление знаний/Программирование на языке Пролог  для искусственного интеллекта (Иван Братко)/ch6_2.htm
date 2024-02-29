@@ -1,0 +1,627 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 6. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch6_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch6_3.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>6. 2.&nbsp;&nbsp;&nbsp; Обработка файлов термов</h4>
+<a name="p6_2_1">
+
+<hr>
+</a>
+
+<h4>6. 2. 1.&nbsp;&nbsp;&nbsp; <font face="System"><em>reаd</em></font>&nbsp; и <a
+name="tn69"><font face="System"><em>write</em></font></h4>
+
+<p>Встроенный предикат <strong><span id="t69">read</span></strong>
+используется для чтения термов из текущего
+входного потока. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>read( X)</strong></p>
+
+<p>вызывает чтение следующего терма Т и
+сопоставление его с X. Если Х - переменная, то в
+результате Х конкретизируется и становится
+равным Т. Если сопоставление терпит неудачу, цель
+<strong>read( X)</strong> тоже терпит неудачу. Предикат <strong>read</strong>
+- детерминированный в том смысле, что в случае
+неуспеха не происходит возврата для ввода
+следующего терма. После каждого терма во входном
+файле должна стоять точка или пробел, или символ
+возврата каретки.</p>
+
+<p>Если <strong>read( X)</strong> вычисляется в тот момент,
+когда достигнут конец текущего входного файла,
+тогда Х конкретизируется атомом <strong>end_of_file</strong>
+(конец файла)</a><a name="tn83">.</p>
+
+<p>Встроенный предикат <strong><span id="t83">write</span></strong>
+выводит терм. Поэтому цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>write( X)</strong></p>
+
+<p>выведет терм Х в текущий выходной файл. Х будет
+выведен в той же стандартной форме, в какой
+обычно пролог-система изображает на экране или
+распечатке значения переменных. Полезной
+особенностью Пролога является то, что процедура <strong>write</strong>
+&quot;знает&quot;, как изображать любой терм, как бы
+сложен он не был.</p>
+
+<p>Существуют дополнительные встроенные
+предикаты для форматирования вывода. Они
+вставляют пробелы в дополнительные строки в
+выходной поток. </a><a name="tn77">Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t77">tab</a><a name="tn63">(
+N)</span></strong></p>
+
+<p>выводит <strong>N</strong> пробелов. Предикат <strong><span
+id="t63">nl</span></strong> (без аргументов) приводит к
+переходу на новую строку.</p>
+
+<p>Следующие примеры иллюстрируют использование
+этих процедур.</p>
+
+<p>Предположим, у нас есть процедура для
+вычисления кубов чисел:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>куб( N, С) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; С is N * N * N.</strong></p>
+
+<p>Предположим далее, что мы хотим применить ее
+для вычисления кубов элементов некоторой
+последовательности чисел. Это можно сделать с
+помощью последовательности вопросов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; куб( 2, X).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = 8</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; ку6( 5, Y).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y = 125</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; куб( 12, Z).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z = 1728</strong></p>
+
+<p>Для получения каждого результата нам придется
+набирать соответствующую цель. Давайте теперь
+изменим эту программу так, чтобы процедура <strong>куб</strong>
+сама читала соответствующие данные. Теперь
+программа будет сама читать данные и выводить их
+кубы до тех пор, пока не будет прочитан атом <strong>стоп</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>куб :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+read( X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обработать( X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обработать( стоп) :-
+&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обработать( N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+С is N * N * N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( С),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+куб.</strong></p>
+
+<p>Это был пример программы, декларативный смысл
+которой трудно сформулировать. В то же время ее
+процедурный смысл совершенно ясен: чтобы
+вычислить <strong>куб</strong>, сначала нужно считать X, а
+затем его обработать; если <strong>Х = стоп</strong>, то
+все сделано, иначе вывести Х<sup>3</sup> и рекурсивно
+запустить процедуру <strong>куб</strong> для обработки
+остальных чисел.</p>
+
+<p>С помощью этой новой процедуры таблица кубов
+чисел может быть получена таким образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; куб.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 125<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1728<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; стоп.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p>Числа&nbsp; 2,&nbsp; 5&nbsp; и&nbsp; 12&nbsp; были введены
+пользователем с терминала, остальные числа были
+выведены программой. Заметьте, что после каждого
+числа, введенного пользователем, должна стоять
+точка, которая сигнализирует о конце терма.</p>
+
+<p>Может показаться, что приведённую процедуру <strong>куб</strong>
+можно упростить. Однако следующая попытка такого
+упрощения является ошибочной:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>куб :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read(
+стоп), &nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; куб :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read( N),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; С is N * N
+* N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write( С),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; куб.</strong></p>
+
+<p>Причина, по которой эта процедура работает
+неправильно, станет очевидной, если проследить,
+какие действия она выполняет с входным
+аргументом, скажем с числом 5. Цель <strong>read( стоп)</strong>
+потерпит неудачу при чтении этого числа, и оно
+будет потеряно навсегда. Следующая цель <strong>read</strong>
+введет следующий терм. С другой стороны может
+случиться, что сигнал <strong>стоп</strong> будет считан
+целью <strong>read( N)</strong>, что приведет к попытке
+перемножить нечисловую информацию.</p>
+
+<p>Процедура <strong>куб</strong> ведет диалог между
+пользователем и программой. В таких случаях
+обычно желательно, чтобы программа перед тем, как
+читать с терминала новые данные, дала сигнал
+пользователю о том, что она готова к приему
+информации, а также, возможно, и о том, какого вида
+информация ожидается. Это делается обычно путем
+выдачи &quot;приглашения&quot; перед чтением. Нашу
+процедуру <strong>куб</strong> можно для этого изменить,
+например, так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>куб :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write(
+'Следующее число, пожалуйста:'),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; read( X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; обработать( X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; о6работать( стоп) :-
+&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обработать( N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;С is
+N * N * N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(
+'Куб'),&nbsp; write( N),&nbsp; write( 'равен').<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write(
+С), nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;куб.</strong></p>
+
+<p>Разговор с новой версией мог бы быть, например,
+таким:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; куб.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Следующее число,
+пожалуйста: 5.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Куб 5 равен 125</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Следующее число,
+пожалуйста: 12.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Куб 12 равен 1728</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Следующее число,
+пожалуйста: стоп.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p>В некоторых реализациях для того, чтобы
+приглашение</a><a name="tn81"> появилось на экране перед
+чтением, необходимо выдать дополнительный
+запрос (такой, скажем, как <strong><span id="t81">ttyflush</span></strong>)
+после записи.</p>
+
+<p>В последующих разделах мы увидим некоторые
+типичные примеры операций, в которых участвуют
+чтение и запись.</p>
+</a><a name="p6_2_2">
+
+<hr>
+</a>
+
+<h4>6. 2. 2.&nbsp;&nbsp;&nbsp; Вывод списков</h4>
+
+<p>Кроме стандартного прологовского формата для
+списков существуют несколько других
+естественных форм их внешнего представления,
+которые в некоторых ситуациях являются более
+предпочтительными. Следующая процедура</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вывспис( L)</strong></p>
+
+<p>выводит список L так, что каждый его элемент
+занимает отдельную строку:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вывспис( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывспис( [X | L) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( X), n1.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывспис( L).</strong></p>
+
+<p>Если у нас есть список списков, то одной из
+естественных форм его выводе является такая, при
+которой все элементы каждого списка
+записываются на отдельной строке. Для этого мы
+определим процедуру <strong>вывспис2</strong>. Вот
+пример ее использования:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; вывспис2( [ [а, b,
+с], [d, e, f], [g, h, i] ] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; а&nbsp;&nbsp; b&nbsp;&nbsp; с<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; d&nbsp;&nbsp; e&nbsp;&nbsp; f<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; g&nbsp;&nbsp; h&nbsp;&nbsp; i</strong></p>
+
+<p>Процедура, выполняющая эту работу, такова:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вывспис2( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывспис2( [L | LL] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+строка( L), n1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывспис1( LL).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; строка( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; строка( [X | L] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( X), tab( 1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+строка( L).</strong></p>
+
+<p>Список целых чисел иногда удобно представить в
+виде диаграммы. Следующая процедура <strong>диагр</strong>
+выводит список в такой форме (предполагается, что
+числа списка заключены между 0 и 80). Пример ее
+использования:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- диагр( [3, 4, 6, 5] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ***<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ****<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ******<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *****</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Процедуру <strong>диагр</strong>
+можно определить так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>диагр( [N | L]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+звездочки( N), n1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+диагр( L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+звеэдочки( N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N &gt; 0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( *),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nl is N - 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+звездочки( Nl).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+звездочки( N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N =&lt; 80.</strong></p>
+<a name="p6_2_3">
+
+<hr>
+</a>
+
+<h4>6. 2. 3.&nbsp;&nbsp;&nbsp; Формирование термов</h4>
+
+<p>Предположим, наша программа имеет дело с
+семьями, которые представлены в виде термов так,
+как это сделано в гл. 4 (рис. 4.1). Тогда, если,
+перемен-</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родители<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+том фокс, датарожд 7 май 1950, работает bbс,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+оклад 15200<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+энн фокс, датарожд 9 май 1951, неработает<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дети<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+пат фокс, датарожд 5 май 1973, неработает<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+джим фокс, датарожд 5 май 1973, неработает</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 6. 2.</strong>&nbsp; Улучшенный
+формат вывода термов, представляющих семью.</small></p>
+
+<p>ная F конкретизирована термом, изображенный на
+рис. 4.1, то цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>write( F)</strong></p>
+
+<p>вызовет вывод этого терма в стандартной форме
+примерно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>семья( членсемьи(
+том, фокс, дата( 7, май,1950),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; работает( bbс, 15200)),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+членсемьи( энн, фокс, дата( 9, май, 1951),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; неработает),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[членсемьи( пат, фокс, дата( 5, май, 1973),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; неработает),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+членсемьи( джим, фокс, дата( 5, май, 1973),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; неработает)])</strong></p>
+
+<p>Здесь содержится полная информация, однако
+форма представления легко может запутать,
+поскольку трудно проследить, какие ее части
+образуют самостоятельные семантические единицы.
+Поэтому обычно предпочитают выводить такую
+информацию в каком-либо формате, например так,
+как показано на рис. 6.2. Процедура</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вывсемью( F)</strong></p>
+
+<p>с помощью которой это достигается, приведена на
+рис. 6.3.</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вывсемью( семья (
+Муж, Жена, Дети) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nl, write( родители), nl, nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывчленсемьи( Муж), nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывчленсемьи( Жена), nl, nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( дети), nl, nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывчленсемьи( Дети).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывчленсемьи(
+членсемьи( Имя, Фамилия, дата( Д, М, Г), Работа) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+tab(4), write( Имя),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+tab(1), write( Фамилия),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( ', дата рождения'),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( Д), tab( 1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( M), tab( 1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( Г), write( ','),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывработу( Работа).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывсписчлсемьи( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывсписчлсемьи( [Р |
+L]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывчленсемьи( Р), nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вывсписчлсемьи( L),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывработу( неработает) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( неработает).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вывработу( работает
+Место, Оклад) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write(' работает '), write( Место),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( ', оклад '), write( Оклад).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 6. 3.</strong>&nbsp; Программа,
+обеспечивающая вывод в формате, представленном
+на рис. 6.2.</small></p>
+<a name="p6_2_4">
+
+<hr>
+</a>
+
+<h4>6. 2. 4.&nbsp;&nbsp;&nbsp; Обработка произвольного файла
+термов</h4>
+
+<p>Типичная последовательность целей для
+обработки файла F от начала до конца будет
+выглядеть примерно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>. . . , see( F),
+обработкафайла, sеe( user), . . .</strong></p>
+
+<p>Здесь <strong>обработкафайла</strong> - процедура,
+которая читает и обрабатывает последовательно
+каждый терм файла F один за другим до тех пор, пока
+не встретится конец файла. Приведем типичную
+схему для процедуры</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>обработкафайла:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обработкафайла :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+read( Терм),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обработка( Терм).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обработка( end_of_file) :-
+&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Все сделано</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>обработка( Терм) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обраб( Терм),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Обработать текущий элемент</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>обработкафайла.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Обработать оставшуюся часть файла</small></p>
+
+<p>Здесь <strong>обраб( Терм)</strong> представляет
+процедуру обработки отдельного терма. В качестве
+примера такой обработки рассмотрим процедуру,
+которая выдает на терминал каждый терм вместе с
+его порядковым номером. Назовем эту процедуру <strong>показфайла</strong>.
+У нее должен быть дополнительный аргумент для
+подсчета прочитанных термов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>показфайла( N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+read( Терм),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+показ( Терм, N).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; показ( Терм, N) :-&nbsp; !<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( N), tab( 2), write( Терм),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Nl is N + 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+показфайла( Nl).</strong></p>
+
+<p>Вот другой пример программы обработки файлов,
+построенной по подобной схеме. Пусть есть файл с
+именем <strong>файл1</strong>, термы которого имеют форму</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>изделие( НомерИзд,
+Описание, Цена, ИмяПоставщика)</strong></p>
+
+<p>Каждый терм описывает одну строку каталога
+изделий. Нужно построить новый файл. содержащий
+только те изделия, которые выпускаются каким-то
+конкретным поставщиком. Поскольку поставщик в
+этом новом файле у всех изделий будет одинаков,
+его имя нужно записать только один раз в самом
+начале и убрать из всех остальных термов.
+Процедура будет называться</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>создатьфайл(
+Поставщик)</strong></p>
+
+<p>Например, если исходный каталог хранится в
+файле <strong>файл1</strong>, а мы хотим создать
+специальный каталог в файле <strong>файл2</strong>,
+содержащий всю информацию о том, что поставляет
+Гаррисон, тогда мы применим процедуру <strong>создатьфайл</strong>
+следующим образом: </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; seе( файл1), tеll(
+файл2), создатьфайл( гаррисон),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; see( user), tell( user).</strong></p>
+
+<p>Процедуру <strong>создатьфайл</strong> можно
+определить так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>создатьфайл(
+Поставщик) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( Поставщик), write( '.'), nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+создатьостальное( Поставщик).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; создатьостальное(
+Поставщик) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+read( Изделие),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обработать( Изделие, Поставщик).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обработать( end_ot_file)
+:-&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; обработать(
+Изделие( Ном, Опис, Цена, Поставщик),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Поставщик) :-&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( Изделие( Ном, Опис, Цена) ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( '.'), nl,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+создатьостальное( Поставщик).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+обработать ( _, Поставщик) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+создатьостальное( Поставщик).</strong></p>
+
+<p>Обратите внимание на то, что <strong>обработать</strong>
+вписывает точки между термами, чтобы
+впоследствии файл мог быть прочитан процедурой <strong>read</strong>.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>6. 1.</strong>&nbsp;&nbsp;&nbsp; Пусть <strong> f</strong>&nbsp; -
+&nbsp; файл термов. Определите процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>найтитерм( Терм)</strong></p>
+
+<p>которая выводит на терминал новый терм из <strong>f</strong>,
+сопоставимый с <strong>Терм</strong>'ом.</p>
+
+<p><a href="javascript:fa('6_1')">Посмотреть ответ</a></p>
+
+<p><strong>6. 2.</strong>&nbsp;&nbsp;&nbsp; Пусть <strong> f</strong>&nbsp; -
+&nbsp; файл термов. Напишите процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>найтивсетермы(
+Терм)</strong></p>
+
+<p>которая выводит на экран все термы из <strong>f</strong>,
+сопоставимые с <strong>Tepм</strong>'ом. Обеспечьте при
+этом, чтобы во время поиска <strong>Терм</strong> не
+конкретизировался (это могло бы помешать ему
+сопоставиться с другими термами дальше по файлу).</p>
+
+<p><a href="javascript:fa('6_2')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch6_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch6_3.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

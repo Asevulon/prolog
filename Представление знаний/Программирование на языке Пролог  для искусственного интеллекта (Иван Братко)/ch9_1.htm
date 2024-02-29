@@ -1,0 +1,661 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 9. Пункт 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch8_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch9_2.htm">Вперёд</a></p>
+
+<hr>
+
+<p align="left">&nbsp;</p>
+<script language="JavaScript">double_rectangle();</script>
+
+
+<p align="left">&nbsp;</p>
+
+<h3 align="center">Часть 2</h3>
+
+<h3 align="center">ПРОЛОГ</h3>
+
+<h3 align="center">В ИСКУССТВЕННОМ ИНТЕЛЛЕКТЕ</h3>
+
+<p align="center">&nbsp;</p>
+
+<p align="center">&nbsp;</p>
+
+<p align="center"><img src="pic/fig9_0.gif" width="403" height="318"
+alt="fig9_0.gif (3287 bytes)"></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<h3 align="center">Глава 9</h3>
+
+<h3 align="center">ОПЕРАЦИИ НАД СТРУКТУРАМИ ДАННЫХ</h3>
+
+<p>Один из фундаментальных вопросов
+программирования - это вопрос о представлении
+сложных объектов (таких как, например, множества),
+а также вопрос об эффективной реализации
+операций над подобными объектами. В этой главе мы
+рассмотрим несколько часто используемых
+структур данных, принадлежащих к трем большим
+семействам: спискам, деревьям и графам. Мы изучим
+способы представления этих структур на Прологе и
+составим программы, реализующие некоторые
+операции над ними, в том числе, сортировку
+списков, работу с множествами как древовидными
+структурами, запись элементов данных в дерево,
+поиск данных в дереве, нахождение пути в графе и
+т.п. Мы подробно разберем несколько примеров,
+чрезвычайно поучительных с точки зрения
+программирования на Прологе.</p>
+<a name="p9_1"><script language="JavaScript">double_line();</script>
+</a>
+
+<h4>9. 1.&nbsp;&nbsp;&nbsp; Представление списков.
+Сортировка</h4>
+<a name="p9_1_1">
+
+<hr>
+</a>
+
+<h4>9. 1. 1.&nbsp;&nbsp;&nbsp; Замечания в некоторых
+альтернативных способах представления списков</h4>
+
+<p>В главе 3 была введена специальная система
+обозначений для списков (специальная
+прологовская нотация), которую мы и использовали
+в последующем изложении. <a name="tn291">Разумеется, это
+был всего лишь один из способов представления
+списков на Прологе. <em><span id="t291">Список</span></em> - это,
+в самом общем смысле, структура, которая либо 
+
+<ul>
+  <li><em>пуста</em>, либо</li>
+  <li>состоит из <em>головы</em> и <em>хвоста</em>, причем
+    хвост должен быть сам списком.</li>
+</ul>
+
+<p>Поэтому для представления этой структуры нам
+необходимо иметь всего лишь два языковых средства:
+специальный символ, обозначающий пустой список,
+и функтор для соединения головы с хвостом. Мы
+могли бы, например, выбрать</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ничего_не_делать</strong></p>
+
+<p>в качестве символа, обозначающего пустой
+список, и атом</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>затем</strong></p>
+
+<p>в качестве инфиксного оператора для построения
+списка по заданным голове и хвосту. Этот оператор
+мы можем объявить в программе, например, так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 500, xfy, затем).</strong></p>
+
+<p>Список</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ войти, сесть,
+поужинать]</strong></p>
+
+<p>можно было бы тогда записать как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>войти затем сесть
+затем поужинать<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; затем ничего_не_делать</strong></p>
+
+<p>Важно заметить, что на соответствующем уровне
+абстракции специальная прологовская нотация и
+всевозможные альтернативные способы
+обозначения списков сводятся, фактически, к
+одному и тому же представлению. В связи с этим
+типовые операции над списками, такие как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>принадлежит ( X, L)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( L1, L2, L3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( X, L1, L2)</strong></p>
+
+<p>запрограммированные нами в специальной
+прологовской нотации, легко поддаются
+перепрограммированию в различные системы
+обозначений, выбранные пользователем. Например,
+отношение <strong>конк</strong> транслируется на язык
+&quot;затем - ничего_не_делать&quot; следующим образом.
+Определение, которое мы использовали до сих пор,
+имеет вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк( [ ], L, L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( [X | L1], L2, [X | L3] )
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( L1, L2, L3).</strong></p>
+
+<p>В новой системе обозначений оно превращается в</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>конк(
+ничего_не_делать, L, L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( Х затем L1, L2, Х
+затем L3) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк(L1, L2, L3).</strong></p>
+
+<p>Этот пример показывает, как легко наши
+определения отношений над списками обобщаются
+на весь класс структур этого типа. Решение о том,
+какой именно способ записи списков будет
+использоваться в той или иной программе, следует
+принимать в соответствии с тем смыслом, который
+мы придаем списку в каждом конкретном случае.
+Если, например, список - это просто множество
+элементов, то наиболее удобна обычная
+прологовская нотация, поскольку в ней
+непосредственно выражается то, что программист
+имел в виду. С другой стороны, некоторые типы
+выражений также можно трактовать как своего рода
+списки. Например, для конъюнктов в исчислении
+высказываний подошло бы следующее
+спископодобное представление: 
+
+<ul>
+  <li><strong>истина</strong> соответствует пустому списку,</li>
+  <li><strong>&amp;</strong> - оператор для соединения головы с
+    хвостом, определяемый, например, как<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 300,
+    xfy, &amp;)</strong></li>
+</ul>
+
+<p>Конъюнкция членов а, b, и с выглядела бы тогда
+как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а &amp; b
+&amp; с &amp; истина</strong></p>
+
+<p>Все приведенные примеры базируются, по
+существу, на одной и той же структуре,
+представляющей список. Однако в гл. 8 мы
+рассмотрели существенно другой способ, влияющий
+на эффективность вычислений. Уловка состояла в
+том, что список представлялся в виде пары
+списков, являясь их &quot;разностью&quot;. Было
+показано, что такое представление приводит к
+очень эффективной реализации отношения
+конкатенации.</p>
+
+<p>Материал настоящего раздела проливает свет и
+на то различие, которое существует между
+применением операторов в математике и
+применением их в Прологе. В математике с каждым
+оператором всегда связано некоторое действие, в
+то время как в Прологе операторы используются
+просто для представления структур.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>9. 1.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>список( Объект)</strong></p>
+
+<p>для распознавания случаев, когда <strong>Объект</strong>
+является стандартным прологовским списком.</p>
+</a>
+
+<p><a href="javascript:fa('9_1')">Посмотреть ответ</a></p>
+
+<p><strong>9. 2.</strong>&nbsp;&nbsp;&nbsp; Определите отношение
+принадлежности к списку, используя систему
+обозначений, введенную в этой разделе: &quot;затем -
+ничего_не_делать&quot;.</p>
+
+<p><a href="javascript:fa('9_2')">Посмотреть ответ</a></p>
+
+<p><strong>9. 3.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>преобр( СтандСпис,
+Спис)</strong></p>
+
+<p>для преобразования списков из стандартного
+представления в систему
+&quot;затем-ничего_не_делать&quot;. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>преобр( [а, b], а затем
+b затем ничего_не_делать)</strong></p>
+
+<p><a href="javascript:fa('9_3')">Посмотреть ответ</a></p>
+
+<p><strong>9. 4.</strong>&nbsp;&nbsp;&nbsp; Обобщите отношение <strong>преобр</strong>
+на случай произвольного альтернативного
+представления списков. Конкретное представление
+задается символом, обозначающим пустой список, и
+функтором для соединения головы с хвостом. В
+отношении <strong>преобр</strong> придется добавить два
+новых аргумента:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>преобр( СтандСпис,
+Спис, Функтор, ПустСпис)</strong></p>
+
+<p>Примеры применения этого отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; пpeoбp( [а, b], L,
+затем, ничего_не_делать).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = а затем b затем
+ничего_не_делать</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; преобр( [а, b, с],
+L, +, 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = а+(b+(с+0) <a name="tn281">)</strong></p>
+</a>
+
+<p><a href="javascript:fa('9_4')">Посмотреть ответ</a></p>
+<a name="p9_1_2">
+
+<hr>
+</a>
+
+<h4>9. 1. 2.&nbsp;&nbsp;&nbsp; <span id="t281">Сортировка списков</span></h4>
+
+<p>Сортировка применяется очень часто. Список
+можно отсортировать (упорядочить), если между его
+элементами определено отношение порядка. Для
+удобства изложения мы будем использовать
+отношение порядка</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>больше( X, Y)</strong></p>
+
+<p>означающее, что Х <em>больше, чем</em> Y, независимо
+от того, что мы в действительности понимаем под
+&quot;больше, чем&quot;. Если элементами списка
+являются числа, то отношение <strong>больше</strong>
+будет, вероятно, определено как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>больше( X, Y) := Х &gt; Y.</strong></p>
+
+<p>Если же элементы списка - атомы, то отношение <strong>больше</strong>
+может соответствовать алфавитному порядку между
+ними. </p>
+
+<p>Пусть</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сорт( Спис,
+УпорСпис)</strong></p>
+
+<p>обозначает отношение, в котором <strong>Спис</strong> -
+некоторый список, а <strong>УпорСпис</strong> - это
+список, составленный из тех же элементов, но
+упорядоченный по возрастанию в соответствия с
+отношением <strong>больше</strong>. Мы построим три
+определения этого отношения на Прологе,
+основанные на трех различных идеях о механизме
+сортировки. Вот первая идея:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Для того, чтобы упорядочить список <strong>Спис</strong>,
+необходимо: 
+
+<ul>
+  <li>Найти в <strong>Спис</strong> два смежных элемента Х и Y,
+    таких, что <strong>больше( X, Y)</strong>, и поменять Х и Y
+    местами, получив тем самым новый список <strong>Спис1</strong>;
+    затем отсортировать <strong>Спис1</strong>.</li>
+  <li>Если в <strong>Спис</strong> нет ни одной пары смежных
+    элементов Х и Y, таких, что <strong>больше( X, Y)</strong>, то
+    считать, что <strong>Спис</strong> уже отсортирован.</li>
+</ul>
+<script language="JavaScript">line();</script>
+
+
+<p>Мы переставили местами 2 элемента X и Y,
+расположенные в списке &quot;не в том порядке&quot;, с
+целью приблизить список к своему упорядоченному
+состоянию. Имеется в виду, что после достаточно
+большого числа перестановок все элементы списка
+будут расположены<a name="tn279"> в правильном порядке.
+Описанный принцип сортировки принято называть <em><span
+id="t279">методом пузырька</span></em>, поэтому
+соответствующая прологовская процедура будет
+называться <strong>пузырек</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>пузырек( Спис,
+УпорСпис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+перест( Спис, Спис1),&nbsp; !,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&nbsp;&nbsp;&nbsp;&nbsp;
+% Полезная перестановка ?</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>пузырек( Спис1, УпорСпис).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; пузырек( УпорСпис,
+УпорСпис).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Если нет, то список уже упорядочен</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>перест( [Х, Y |
+Остаток], [Y, Х ) Остаток] ):-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Перестановка первых двух элементов</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>больше( X, Y).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перест( [Z | Остаток],
+[Z | Остаток1] ):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+перест( Остаток, Остаток1).</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Перестановка в </a><a name="tn280">хвосте</small></p>
+
+<p>Еще один простой алгоритм сортировки
+называется <em><span id="t280">сортировкой со вставками</span><em>.</em></em>
+Он основан на следующей идее:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Для того, чтобы упорядочить непустой список&nbsp; <strong>L
+= [X | Хв]</strong>,&nbsp; необходимо:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Упорядочить хвост&nbsp; <strong>Хв</strong>
+&nbsp; списка&nbsp; <strong>L</strong>.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Вставить голову&nbsp; <strong>Х</strong>&nbsp;
+списка&nbsp; <strong>L</strong>&nbsp; в упорядоченный хвост,
+поместив ее в такое место, чтобы получившийся
+список остался упорядоченным. Список
+отсортирован.</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Этот алгоритм транслируется в следующую
+процедуру <strong>вставсорт</strong> на Прологе:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вставсорт([ ], [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вставсорт( [X | Хв],
+УпорСпис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вставсорт( Хв, УпорХв),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Сортировка хвоста</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>встав( X, УпорХв, УпорСпис).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Вставить Х на нужное место</small></p>
+
+<p align="center"><img src="pic/fig9_1.gif" width="387" height="463"
+alt="fig9_1.gif (4045 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 9. 1.</strong>&nbsp; Сортировка
+списка процедурой <strong>быстрсорт</strong>.</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>встав( X, [Y |
+УпорСпис], [Y | УпорСпис1]):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( X, Y),&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+встав( X, УпорСпис, УпорСпис1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; встав( X, УпорСпис, [X
+| УпорСпис] ).</strong></p>
+
+<p>Процедуры сортировки <strong>пузырек</strong> и <strong>вставсорт</strong>
+просты, но не эффективны. Из этих двух процедур
+процедура со вставками более эффективна, однако
+среднее время, необходимое для сортировки списка
+длиной&nbsp; <em>n</em>&nbsp; процедурой <strong>вставсорт</strong>,
+возрастает с ростом <em>n</em> пропорционально&nbsp; <em>n<sup>2</sup></em>.
+&nbsp; </a><a name="tn25">Поэтому для длинных списков
+значительно лучше работает <span id="t25">алгоритм <em>быстрой
+сортировки</em></span>, основанный на следующей идее
+(рис. 9.1):</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Для того, чтобы упорядочить непустой список&nbsp; <strong>L</strong>,
+&nbsp; необходимо:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Удалить из списка&nbsp; <strong>L</strong>
+&nbsp;какой-нибудь элемент&nbsp; <strong>Х</strong>&nbsp; и
+разбить оставшуюся часть на два списка,
+называемые <strong>Меньш</strong> и <strong>Больш</strong>,
+следующим образом: все элементы большие, чем&nbsp; <strong>X</strong>,
+&nbsp; принадлежат списку <strong>Больш</strong>, остальные
+- списку <strong>Меньш</strong>.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Отсортировать список <strong>Меньш</strong>,
+результат - список <strong>УпорМеньш</strong>.</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Отсортировать список <strong>Больш</strong>,
+результат - список <strong>УпорБольш</strong>.</p>
+
+<p>(4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Получить
+результирующий упорядоченный список как
+конкатенацию списков <strong>УпорМеньш</strong> и <strong>[
+Х | УпорБольш]</strong>.</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Заметим, что если исходный список пуст, то
+результатом сортировки также будет пустой
+список. Реализация быстрой сортировки на Прологе
+показана на рис. 9.2. Здесь в качестве элемента &nbsp;
+X,&nbsp; удаляемого из списка, всегда выбирается
+просто голова этого списка. Разбиение на два
+списка запрограммировано как отношение с
+четырьмя аргументами:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>разбиение( X, L,
+Больш, Меньш).</strong></p>
+
+<p>Временная сложность нашего алгоритма зависит
+от того, насколько нам повезет при разбиении
+сортируемого списка. Если списки всегда
+разбиваются на два списка примерно равной длины,
+то процедура сортировки имеет временную
+сложность порядка <em>n</em>log<em>n</em>, где&nbsp; <em>n</em>&nbsp; -
+длина исходного списка. Если же, наоборот,
+разбиение всегда приводит к тому, что один из
+списков оказывается значительно больше другого,
+то сложность будет порядка&nbsp; <em>n<sup>2</sup></em>. &nbsp;
+Анализ показывает, что, к счастью, средняя
+производительность быстрой сортировки ближе к
+лучшему случаю, чем к худшему.</p>
+
+<p>Программу, показанную на рис. 9.2, можно
+усовершенствовать, если реализовать операцию
+конкатенации более эффективно. Напомним, что
+конкатенация</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>быстрсорт( [ ], [ ] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; быстрсорт( [X |
+Хвост], УпорСпис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+разбиение( X, Хвост, Меньш, Больш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстрсорт( Меньш, УпорМеньш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстрсорт( Больш, УпорБольш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( УпорМеньш, [X | УпорБольш], УпорСпис).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; разбиение( X, [ ], [ ], [ ]
+).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; разбиение( X, [Y |
+Хвост], [Y | Меньш], Больш ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( X, Y),&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+разбиение( X, Хвост, Меньш, Больш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; разбиение( X, [Y |
+Хвост], Меньш, [Y | Больш] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+разбиение( X, Хвост, Меньш, Больш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( [ ], L, L).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конк( [X | L1], L2, [X | L3] )
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( L1, L2, L3 ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 2.</strong>&nbsp; Быстрая
+сортировка.</small></p>
+
+<p>становится тривиальной операцией после
+применения разностного представления списков,
+введенного в гл. 8. Для того, чтобы использовать
+эту идею в нашей процедуре сортировки, нужно
+представить встречающиеся в ней списки в форме
+пар вида <strong>A-Z</strong> следующим образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>УпорМеньш</strong>
+имеет вид <strong>A1-Z1</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>УпорБольш</strong> имеет
+вид <strong>A2-Z2</strong></p>
+
+<p>Тогда конкатенации списков</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>УпорМеньш</strong> и <strong>[
+Х | УпорБольш]</strong></p>
+
+<p>будет соответствовать конкатенация пар</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>A1-Z1</strong>&nbsp;&nbsp;&nbsp; и
+&nbsp;&nbsp;&nbsp; <strong>[ Х | A2]-Z2</strong></p>
+
+<p>В результате мы получим</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>А1-Z2</strong>, &nbsp;&nbsp;&nbsp;
+причем&nbsp;&nbsp;&nbsp; <strong>Z1 = [ Х | А2]</strong></p>
+
+<p>Пустой список представляется парой Z-Z.
+Систематически вводя изменения в программу рис.
+9.2, мы получим более эффективный способ
+реализации процедуры <strong>быстрсорт</strong>,
+показанный на рис. 9.3 под именем</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>быстрсорт( Спис,
+УпорСпис) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстрсорт2( Спис, УпорСпис-[ ] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; быстрсорт2( [ ], Z-Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; быстрсорт2( [X |
+Хвост], A1-Z2) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+разбиение( X, Хвост, Меньш, Больш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстрсорт2( Меньш, А1-[Х | A2] ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстрсорт2( Больш, A2-Z2).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 3.</strong>&nbsp; Более
+эффективная реализация процедуры <strong>быстрсорт</strong></small><br>
+<small>с использованием</small> <small>разностного
+представления списков. Отношение</small><br>
+<small><strong>разбиение( Х, Спис, Меньш, Больш)</strong>
+определено, как на рис. 9.2.</small></p>
+
+<p><strong>быстрсорт2</strong>. Здесь, как и раньше,
+процедура <strong>быстрсорт</strong> использует обычное
+представление списков, но в действительности
+сортировку выполняет более эффективная
+процедура <strong>быстрсорт2</strong>, использующая
+разностное представление. Эти две процедуры
+связаны между собой, соотношением</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>быстрсорт( L, S) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+быстрсорт2( L, S-[ ] )</strong>.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>9. 5.</strong>&nbsp;&nbsp;&nbsp; Напишите процедуру
+слияния двух упорядоченных списков в один третий
+список. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; слить( [2, 5, 6, 6,
+8], [1, 3, 5, 9], L).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [1, 2, 3, 5, 5, 6, 6, 8, 9]</strong></p>
+
+<p><strong>9. 6.</strong>&nbsp;&nbsp;&nbsp; Программы сортировки,
+показанные на рис. 9.2 и 9.3, отличаются друг от
+друга способом представления списков. Первая из
+них использует обычное представление, в то время
+как вторая - разностное представление.
+Преобразование из одного представления в другое
+очевидно и может быть автоматизировано. Введите
+в программу рис. 9.2 необходимые изменения, чтобы
+преобразовать ее в программу рис. 9.3.</p>
+
+<p><strong>9. 7.</strong>&nbsp;&nbsp;&nbsp; Наша программа <strong>быстрсорт</strong>
+в случае, когда исходный список уже упорядочен
+или почти упорядочен, работает очень
+неэффективно. Проанализируйте причины этого
+явления.</p>
+
+<p><strong>9. 8.</strong>&nbsp;&nbsp;&nbsp; Существует еще одна
+хорошая идея относительно механизма сортировки
+списков, позволяющая избавиться от недостатков
+программы <strong>быстрсорт</strong>, а именно: разбить
+список на два меньших списка, отсортировать их, а
+затем слить вместе. Итак, для того, чтобы
+отсортировать список L, необходимо 
+
+<ul>
+  <li>разбить L на два списка L1 и L2 примерно одинаковой
+    длины;</li>
+  <li>произвести сортировку списков L1 и L2,получив
+    списки S1 и S2;</li>
+  <li>слить списки S1 и S2, завершив на этом сортировку
+    списка L.</li>
+</ul>
+
+<p>Реализуйте этот принцип сортировки и сравните
+его эффективность с эффективностью программы <strong>быстрсорт</strong>.</p>
+</a>
+
+<p><a href="javascript:fa('9_8')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch8_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch9_2.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

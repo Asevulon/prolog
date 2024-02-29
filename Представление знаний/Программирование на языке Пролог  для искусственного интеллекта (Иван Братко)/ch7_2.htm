@@ -1,0 +1,422 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 7. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch7_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch7_3.htm">Вперёд</a></p>
+<a name="tn40"><script language="JavaScript">double_line();</script>
+
+
+<h4>7. 2.&nbsp;&nbsp;&nbsp; Создание и декомпозиция термов:
+&nbsp; <em><span id="t40">=..</span>,&nbsp; functor,&nbsp; arg,&nbsp; name</em></h4>
+
+<p>Имеются три встроенные предиката для
+декомпозиции и синтеза термов: <strong>functor</strong>, <strong>arg</strong>
+и <strong>=..</strong> . Рассмотрим сначала отношение <strong>=..</strong>
+, которое записывается как инфиксный оператор.
+Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Терм =.. L</strong></p>
+
+<p>истинна, если L - список, начинающийся с главного
+функтора терма <strong>Терм</strong>, вслед за которым
+идут его аргументы. Вот примеры:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; f( а, b) =.. L.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L = [f, а, b]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; Т =..
+[прямоугольник, 3, 5].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Т = прямоугольник( 3, 5)</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; Z =.. [р, X, f( X,Y) ].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z = p( X, f( X,Y) )</strong></p>
+
+<p>Зачем может понадобиться разбирать терм на
+составляющие компоненты - функтор и его
+аргументы? Зачем создавать новый терм из
+заданного функтора и аргументов? Следующий
+пример показывает, что это действительно нужно.</p>
+
+<p>Рассмотрим программу, которая манипулирует
+геометрическими фигурами. Фигуры - это квадраты,
+прямоугольники, треугольники, окружности в т.д. В
+программе их можно представлять в виде термов,
+функтор которых указывает на тип фигуры, а
+аргументы задают ее размеры:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>квадрат( Сторона)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; треугольник( Сторона1,
+Сторона2, Сторона3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; окружность( R)</strong></p>
+
+<p>Одной из операций над такими фигурами может
+быть увеличение. Его можно реализовать в виде
+трехаргументного отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>увел( Фиг,
+Коэффициент, Фиг1)</strong></p>
+
+<p>где <strong>Фиг</strong> и <strong>Фиг1</strong> -
+геометрические фигуры одного типа (с одним в тем
+же функтором), причем параметры <strong>Фиг1</strong>
+равны параметрам <strong>Фиг</strong>, умноженным на <strong>Коэффициент</strong>.
+Для простоты будем считать, что все параметры <strong>Фиг</strong>,
+а также <strong>Коэффициент</strong> уже известны, т. е.
+конкретизированы числами. Один из способов
+программирования отношения <strong>увел</strong> таков:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>увел( квадрат( A), F,
+квадрат( А1) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A1 is F*A</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; увел( окружность( R),
+F, окружность( R1) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+R1 is F*R1</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; увел(
+прямоугольник( А, В), F, прямоугольник( А1, В1)) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A1 is F*A, B1 is F*B.</strong></p>
+
+<p>Такая программа будет работать, однако она
+будет выглядеть довольно неуклюже при большом
+количестве различных типов фигур. Мы будем
+вынуждены заранее предвидеть все возможные типы,
+которые могут когда-либо встретиться. Придется
+заготовить по предложению на каждый тип, хотя во
+всех этих предложениях по существу говорится
+одно и то же: возьми параметры исходной фигуры,
+умножь их на коэффициент и создай фигуру того же
+типа с этими новыми параметрами.</p>
+
+<p>Ниже приводится программа, в которой делается
+попытка (неудачная) справиться для начала хотя бы
+со всеми однопараметрическими фигурами при
+помощи одного предложения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>увел( Тип( Пар), F,
+Тип( Пар1) ):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Пар1 is F*Пар.</strong></p>
+
+<p>Однако в Прологе подобные конструкции, как
+правило, запрещены, поскольку функтор должен
+быть атомом, и, следовательно, переменная <strong>Тип</strong>
+синтаксически не будет воспринята как функтор.
+Правильный метод - воспользоваться предикатом
+'=..' . Тогда процедура <strong>увел</strong> будет иметь
+обобщенную формулировку, пригодную для фигур
+любых типов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>увел( Фиг, F, Фиг1):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Фиг =.. [Тип | Параметры],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+умножспис( Параметры, F, Параметры1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Фиг1 =.. [Тип | Параметры)].</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; умножспис( [ ], _, [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; умножспис( [X | L], F, [X1
+| L1] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+X1 is F*X, умножспис( L, F, L1).</strong></p>
+
+<p>Наш следующий пример использования предиката
+'=..' связан с обработкой символьных выражений
+(формул), где часто приходится подставлять вместо
+некоторого подвыражения другое выражение. Мы
+определим отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подставить(
+Подтерм, Терм, Подтерм1, Терм1)</strong></p>
+
+<p>следующим образом: если все вхождения <strong>Подтерм</strong>'а
+в <strong>Терм</strong> заменить на <strong>Подтерм1</strong>, то
+получится <strong>Терм1</strong>. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; подставить( sin(
+x), 2*sin( x)*f( sin( x)), t, F ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F = 2*t*f( t)</strong></p>
+
+<p>Под &quot;вхождением&quot; <strong>Подтерм</strong>'а в <strong>Терм</strong>
+мы будем понимать такой элемент <strong>Терм</strong>'а,
+который <em>сопоставим</em> с <strong>Подтерм</strong>'ом.
+Вхождения будем искать сверху вниз. Поэтому цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; подставить( а+b,
+f( а, А+В), v, F).</strong></p>
+
+<p>даст результат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>F = f( а, v)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F = f( a, v+v)</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>А = а</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+а не
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>А = а+b</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>В = b
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+В = а+b</strong></p>
+
+<p>При определении отношения <strong>подставить</strong>
+нам нужно рассмотреть несколько случаев и для
+каждого принять свое решение:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если <strong>Подтерм</strong> = <strong>Терм</strong>,
+то <strong>Терм1</strong> = <strong>Подтерм1</strong>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе если <strong>Терм</strong> -
+&quot;атомарный&quot; (не структура),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+то <strong>Терм1</strong> = <strong>Терм</strong> (подставлять
+нечего),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+иначе подстановку нужно выполнить над<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+аргументами <strong>Tерм</strong>'a.</p>
+
+<p>Эти правила можно превратить в программу,
+показанную на рис. 7.3.</p>
+
+<p>Термы, полученные при помощи предиката '=..',
+разумеется, можно использовать и в качестве
+целей. Это дает возможность программе в процессе
+вычислений самой порождать и вычислять цели,
+структура которых не обязательно была известна
+заранее в момент написания программы.
+Последовательность целей, иллюстрирующая этот
+прием, могла бы выглядеть примерно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>получить( Функтор),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вычислить( Списарг),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цель =.. [Функтор | Списарг],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цель</strong></p>
+
+<p>Здесь <strong>получить</strong> и <strong>вычислить</strong> -
+некоторые определенные пользователем процедуры,
+предназначенные для вычисления компонент цели.
+После этого цель порождается предикатом '=..', а
+затем активизируется при помощи простого
+указания ее имени <strong>Цель</strong>.</p>
+
+<p>Некоторые реализации Пролога могут содержать
+требование, чтобы все цели, появляющиеся в
+программе, по своей <em>синтаксической</em> форме
+были либо атомами, либо структурами с атомом в
+качестве главного функтора. Поэтому переменная,
+вне</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>%&nbsp;&nbsp;&nbsp; Отношение<br>
+%<br>
+%&nbsp;&nbsp;&nbsp; подставить( Подтерм, Терм, Подтерм1,
+Терм1)<br>
+%<br>
+%&nbsp;&nbsp;&nbsp; состоит в следующем: если все
+вхождения Подтерм'а в Терм<br>
+%&nbsp;&nbsp;&nbsp; заменить на Подтерм1, то получится
+Терм1.</small></p>
+
+<p><small>%&nbsp;&nbsp;&nbsp; Случай 1: Заменить весь терм</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подставить( Терм,
+Терм, Терм1, Терм1) :-&nbsp; !.</strong></p>
+
+<p><small>%&nbsp;&nbsp;&nbsp; Случай 2: нечего подставлять</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подставить( _, Терм,
+_, Терм) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+atomic( Терм),&nbsp; !.</strong></p>
+
+<p><small>%&nbsp;&nbsp;&nbsp; Случай 3: Проделать подстановку в
+аргументах</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>подставить( Под,
+Терм, Под1, Терм1) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Терм =.. [F | Арги],</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выделить аргументы</small><br>
+<strong>&nbsp;&nbsp; </strong>&nbsp;&nbsp;&nbsp;&nbsp; <strong>подспис( Под,
+Арги, Под1, Арги1),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выполнить над ними подстановку</small><br>
+<strong>&nbsp;&nbsp; </strong>&nbsp;&nbsp;&nbsp;&nbsp; <strong>Терм1 =.. [F |
+Арги1].</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; подспис( Под, [Терм |
+Термы], Под1, [Терм1 | Термы1]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; подставить( Под, Терм, Под1, Терм1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; подспис( Под, Термы, Под1, Термы1).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 7. 3.</strong>&nbsp; Процедура
+подстановки в терм вместо одного из его</small><br>
+<small>подтермов некоторого другого подтерма.</small></p>
+
+<p>зависимости от ее текущей конкретизации, может
+по своей синтаксической форме не подойти в
+качестве </a><a name="tn50">цели. Эту трудность можно
+обойти при помощи еще одного встроенного
+предиката <strong><span id="t50">call</span></strong> (вызов), чьим
+аргументом является цель, подлежащая вычислению.
+В соответствий с этим предыдущий пример должен
+быть переписан так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>. . .<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цель = [Функтор | Списарг],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; саll( Цель)</strong></p>
+
+<p>Иногда нужно извлечь из терма только его
+главный функтор или один из аргументов. В этом
+случае можно, конечно, воспользоваться
+отношением '=..' Но более аккуратным и практичным,
+а также и более эффективным </a><a name="tn54">способом
+будет</a><a name="tn43"> применение одной из двух новых
+встроенных процедур: <strong><span id="t54">functor</span></strong> и <strong><span
+id="t43">аrg</span></strong>. Вот их смысл: цель</p>
+</a>
+
+<p><strong>&nbsp;&nbsp; </strong>&nbsp;&nbsp;&nbsp;&nbsp; <strong><a name="tn43">functor(
+Терм, F, N)</a></strong></p>
+<a name="tn43">
+
+<p>истинна, если <strong>F</strong> - главный функтор <strong>Tepм</strong>'a,
+а <strong>N</strong> -арность <strong>F</strong>. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>arg( N, Терм, А)</strong></p>
+
+<p>истинна, если <strong>А</strong> - N-й аргумент в <strong>Терм</strong>'е,
+в предположении, что нумерация аргументов идет
+слева направо и начинается с 1. Примеры для
+иллюстрации:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; functor( t( f( x), X, t),
+Фун, Арность).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Фун = t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Арность = 3</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; аrg( 2, f( X, t( a), t( b)
+), Y).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y = t( a)</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; functor( D, дата, 3),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+arg( 1, D, 29),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+arg( 2, D, июнь),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+arg( 3, D, 1982).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D = дата( 29, июнь, 1982)</strong></p>
+
+<p>Последний пример иллюстрирует особый случай
+применения предиката <strong>functor</strong>. Цель <strong>functor(
+D, дата, 3)</strong> создает &quot;обобщенный&quot; терм с
+главным функтором <strong>дата</strong> и тремя
+аргументами. Этот терм обобщенный, так как все
+три его аргумента - не конкретизированные
+переменные, чья имена генерируются пролог -
+системой. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>D = дата( _5, _6, _7)</strong></p>
+
+<p>Затем эти три переменные конкретизируются при
+помощи трех целей <strong>аrg</strong>.</p>
+
+<p>К рассматриваемому </a><a name="tn62">множеству
+встроенных предикатов относится также и
+введенный в гл. 6 предикат <strong><span id="t62">name</span></strong>,
+предназначенный для синтеза и декомпозиция
+атомов. Для полноты изложения мы здесь напомним
+его смысл. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>name( A, L)</strong></p>
+
+<p>истинна, если L - список кодов (в кодировке ASCII)
+символов, входящих в состав атома А.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>7. 3.</strong>&nbsp;&nbsp;&nbsp; Определите предикат <strong>конкрет(Терм)</strong>
+так, чтобы он принимал значение истина, когда в <strong>Tepм</strong>'e
+нет ни одной неконкретизированной переменной.</p>
+
+<p><strong>7. 4.</strong>&nbsp;&nbsp;&nbsp; Процедура <strong>подставить</strong>
+из данного раздела производит, при наличии
+разных вариантов, лишь самую &quot;внешнюю&quot;
+подстановку.</p>
+
+<p>Модифицируйте эту процедуру так, чтобы она
+находила все возможные варианты при помощи
+автоматического перебора. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; подставить( a+b,
+f( A+B), новый, НовыйТерм).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; А = а<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В = b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; НовыйТерм = f( новый);</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; А = а+b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; В = а+b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; НовыйТерм = f( новый +
+новый)</strong></p>
+
+<p>Наша исходная версия нашла бы только первый из
+этих двух ответов.</p>
+
+<p><strong>7. 5.</strong>&nbsp;&nbsp;&nbsp; </a><a name="tn314">Определите
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t314">включает(
+Tepмl, Терм2)</span></strong></p>
+
+<p>которое выполняется, если <strong>Терм1</strong>
+является более общим, чем <strong>Терм2</strong>.
+Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; включает( X, с).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; включает( g( X), g(
+t( Y))).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; включает f( X,X),
+f( a,b)).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch7_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch7_3.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

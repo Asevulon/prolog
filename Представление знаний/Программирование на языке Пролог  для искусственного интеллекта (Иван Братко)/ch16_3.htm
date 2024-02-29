@@ -1,0 +1,542 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 16. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch16_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch16_4.htm">Вперёд</a></p>
+<a name="tn267"><script language="JavaScript">double_line();</script>
+
+
+<h4>16. 3.&nbsp;&nbsp;&nbsp; <span id="t267">Простая программа для
+автоматического докаэательства теорем</span></h4>
+
+<p>В настоящем разделе мы реализуем простую
+программу для</a> автоматического доказательства<a
+name="tn238"> теорем в виде системы, управляемой
+образцами. Эта программа будет основана на <em><span
+id="t238">принципе резолюции</span></em> </a><a name="tn161">-
+популярном методе, обычно используемом в
+машинном доказательстве теорем. Мы ограничимся
+случаем <em><span id="t161">пропозициональной логики</span></em>,
+поскольку нашей целью будет дать всего лишь
+простую иллюстрацию используемого принципа. На
+самом деле, принцип резолюции можно легко
+обобщить на случай исчисления высказываний
+первого порядка (с применением логических
+формул, содержащих переменные). Базовый Пролог
+можно рассматривать как частный случай системы
+доказательства теорем, основанной на принципе
+резолюции.</p>
+
+<p>Задачу доказательства теорем можно
+сформулировать так: дана формула, необходимо
+показать, что эта формула является теоремой, т. е.
+она верна всегда, независимо от интерпретации
+встречающихся в ней символов. Например,
+утверждение, записанное в виде формулы</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>р</em>&nbsp; v <em>~ р</em></p>
+
+<p>и означающее&nbsp; &quot;<em>р</em>&nbsp; или&nbsp; не&nbsp; <em>р</em>&quot;,
+&nbsp; верно всегда, независимо от смысла
+утверждения&nbsp; <em>р</em>.</p>
+
+<p>Мы будем использовать в качестве операторов
+следующие символы:</p>
+
+<p>&nbsp;&nbsp;&nbsp; ~ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+отрицание, читается как&nbsp; &quot;не&quot;<br>
+&nbsp;&nbsp;&nbsp; &amp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конъюнкцию, читается как&nbsp; &quot;и&quot;<br>
+&nbsp;&nbsp;&nbsp; v &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+дизъюнкцию, читается как&nbsp; &quot;или&quot;<br>
+&nbsp;&nbsp;&nbsp; =&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; импликацию,
+читается как&nbsp; &quot;следует&quot;</p>
+
+<p>Согласно правилам предпочтения операторов,
+оператор &quot;не&quot; связывает утверждения
+сильнее, чем &quot;и&quot;, &quot;или&quot; и &quot;следует&quot;.</p>
+
+<p>Метод резолюции предполагает, что мы
+рассматриваем отрицание исходной формулы и
+пытаемся показать, что полученная формула
+противоречива. Если это действительно так, то
+исходная формула представляет собой тавтологию.
+Таким образом, основную идею можно
+сформулировать так: доказательство
+противоречивости формулы с отрицанием
+эквивалентно доказательству того, что исходная
+формула (без отрицания) есть теорема (т. е. верна
+всегда). Процесс, приводящий к искомому
+противоречию, состоит из отдельных шагов, на
+каждом из которых применяется резолюция.</p>
+
+<p>Давайте проиллюстрируем этот принцип на
+примере. Предположим, что мы хотим доказать, что
+теоремой является следующая пропозициональная
+формула:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<em>а&nbsp; =&gt;&nbsp; b</em>) &amp; (<em>b
+&nbsp; =&gt;&nbsp; с</em>) =&gt; (<em>а&nbsp; =&gt;&nbsp; с</em>)</p>
+
+<p>Смысл этой формулы таков: если из&nbsp; <em>а</em> &nbsp;
+следует&nbsp; <em>b</em>&nbsp; и из&nbsp; <em>b</em>&nbsp; следует &nbsp;
+<em>с</em>,&nbsp; то из&nbsp; <em>а</em>&nbsp; следует&nbsp; <em>с</em>.</p>
+
+<p>Прежде чем начать применять процесс резолюции
+(&quot;резолюционный процесс&quot;), необходимо
+представить</a><a name="tn152"> отрицание нашей формулы в
+наиболее приспособленной для этого форме. Такой
+формой является <em><span id="t152">конъюнктивная
+нормальная форма</span></em>, имеющая вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<em>р<sub>1</sub></em>&nbsp; v&nbsp; <em>p<sub>2</sub></em>
+&nbsp; v&nbsp; ...)&nbsp; &amp;&nbsp; (<em>q<sub>1</sub></em>&nbsp; v&nbsp; <em>q<sub>2</sub></em>
+&nbsp; v&nbsp; ...)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&amp; &nbsp; (<em>r<sub>1</sub></em>&nbsp; v&nbsp; <em>r<sub>2</sub></em>&nbsp; v&nbsp;
+...) &nbsp; &amp;&nbsp; ...</p>
+
+<p>Здесь&nbsp; <em>р<sub>i</sub></em>,&nbsp; <em>q<sub>i</sub></em>,&nbsp; <em>r<sub>i</sub></em>
+&nbsp; -&nbsp; элементарные утверждения</a><a name="tn115"> или
+их отрицания. Конъюнктивная нормальная форма
+есть конъюнкция членов, называемых <em><span id="t115">дизъюнктами</span></em>,
+например (<em>p<sub>1</sub></em>&nbsp; v&nbsp;&nbsp; <em>p<sub>2</sub></em>
+&nbsp;&nbsp; v&nbsp;&nbsp; ...)&nbsp; -&nbsp; это дизъюнкт.</p>
+
+<p>Любую пропозициональную формулу нетрудно
+преобразовать в такую форму. В нашем случае это
+делается следующим образом. У нас есть исходная
+формула</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<em>а&nbsp; =&gt;&nbsp; b</em>) &nbsp;
+&amp;&nbsp; (<em>b&nbsp; =&gt;&nbsp; с</em>)&nbsp; =&gt;&nbsp; (<em>а&nbsp; =&gt; &nbsp;
+с</em>)</p>
+
+<p>Ее отрицание имеет вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ~ ( (<em>а&nbsp; =&gt;&nbsp; b</em>) &amp;
+(<em>b&nbsp; =&gt;&nbsp; с</em>) =&gt; (<em>а&nbsp; =&gt;&nbsp; с</em>) )</p>
+
+<p>Для преобразования этой формулы в
+конъюнктивную нормальную форму можно
+использовать следующие известные правила:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>х&nbsp; =&gt;
+&nbsp; у</em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+эквивалентно
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>~х</em> &nbsp; v&nbsp; <em>у</em><br>
+&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>~</em>(<em>x</em>
+&nbsp; v&nbsp; <em>y</em>)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+эквивалентно
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>~х</em> &nbsp; &amp;&nbsp; <em>~у</em><br>
+&nbsp;&nbsp;&nbsp; (3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>~</em>(<em>х</em>
+&nbsp; &amp;&nbsp; <em>у</em>)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+эквивалентно
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>~х</em> &nbsp; v&nbsp; <em>~у</em><br>
+&nbsp;&nbsp;&nbsp; (4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>~</em>( <em>~х</em>)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+эквивалентно
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>х</em></p>
+
+<p>Применяя правило 1, получаем</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ~ ( ~ ( (<em>a&nbsp; =&gt;&nbsp; b</em>)
+&nbsp; &amp;&nbsp; (<em>b&nbsp; =&gt;&nbsp; с</em>))&nbsp; v&nbsp; (<em>а&nbsp; =&gt;
+&nbsp; с</em>) )</p>
+
+<p>Далее, правила 2 и 4 дают</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<em>а&nbsp; =&gt;&nbsp; b</em>) &nbsp;
+&amp;&nbsp; (<em>b&nbsp; =&gt;&nbsp; с</em>)&nbsp; &amp;&nbsp; ~(<em>а &nbsp;
+=&gt;&nbsp; с</em>)</p>
+
+<p>Трижды применив правило 1, получаем</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<em>~ а</em>&nbsp; v&nbsp; <em>b</em>)
+&nbsp; &amp;&nbsp; (<em>~b</em>&nbsp; v&nbsp; <em>с</em>)&nbsp; &amp;&nbsp; <em>~</em>(<em>~а</em>
+&nbsp; v&nbsp; <em>с</em>)</p>
+
+<p>И наконец, после применения правила 2 получаем
+искомую конъюнктивную нормальную форму</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<em>~а</em>&nbsp; v&nbsp; <em>b</em>)
+&nbsp; &amp;&nbsp; (<em>~b</em>&nbsp; v&nbsp; <em>с</em>)&nbsp; &amp;&nbsp; <em>а</em>
+&nbsp; &amp;&nbsp; <em>~с</em></p>
+
+<p>состоящую из четырех дизъюнктов. Теперь можно
+приступить к резолюционному процессу</a><a name="tn340">.</p>
+
+<p><span id="t340">Элементарный шаг резолюции</span>
+выполняется всегда, когда имеется два дизъюнкта,
+в одном из которых встретилось элементарное
+утверждение&nbsp; <em>р</em>, &nbsp; а в другом -&nbsp; <em>~р</em>.&nbsp;
+Пусть этими двумя дизъюнктами будут</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>р</em>&nbsp; v&nbsp; <em>Y</em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+и
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>~р</em> &nbsp; v&nbsp; </a><a name="tn341"><em>Z</em></p>
+
+<p><span id="t341">Шаг резолюции</span> порождает третий
+дизъюнкт:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Y</em>&nbsp; v&nbsp; <em>Z</em></p>
+
+<p>Нетрудно показать, что этот дизъюнкт логически
+следует из тех двух дизъюнктов, из которых он
+получен. Таким образом, добавив выражение (<em>Y</em>
+&nbsp; v&nbsp; <em>Z</em>) к нашей исходной формуле, мы не
+изменим ее истинности. Резолюционный процесс
+порождает новые дизъюнкты. Появление &quot;пустого
+дизъюнкта&quot; (обычно записываемого как &quot;nil&quot;)
+сигнализирует о противоречии. Действительно,
+пустой дизъюнкт <em>nil</em>&nbsp; порождается двумя
+дизъюнктами вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>x</em>&nbsp;&nbsp;&nbsp; и
+&nbsp;&nbsp;&nbsp; <em>~x</em></p>
+
+<p>которые явно противоречат друг другу.</p>
+
+<p align="center"><img src="pic/fig16_6.gif" width="435" height="175"
+alt="fig16_6.gif (1078 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 16. 6.</strong>&nbsp;
+Доказательство теоремы&nbsp; (<em>а=&gt;b</em>)&amp;(<em>b=&gt;с</em>)=&gt;(<em>a=&gt;с</em>)
+&nbsp; методом<br>
+резолюции. Верхняя строка - отрицание теоремы в
+конъюнктивной<br>
+нормальной форме. Пустой дизъюнкт внизу
+сигнализирует, что<br>
+отрицание теоремы противоречиво.</small></p>
+
+<p>На рис. 16.6 показан процесс применения
+резолюций, начинающийся с отрицания нашей
+предполагаемой теоремы и заканчивающийся пустым
+дизъюнктом.</p>
+
+<p>На рис. 16.7 мы видим, как резолюционный процесс
+можно сформулировать в форме программы,
+управляемой образцами. Программа работает с
+дизъюнктами, записанными в базе данных. В
+терминах образцов принцип резолюции
+формулируется следующим образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>если</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+существуют два таких дизъюнкта&nbsp; <em>С1</em>&nbsp;
+и&nbsp; <em>С2</em>, &nbsp; что<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<em>P</em> &nbsp; является (дизъюнктивным)
+подвыражением&nbsp; <em>С1</em>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+а &nbsp; <em>~Р</em>&nbsp; -&nbsp; подвыражением&nbsp; <em>С2</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>то</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить &nbsp; <em>Р</em>&nbsp; из&nbsp; <em>С1</em>&nbsp; (результат
+-&nbsp; <em>СА</em>), &nbsp; удалить&nbsp; <em>~Р</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+из &nbsp; <em>С2</em>&nbsp; (результат -&nbsp; <em>СВ</em>)&nbsp; и
+добавить в базу<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+данных новый дизъюнкт&nbsp; <em>СА</em>&nbsp; v&nbsp; <em>СВ</em>.</p>
+
+<p>На нашем формальном языке это можно записать
+так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( С1),
+удалить( Р, Cl, CA),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дизъюнкт( С2),
+удалить( ~Р, С2, СВ) ] ---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ assert( дизъюнкт( СА v СВ) ) ].</strong></p>
+
+<p>Это правило нуждается в небольшой доработке.
+Дело в том, что мы не должны допускать повторных
+взаимодействий между дизъюнктами, так как они
+порождают новые копии уже существующих формул.
+Для этого в программе рис. 16.7 предусматривается
+запись в базу данных информации об уже
+произведенных взаимодействиях в форме
+утверждений вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сделано( Cl, C2, Р)</strong></p>
+
+<p>В условных частях правил производится
+распознавание подобных утверждений и обход
+соответствующих повторных действий.</p>
+
+<p>Правила, показанные на рис. 16.7, предусматривают
+также обработку специальных случаев, в которых
+требуется избежать явного представления пустого
+дизъюнкта. Кроме того, имеются два правила для
+упрощения дизъюнктов. Одно из них убирает
+избыточные подвыражения. Например, это правило
+превращает выражение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>a</em>&nbsp; v&nbsp; <em>b</em>&nbsp; v
+&nbsp; <em>a</em></p>
+
+<p>в более простое выражение&nbsp; <em>a</em>&nbsp; v&nbsp; <em>b</em>.
+&nbsp; Другое правило распознает те дизъюнкты,
+которые всегда истинны, например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>a</em>&nbsp; v&nbsp; <em>b</em>&nbsp; v
+&nbsp; <em>~а</em></p>
+
+<p>и удаляет их из базы данных, поскольку они
+бесполезны при поиске противоречия.</p>
+</a><a name="tn118"><script language="JavaScript">line();</script>
+
+
+<p><small>% <span id="t118">Продукционные правила для задачи
+автоматического<br>
+% доказательства теорем</span></small></p>
+
+<p><small>% Противоречие</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( X),
+дизъзюнкт( ~Х) ] ---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ write( 'Обнаружено
+противоречие'), стоп].</strong></p>
+
+<p><small>% Удалить тривиально истинный дизъюнкт</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( С),
+внутри( Р, С), внутри( ~Р, С) ] ---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ retract( С) ].</strong></p>
+
+<p><small>% Упростить дизъюнкт</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( С),
+удалить( Р, С, С1), внутри( Р, С1) ] ---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ заменить( дизъюнкт( С),
+дизъюнкт( С1) ) ].</strong></p>
+
+<p><small>% Шаг резолюции, специальный случай</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( Р),
+дизъюнкт( С), удалить( ~Р, С, С1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not сделано( Р, С, Р) ] ---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ аssеrt( дизъюнкт( С1)), аssert(
+сделано( Р, С, Р))].</strong></p>
+
+<p><small>% Шаг резолюции, специальный случай</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( ~Р),
+дизъюнкт( С), удалить( Р, С, С1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not сделано( ~Р, С, Р) ] ---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ assert( дизъюнкт( C1)), аssert(
+сделано( ~Р, С, Р))].</strong></p>
+
+<p><small>% Шаг резолюции, общий случай</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ дизъюнкт( С1),
+удалить( Р, С1, СА),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дизъюнкт( С2),
+удалить( ~Р, С2, СВ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not сделано( Cl, C2, Р) ]
+---&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ assert( дизъюнкт( СА v СВ) ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; assert( сделано( Cl, C2, Р)
+) ].</strong></p>
+
+<p><small>% Последнее правило: тупик</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ ] ---&gt; [ write( 'Нет
+противоречия'), стоп ].</strong></p>
+
+<p><small>% удалить( Р, Е, Е1) означает, получить из
+выражения Е<br>
+% выражение Е1, удалив из него подвыражение Р</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( X, X v Y, Y).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( X, Y v X, Y).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( X, Y v Z, Y v Z1) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( X, Z, Z1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( X, Y v Z, Y1 v Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( X, Y, Y1).</strong></p>
+
+<p><small>% внутри( Р, Е) означает Р есть дизъюнктивное
+подвыражение<br>
+% выражения Е</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>внутри( X, X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; внутри( X, Y) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( X, Y, _ ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 16. 7.</strong>&nbsp; Программа,
+управляемая образцами, для<br>
+автоматического доказательства теорем.</small></p>
+
+<p>Остается еще один вопрос: как преобразовать
+заданную пропозициональную формулу в
+конъюнктивную нормальную форму? Это несложное
+преобразование выполняется с помощью программы,
+показанной на рис. 16.8. Процедура</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>транс( Формула)</strong></p>
+
+<p>транслирует заданную формулу в множество
+дизъюнктов&nbsp; Cl,&nbsp; C2&nbsp; и т.д. и записывает их
+при помощи <strong>assert</strong> в базу данных в виде
+утверждений</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>дизъюнкт( С1).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дизъюнкт( С2).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>Программа, управляемая образцами, для
+автоматического доказательства теорем
+запускается при помощи цели <strong>пуск</strong>. Таким
+образом, для того чтобы доказать при помощи этой
+программы некоторую теорему, мы транслируем ее
+отрицание в конъюнктивную нормальную форму, а
+затем запускаем резолюционный процесс. В нашем
+примере это можно сделать так:</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>% Преобразование пропозициональной формулы
+в множество<br>
+% дизъюнктов с записью их в базу данных при помощи
+assert</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 100, fy, ~).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Отрицание</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 110, xfy, &amp;).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Конъюнкция</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 120, xfy, v).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Дизъюнкция</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 130, xfy, =&gt;).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Импликация</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>транс( F &amp; G) :-&nbsp; !,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Транслировать конъюнктивную формулу</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>транс( F),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+транс( G).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; транс( Формула) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+тр( Формула, НовФ),&nbsp; !,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Шаг трансформации</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>транс( НовФ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; транс( Формула) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Дальнейшая трансформация невозможна</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>assert( дизъюнкт( Формула) ).</strong></p>
+
+<p><small>% Правила трансформаций для
+пропозициональных формул</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( ~( ~Х), X) :-&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small> % Двойное отрицание</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( X =&gt; Y, ~Х v Y) :- &nbsp;
+!.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Устранение импликации</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( ~( X &amp; Y), ~Х v ~Y) :-
+&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Закон де Моргана</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( ~( X v Y), ~Х &amp; ~Y) :-
+&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Закон де Моргана</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( X &amp; Y v Z, (X v Z) &amp;
+(Y v Z) ) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp; % Распределительный закон</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( X v Y &amp; Z, (X v Y) &amp;
+(X v Z) ) :-&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp; % Распределительный закон</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>тр( X v Y, X1 v Y) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Трансформация подвыражения</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>тр( X, X1),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; тр( X v Y, X v Y1) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Трансформация подвыражения</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>тр( Y, Y1),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; тр( ~Х, ~Х1) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Трансформация подвыражения</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>тр( X, X1).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 16. 8.</strong> &nbsp;
+Преобразование пропозициональных формул в
+множество<br>
+дизъюнктов с записью их в базу данных при помощи <strong>assert</strong>.</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; транс( ~(( а=&gt;b)
+&amp; ( b=&gt;c) =&gt; ( а=&gt;с))&nbsp; ),&nbsp; пуск.</strong></p>
+
+<p>Ответ программы &quot;Обнаружено противоречие&quot;
+будет означать, что исходная формула является
+теоремой.</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch16_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch16_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

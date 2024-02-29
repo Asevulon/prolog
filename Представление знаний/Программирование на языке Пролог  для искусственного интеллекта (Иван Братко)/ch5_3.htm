@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 5. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch5_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch5_4.htm">Вперёд</a></p>
+<a name="tn197"><script language="JavaScript">double_line();</script>
+
+
+<h4>5. 3.&nbsp;&nbsp;&nbsp; <span id="t197">Отрицание как неуспех</span></h4>
+
+<p>&quot;Мэри любит всех животных, кроме змей&quot;. Как
+выразить это на Прологе? Одну часть этого
+утверждения выразить легко: &quot;Мэри любит
+всякого X, если Х - животное&quot;. На Прологе это
+записывается так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>любит( мэри, X) :-
+животное ( X).</strong></p>
+
+<p>Но нужно исключить змей. Это можно сделать,
+использовав другую формулировку:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х - змея, то &quot;Мэри
+любит X&quot; - не есть<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+истина,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе, если Х - животное,
+то Мэри любит X</a>.</p>
+
+<p><a name="tn52">Сказать на Прологе, что что-то не есть
+истина, можно при помощи специальной цели <strong><span
+id="t52">fail</span></strong> (неуспех), которая всегда терпит
+неудачу, заставляя потерпеть неудачу и ту цель,
+которая является ее родителем. Вышеуказанная
+формулировка, переведенная на Пролог с
+использованием <strong>fail</strong>, выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>любит( мэри, X) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+змея( X),&nbsp; !,&nbsp; fail.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; любит( Мэри, X) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+животное ( X).</strong></p>
+
+<p>Здесь первое правило позаботится о змеях: если
+Х - змея, то отсечение предотвратит перебор
+(исключая таким образом второе правило из
+рассмотрения), а <strong>fail</strong> вызовет неуспех. Эти
+два предложения можно более компактно записать в
+виде одного:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>любит( мэри, X) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+змея( X),&nbsp; !,&nbsp; fail;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+животное ( X).</strong></p>
+
+<p>Ту же идею можно использовать для определения
+отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>различны( X, Y)</strong></p>
+
+<p>которое выполняется, если Х и Y не совпадают. При
+этом, однако, мы должны быть точными, потому что
+&quot;различны&quot; можно понимать по-разному: 
+
+<ul>
+  <li>Х и Y не совпадают буквально;</li>
+  <li>Х и Y не сопоставимы;</li>
+  <li>значения арифметических выражений Х и Y не
+    равны.</li>
+</ul>
+
+<p>Давайте считать в данном случае, что Х и Y
+различны, если они не сопоставимы. Вот способ
+выразить это на Прологе:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если Х и Y сопоставимы,
+то<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цель <strong>различны(
+X, Y)</strong> терпит неуспех<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе
+цель <strong>различны( X, Y)</strong> успешна.</p>
+
+<p>Мы снова используем сочетание отсечения и <strong>fail</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>различны( X, X) :-&nbsp; !,
+&nbsp; fail.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; различны( X, Y).</strong></p>
+
+<p>То же самое можно записать и в виде одного
+предложения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>различны( X, Y) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х = Y,&nbsp; !,
+&nbsp; fail;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; true.</strong></p>
+
+<p>Здесь <strong>true</strong> - цель, которая всегда успешна</a><a
+name="tn66">.</p>
+
+<p>Эти примеры показывают, что полезно иметь
+унарный предикат <span id="t66">&quot;not&quot; (не)</span>, такой,
+что</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>nоt( Цель)</strong></p>
+
+<p>истинна, если <strong>Цель</strong> не истинна.
+Определим теперь отношение <strong>not</strong> следующим
+образом:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если <strong>Цель</strong>
+успешна, то <strong>not( Цель)</strong> неуспешна,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; иначе <strong>not( Цель)</strong>
+успешна.</p>
+
+<p>Это определение может быть записано на Прологе
+так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>not( Р) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P,&nbsp; !,
+&nbsp; fail;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; true.</strong></p>
+
+<p>Начиная с этого момента мы будем предполагать,
+что&nbsp; <strong>not</strong>&nbsp; - это встроенная
+прологовская процедура, которая ведет себя так,
+как это только что было определено. Будем также
+предполагать, что оператор <strong>not</strong> определен
+как префиксный, так что цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>not( змея( X) )</strong></p>
+
+<p>можно записывать и как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>not змея( X)</strong></p>
+
+<p>Многие версии Пролога поддерживают такую
+запись. Если же приходится иметь дело с версией, в
+которой нет встроенного оператора <strong>not</strong>,
+его всегда можно определить самим.</p>
+
+<p>Следует заметить, что <strong>not</strong>, как он здесь
+определен с использованием неуспеха, не
+полностью соответствует отрицанию в
+математической логике. Эта разница может
+породить неожиданности в поведении программы,
+если оператором <strong>not</strong> пользоваться
+небрежно. Этот вопрос будет рассмотрен в данной
+главе позже.</p>
+
+<p>Тем не менее <strong>not</strong> - полезное средство, и
+его часто можно с выгодой применять вместо
+отсечения. Наши два примера можно переписать с <strong>not</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>любит( мэри, X) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+животное ( X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not
+змея( X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; различны( X, Y) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not(
+Х = Y).</strong></p>
+
+<p>Это, конечно, выглядит лучше, нежели наши
+прежние формулировки. Вид предложений стал более
+естественным, и программу стало легче читать.</p>
+
+<p>Нашу программу теннисной классификации из
+предыдущего раздела можно переписать с
+использованием <strong>not</strong> так, чтобы ее вид был
+ближе к исходным определениям наших трех
+категорий:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>класс( X, боец) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+победил( X, _ ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+победил( _, X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( X, победитель)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+победил( X, _ ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not
+победил( _, X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( X, спортсмен)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not
+победил( X, _ ).</strong></p>
+
+<p>В качестве еще одного примера использования <strong>not</strong>
+рассмотрим еще раз программу 1 для решения задачи
+о восьми ферзях из предыдущей главы (рис. 4.7). Мы
+определили там отношение <strong>небьет</strong> между
+некоторым ферзем и остальными ферзями. Это
+отношение можно определить также и как отрицание
+отношения &quot;бьет&quot;. На рис. 5.3 приводится
+соответствующим образом измененная программа.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>5. 4.</strong>&nbsp;&nbsp;&nbsp; Даны два списка <strong>Кандидаты</strong>
+и <strong>Исключенные</strong>, напишите
+последовательность целей (используя <strong>принадлежит</strong>
+и <strong>not</strong>), которая, при помощи перебора,
+найдет все элементы списка <strong>Кандидаты</strong>,
+не входящие в список <strong>Исключенные</strong>.</p>
+</a>
+
+<p><a href="javascript:fa('5_4')">Посмотреть ответ</a></p>
+
+<p><strong>5.5.</strong>&nbsp;&nbsp;&nbsp; Определите отношение,
+выполняющее вычитание множеств:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решение( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решение( [X/Y |
+Остальные] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решение( Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( Y, [1, 2, 3, 4, 5, 6, 7, 8] ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not бьет( X/Y, Остальные).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; бьет( X/Y, Остальные)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( X1/Y1, Остальные),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( Y1 = Y;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Y1 is Y + X1 - X;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Y1 is Y - X1 + X ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( А, [А | L]
+).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( А, [В | L]
+) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( А, L).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Шаблон решения</small></p>
+
+<p><strong>&nbsp;&nbsp; </strong>&nbsp;&nbsp;&nbsp;&nbsp; <strong>шаблон( [1/Y1,
+2/Y2, 3/Y3, 4/Y4, 5/Y5, 6/Y6, 7/Y7, 8/Y8]).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 5. 3.</strong>&nbsp; Еще одна
+программа для решения задачи о восьми ферзях.</small></p>
+
+<p align="left"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; разность(
+Множ1, Множ2, Разность)</strong></p>
+
+<p>где все три множества представлены в виде
+списков. Например,</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>разность( [a, b, c, d], [b,
+d, e, f], [a, c] )</strong></p>
+
+<p><a href="javascript:fa('5_5')">Посмотреть ответ</a></p>
+
+<p><strong>5. 6.</strong>&nbsp; Определите предикат</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>унифицируемые(
+Спис1, Терм, Спис2)</strong></p>
+
+<p>где <strong>Спис2</strong> - список всех элементов <strong>Спис1</strong>,
+которые сопоставимы с <strong>Терм</strong>'ом, но не
+конкретизируются таким сопоставлением.
+Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; унифицируемые(
+[X, b, t( Y)], t( a), Спис).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Спис = [ X, t( Y)]</strong></p>
+
+<p>Заметьте, что и Х и Y должны остаться
+неконкретизированными, хотя сопоставление с t( a)
+вызывает их конкретизацию. Указание: используйте
+<strong>not ( Терм1 = Терм2)</strong>. Если цель <strong>Терм1 =
+Терм2</strong> будет успешна, то <strong>not( Терм1 = Tepм2)</strong>
+потерпит неудачу и получившаяся конкретизация
+будет отменена!</p>
+
+<p><a href="javascript:fa('5_6')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch5_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch5_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

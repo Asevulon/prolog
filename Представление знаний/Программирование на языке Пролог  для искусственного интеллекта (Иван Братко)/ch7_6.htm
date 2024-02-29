@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 7. Пункт 6</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch7_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch8_1.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>7. 6.&nbsp;&nbsp;&nbsp; <font face="System"><em>bagof</em></font> , <font
+face="System"><em>setof</em></font>&nbsp; и <em><font face="System">findall</font></em></h4>
+
+<p>При помощи механизма автоматического перебора
+можно получить одни за другим все объекты,
+удовлетворяющие некоторой цели. Всякий раз, как
+порождается новое<a name="tn315"> решение, предыдущее
+пропадает и становится с этого момента
+недоступным. Однако у нас может возникнуть <span
+id="t315">желание получить доступ ко всем
+порожденным объектам сразу</span>, например собрав
+их в список. Встроенные предикаты <strong>bagof</strong>
+(набор) и <strong>setof</strong> (множество) обеспечивают
+такую возможность; вместо них иногда используют
+предикат <strong>findall</strong> (найти все).</p>
+</a>
+
+<p><a name="tn49">Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t49">bagof( X, P, L)</span></strong></p>
+
+<p>порождает список L всех объектов X,
+удовлетворяющих цели Р. Обычно <strong>bagof</strong> имеет
+смысл применять только тогда, когда Х и Р
+содержат общие переменные. Например, допустим,
+что мы включили в программу следующую группу
+предложений для разбиения букв (из некоторого
+множества) на два класса - гласные и согласные:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>класс( а, глас).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( b, согл).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( с, согл).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( d, согл).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( е, глас).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; класс( f, согл).</strong></p>
+
+<p>Тогда мы можем получить список всех согласных,
+упомянутых в этих предложениях, при помощи цели:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; bagof( Буква,
+класс( Буква, согл), Буквы).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Буквы = [d, c, d, f]</strong></p>
+
+<p>Если же мы в указанной цели оставим класс букв
+неопределенным, то, используя автоматический
+перебор, получим два списка букв, каждый из
+которых соответствует одному из классов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; bagof( Буква,
+класс( Буква, Класс), Буквы).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Класс = глас<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Буквы = [а,е]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Класс = согл<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Буквы = [b, c, d, f]</strong></p>
+
+<p>Если <strong>bagof( X, Р, L)</strong> не находит ни одного
+решения для <strong>Р</strong>, то цель <strong>bagof</strong>
+просто терпит неуспех. Если один и тот же Х найден
+многократно, то все его экземпляры будут
+занесены в <strong>L</strong>, что приведет к появлению в <strong>L</strong>
+повторяющихся элементов</a><a name="tn75">.</p>
+
+<p>Предикат <strong><span id="t75">setof</span></strong> работает
+аналогично предикату <strong>bagof</strong>. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>setof( X, P, L)</strong></p>
+
+<p>как и раньше, порождает список&nbsp; L&nbsp; объектов
+&nbsp; X,&nbsp; удовлетворяющих&nbsp; Р.&nbsp; Только на этот
+раз список&nbsp; L&nbsp; будет упорядочен, а из всех
+повторяющихся элементов, если таковые есть, в
+него попадет только один. Упорядочение
+происходит по алфавиту или по отношению '&lt;', если
+элементы списка - числа. Если элементы списка -
+структуры, то они упорядочиваются по своим
+главным функторам. Если же главные функторы
+совпадают, то решение о порядке таких термов
+принимается по их первым несовпадающим
+функторам, расположенным выше и левее других (по
+дереву). На вид объектов, собираемых в список,
+ограничения нет. Поэтому можно, например,
+составить список пар вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Класс / Буква</strong></p>
+
+<p>при этом гласные будут расположены в списке
+первыми (&quot;глас&quot; по алфавиту раньше
+&quot;согл&quot;):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; setof(
+Класс/Буква, класс( Буква, Класс), Спис).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Спис = [глас/а,
+глас/е, согл/b, согл/с, согл/d, согл/f]</strong></p>
+
+<p>Еще одним предикатом этого семейства,
+аналогичным <strong>bagof</strong>, </a><a name="tn53">является <strong>findall</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t53">findall( X, P, L)</span></strong></p>
+
+<p>тоже порождает список объектов,
+удовлетворяющих Р. Он отличается от <strong>bagof</strong>
+тем, что собирает в список <em>все</em> объекты X, не
+обращая внимание на (возможно) отличающиеся для
+них конкретизации тех переменных из P, которых
+нет в X. Это различие видно из следующего примера:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; findall( Буква,
+класс( Буква, Класс), Буквы).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Буквы= [a, b, c, d, e, f]</strong></p>
+
+<p>Если не существует ни одного объекта X,
+удовлетворяющего P, то <strong>findall</strong> все равно
+имеет успех и выдает <strong>L = [ ]</strong>.</p>
+
+<p>Если в используемой реализации Пролога
+отсутствует встроенный предикат <strong>findall</strong>,
+то его легко запрограммировать следующим
+образом. Все решения для Р порождаются
+искусственно вызываемыми возвратами. Каждое
+решение, как только оно получено, немедленно
+добавляется к базе данных, чтобы не потерять его
+после нахождения следующего решения. После того,
+как будут получены и сохранены все решения, их
+нужно собрать в список, а затем удалить из базы
+данных при помощи <strong>retract</strong>. Весь процесс
+можно представлять себе как построение очереди
+из порождаемых решений. Каждое вновь порождаемое
+решение добавляется в конец этой очереди при
+помощи <strong>assert</strong>. Когда все решения собраны,
+очередь расформировывается. Заметим также, что
+конец очереди надо пометить, например, атомом
+&quot;дно&quot; (который, конечно, должен отличаться от
+любого ожидаемого решения). Реализация <strong>findall</strong>
+в соответствии с описанным методом показана на
+рис. 7.4.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>findall( X, Цель, ХСпис) :-</strong><br>
+&nbsp;&nbsp;&nbsp; <strong> саll( Цель),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Найти решение</small><br>
+&nbsp;&nbsp;&nbsp; <strong> assert( очередь( X) ),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Добавить егo</small><br>
+&nbsp;&nbsp;&nbsp; <strong> fail;</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Попытаться найти еще решения</small><br>
+&nbsp;&nbsp;&nbsp; <strong> assertz( очередь( дно) ),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Пометить конец решений</small><br>
+&nbsp;&nbsp;&nbsp; <strong> собрать( ХСпис).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Собрать решения в список</small></p>
+
+<p><strong>собрать( L) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp; retract( очередь(Х) ),&nbsp; !,</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Удалить следующее решение</small><br>
+&nbsp;&nbsp;&nbsp; <strong> ( Х == дно,&nbsp; !,&nbsp; L = [ ];</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Конец решений?</small><br>
+&nbsp;&nbsp;&nbsp; <strong> L = [X | Остальные], собрать(
+Остальные) ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Иначе собрать остальные</small></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 7. 4.</strong>&nbsp; Реализация
+отношения <strong>findall</strong>.</small></p>
+
+<h4>Упражнения</h4>
+
+<p><strong>7. 8.</strong>&nbsp;&nbsp;&nbsp; Используя <strong>bagof</strong>,
+определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>множподмножеств(
+Мн, Подмн)</strong></p>
+
+<p>для вычисления множества всех подмножеств
+данного множества (все множества представлены
+списками).</p>
+
+<p><strong>7. 9.</strong>&nbsp;&nbsp;&nbsp; Используя <strong>bagof</strong>,
+определите</a><a name="tn316"> отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t316">копия(
+Терм, Копия)</span></strong></p>
+
+<p>чтобы <strong>Копия</strong> представляла собой <strong>Терм</strong>,
+в котором все переменные переименованы.</p>
+
+<h4>Резюме</h4>
+
+<ul>
+  <li>В любой реализации Пролога обычно
+    предусматривается набор встроенных процедур для
+    выполнения различных полезных операций,
+    несуществующих в чистом Прологе. В данной главе
+    мы рассмотрели подобное множество предикатов,
+    имеющееся во многих реализациях.</li>
+  <li>Тип терма можно установить при помощи следующих
+    предикатов:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>var( X)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Х - (неконкретизированная) переменная<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>nonvar( X)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х - не
+    переменная<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>atom( X)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Х - атом<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>integer( X)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х -
+    целое<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>atomic( X)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х - или
+    атом, или целое<br>
+  </li>
+  <li>Термы можно синтезировать или разбирать на
+    части:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Терм =.. [Функтор [
+    СписокАргументов]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; functor( Терм, Функтор,
+    Арность)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; arg( N, Терм, Аргумент)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; name( атом, КодыСимволов)</strong><br>
+  </li>
+  <li>Программу на Прологе можно рассматривать как
+    реляционную базу данных, которую можно изменять
+    при помощи следующих процедур:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>аssert( Предл)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    добавляет предложение <strong>Предл</strong> к
+    программе<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>аssегtа( Предл)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    добавляет в начало<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>asserfz( Предл)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    добавляет в конец<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>rеtrасt( Предл)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    удаляет предложение,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    сопоставимое с предложением <strong>Предл</strong><br>
+  </li>
+  <li>Все объекты, отвечающие некоторому заданному
+    условию, можно собрать в список при помощи
+    предикатов:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>bagof( X, Р, L)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L - список всех X,
+    удовлетворяющих условию Р<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>setof( X, Р, L)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; L - отсортированный
+    список всех X,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    удовлетворяющих условию Р<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>findall( X, Р, L)</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; аналогичен <strong>bagof</strong><br>
+  </li>
+  <li><strong>repeat</strong> - средство управления, позволяющее
+    порождать неограниченное число альтернатив для
+    автоматического перебора.</li>
+</ul>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch7_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch8_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

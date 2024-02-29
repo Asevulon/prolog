@@ -1,0 +1,537 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 11. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch11_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch11_4.htm">Вперёд</a></p>
+<a name="tn213"><script language="JavaScript">double_line();</script>
+
+
+<h4>11. 3.&nbsp;&nbsp;&nbsp; <span id="t213">Поиск в ширину</span></h4>
+
+<p>В противоположность поиску в глубину стратегия
+поиска в ширину предусматривает переход в первую
+очередь к вершинам, ближайший к стартовой
+вершине. В результате процесс поиска имеет
+тенденцию развиваться более в ширину, чем в
+глубину, что иллюстрирует рис. 11.9.</p>
+
+<p>Поиск в ширину программируется не так легко,
+как поиск в глубину. Причина состоят в том, что</p>
+
+<p align="center"><img src="pic/fig11_9.gif" width="275" height="205"
+alt="fig11_9.gif (1697 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 11. 9.</strong> Простое
+пространство состояний:&nbsp; <strong>а</strong>&nbsp; -
+стартовая вершина,</small><br>
+<small>f&nbsp; и&nbsp; j&nbsp; - целевые вершины. Применение
+стратегии поиска</small> <small>в ширину</small><br>
+<small>дает следующий порядок прохода по вершинам:
+а, b, c,</small> <small>d, e, f.</small> <small>Более</small><br>
+<small>короткое решение <strong>[a, c, f]</strong> найдено
+раньше, чем</small> <small>более длинное</small><br>
+<strong><small>[а, b, e, j]</small></strong></p>
+
+<p>нам приходится сохранять все множество
+альтернативных вершин-кандидатов, а не только
+одну вершину, как при поиске в глубину. Более
+того, если мы желаем получить при помощи процесса
+поиска решающий путь, то одного множества вершин
+недостаточно. Поэтому мы будем хранить не
+множество вершин-кандидатов, а множество <em>путей</em>-кандидатов.
+Таким образом, цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вширину( Пути,
+Решения)</strong></p>
+
+<p>истинна только тогда, когда существует путь из
+множества кандидатов <strong>Пути</strong>, который
+может быть продолжен вплоть до целевой вершины.
+Этот продолженный путь и есть <strong>Решение</strong>.</p>
+</a><a name="p11_3_1">
+
+<hr>
+</a>
+
+<h4>11. 3. 1.&nbsp;&nbsp;&nbsp; Списковое представление
+множества кандидатов</h4>
+
+<p>В нашей первой реализации этой идеи мы будем
+использовать следующее представление для
+множества</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Старт,
+Решение) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вширину( [ [Старт] ], Решение).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вширину( [ [Верш |
+Путь] | _ ], [Верш | Путь] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( Верш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вширину( [ [В | Путь] |
+Пути], Решение ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+bagof( [B1, В | Путь ],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( после( В, В1), not&nbsp; принадлежит( В1, [В | Путь])),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+НовПути),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% НовПути - ациклические продолжения пути [В |
+Путь]</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>конк( Пути, НовПути, Пути1),&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вширину( Путь1, Решение);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вширину( Пути, Решение).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Случай, когда у В нет преемника</small></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 11. 10.</strong>&nbsp; Реализации
+поиска в ширину.</small></p>
+
+<p>путей-кандидатов. Само множество будет списком
+путей, а каждый путь - списком вершин,
+перечисленных в обратном порядке, т. е. головой
+списка будет самая последняя из порожденных
+вершин, а последним элементом списка будет
+стартовая вершина. Поиск начинается с
+одноэлементного множества кандидатов</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ [СтартВерш] ]</strong></p>
+
+<p>Общие принципы поиска в ширину таковы:</p>
+
+<p>Для того, чтобы выполнить поиск в ширину при
+заданном множестве путей-кандидатов, нужно: 
+
+<ul>
+  <li>если голова первого пути - это целевая вершина,
+    то взять этот путь в качестве решения, иначе</li>
+  <li>удалить первый путь из множества кандидатов и
+    породить множество всех возможных продолжений
+    этого пути на один шаг; множество продолжений
+    добавить в конец множества кандидатов, а затем
+    выполнить поиск в ширину с полученным новым
+    множеством.</li>
+</ul>
+
+<p>В случае примера рис.11.9 этот процесс будет
+развиваться следующим образом:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Старт,
+Решение) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вширь( [ [Старт] | Z ]-Z, Решение).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вширь( [ [Верш | Путь]
+| _ ]-_, [Верш | Путь] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( Верш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вширь( [ [В | Путь] |
+Пути]-Z, Решение ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+bagof( [B1, В | Путь ],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( после( В, В1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not принадлежит( В1, [В | Путь]) ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Нов ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+конк( Нов, ZZ, Z),&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вширь( Пути-ZZ, Решение);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Пути \== Z,</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Множество кандидатов не пусто</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>вширь( Пути-Z, Решение).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 11. 11.</strong>&nbsp; Программа
+поиска в ширину более эффективная, чем</small><br>
+<small>программа рис.11.10. Усовершенствование
+основано на разностном</small><br>
+<small>представлении списка путей-кандидатов.</small></p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Начинаем с начального
+множества кандидатов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[ [а] ]</strong></p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Порождаем продолжения
+пути <strong>[а]</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[ [b, а], [с, а] ]</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Обратите
+внимание, что пути записаны в обратном порядке.)</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Удаляем первый путь из
+множества кандидатов и порождаем его
+продолжения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[ [d, b, a], [e, b, а] ]</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Добавляем
+список продолжений в конец списка кандидатов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[ [с, а], [d, b, a], [e, b, а] ]</strong></p>
+
+<p>(4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Удаляем&nbsp; <strong>[с, а]</strong>,
+&nbsp; а затем добавляем все его продолжения в конец
+множества кандидатов. Получаем:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[ [d, b, a], [e, b, а], [f, c, a], [g, c, a] ]</strong></p>
+
+<p>Далее, после того, как пути <strong>[d, b, a]</strong> и <strong>[e,
+b, а]</strong> будут продолжены, измененный список
+кандидатов примет вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[[f, c, a], [g, c, a], [h, d, b, a], [i, e, b, a], [j, e, b, a]]</strong></p>
+
+<p>В этот момент обнаруживается путь <strong>[f, c, a]</strong>,
+содержащий целевую вершину <strong>f</strong>. Этот путь
+выдается в качестве решения.</p>
+
+<p>Программа, порождающая этот процесс, показана
+на рис. 11.10. В этой программе все продолжения пути
+на один шаг генерируются встроенной процедурой <strong>bagof</strong>.
+Кроме того, делается проверка, предотвращающая
+порождение циклических путей. Обратите внимание
+на то, что в случае, когда путь продолжить
+невозможно, и цель <strong>bagof</strong> терпит неудачу,
+обеспечивается альтернативный запуск процедуры <strong>вширину</strong>.
+Процедуры <strong>принадлежит</strong> и <strong>конк</strong>
+реализуют отношения принадлежности списку и
+конкатенации списков соответственно.</p>
+
+<p>Недостатком этой программы является
+неэффективность операции <strong>конк</strong>.
+Положение можно исправить, применив разностное
+представление списков (см. гл. 8). Тогда множество
+путей-кандидатов будет представлено парой
+списков <strong>Пути</strong> и <strong>Z</strong>, записанной в
+виде</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Пути-Z</strong></p>
+
+<p>При введении этого представления в программу
+рис. 11.10 ее можно постепенно преобразовать в
+программу, показанную на рис. 11.11. Оставим это
+преобразование читателю в качестве упражнения.</p>
+<a name="p11_3_2">
+
+<hr>
+</a>
+
+<h4>11. 3. 2.&nbsp; Древовидное представление множества
+кандидатов</h4>
+
+<p>Рассмотрим теперь еще одно изменение нашей
+программы поиска в ширину. До сих пор мы
+представляли множества путей-кандидатов как
+списки путей. Это расточительный способ,
+поскольку начальные участки путей являются
+общими для нескольких из них. Таким образом, эти
+общие части путей приходится хранить во многих
+экземплярах. Избежать избыточности помогло бы
+более компактное представление множества
+кандидатов. Таким более компактным
+представлением является дерево, в котором общие
+участки путей хранятся в его верхней части без
+дублирования. Будем использовать в программе
+следующее представление дерева. Имеется два
+случая:</p>
+
+<p><em>Случай 1:</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Дерево
+состоит только из одной вершины В; В этом случае
+оно имеет вид терма <strong>л( В)</strong>; Функтор <strong>л</strong>
+указывает на то, что В - это лист дерева.</p>
+
+<p><em>Случай 2:</em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Дерево
+состоит из корневой вершины В и множества
+поддеревьев Д1, Д2, ... . Такое дерево
+представляется термом</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>д( В, Пд)</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; где <strong>Пд</strong> - список
+поддеревьев:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Пд = [ Д1, Д2, ...]</strong></p>
+
+<p>В качестве примера рассмотрим ситуацию,
+которая возникает после того, как порождены три
+уровня дерева рис. 11.9. Множество путей-кандидатов
+в случае спискового представления имеет вид:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[ [d, b, a], [e, b, а], [f, c, a],
+[g, c, a] ]</strong></p>
+
+<p>В виде дерева это множество выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>д( а, [д( b, [л( d), л( е)] ),
+д( с, [л( f), л( g)] )] )</strong></p>
+
+<p>На первый взгляд древовидное представление
+кажется еще более расточительным, чем списковое,
+однако это всего лишь поверхностное впечатление,
+связанное с компактностью прологовской нотации
+для списков.</p>
+
+<p>В случае спискового представления множества
+кандидатов эффект распространения процесса в
+ширину достигался за счет перемещения
+продолженных путей в конец списка. В нашем случае
+мы уже не можем использовать этот прием, поэтому
+программа несколько усложняется. Ключевую роль в
+нашей программе будет играть отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( Путь,
+Дер, Дер1, ЕстьРеш, Решение)</strong></p>
+
+<p>На рис. 11.12 показано, как связаны между собой
+аргументы отношения <strong>расширить</strong>. При
+каждом обращении к <strong>расширить</strong>
+переменные <strong>Путь</strong> и <strong>Дер</strong> будут
+уже конкретизированы. <strong>Дер</strong> - поддерево
+всего дерева поиска, одновременно оно служит для
+представления множества путей-кандидатов внутри
+этого поддерева. <strong>Путь</strong> - это путь, ведущий
+из стартовой вершины в корень поддерева <strong>Дер</strong>.
+Самая общая идея алгоритма -</p>
+
+<p align="center"><img src="pic/fig11_12.gif" width="424" height="272"
+alt="fig11_12.gif (1807 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 11. 12.</strong>&nbsp; Отношение <strong>paсширить(
+Путь, Дер, Дер1, ЕстьРеш, Решение)</strong>:</small><br>
+<small><strong>s</strong> - &nbsp; стартовая вершина,&nbsp; <strong>g</strong>
+-&nbsp; целевая вершина. <strong>Решение</strong> - это <strong>Путь</strong>,</small><br>
+<small>продолженный вплоть до&nbsp; <strong>g</strong>.&nbsp; <strong>Дер1</strong>
+- результат расширения дерева</small><br>
+<small><strong>Дер</strong> на один уровень вниз.</small></p>
+
+<p>получить поддерево <strong>Дер1</strong> как результат
+расширения <strong>Дер</strong> на один уровень. Но в
+случае, когда в процессе расширения поддерева <strong>Дер</strong>
+встретится целевая вершина, процедура <strong>расширить</strong>
+должна сформировать соответствующий решающий
+путь.</p>
+
+<p>Итак, процедура <strong>расширить</strong> будет
+порождать два типа результатов. На конкретный
+вид результата будет указывать значение
+переменной <strong>ЕстьРеш</strong>:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш</strong> = да<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Решение</strong>
+= решающий путь, т. е. <strong>Путь</strong>, продолженный
+до целевой вершины.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1</strong>
+= неконкретизировано.</p>
+
+<p>Разумеется, такой тип результата получится
+только в том случае, когда <strong>Дер</strong> будет
+содержать целевую вершину. Добавим также, что эта
+целевая вершина обязана быть листом поддерева <strong>Дер</strong>.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ЕстьРеш</strong> = нет<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1</strong>
+= результат расширения поддерева <strong>Дер</strong> на
+один уровень вниз от своего &quot;подножья&quot;. <strong>Дер1</strong>
+не содержит ни одной &quot;тупиковой&quot; ветви из <strong>Дер</strong>,
+т. е. такой ветви, что она либо не может быть
+продолжена из-за отсутствия преемников, либо
+любое ее продолжение приводит к циклу.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Решение</strong>
+= неконкретизировано.</p>
+
+<p>Если в дереве <strong>Дер</strong> нет ни одной целевой
+вершины и, кроме того, оно не может быть
+расширено, то процедура <strong>расширить</strong>
+терпит неудачу.</p>
+
+<p>Процедура верхнего уровня для поиска в ширину</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вширину( Дер,
+Решение)</strong></p>
+
+<p>отыскивает <strong>Решение</strong> либо среди
+множества кандидатов <strong>Дер</strong>, либо в его
+расширении. На рис. 11.3 показано, как выглядит
+программа целиком. В этой программе имеется
+вспомогательная процедура <strong>расширитьвсе</strong>.
+Она расширяет все деревья из некоторого <em>списка</em>,
+и затем, выбросив все &quot;тупиковые&quot;
+деревья&quot;, собирает все полученные расширенные
+деревья в один новый список. Используя механизм
+возвратов, она также порождает все решения,
+обнаруженные в деревьях из списка. Имеется одна
+дополнительная деталь: по крайней мере одно из
+деревьев должно &quot;вырасти&quot;. Если это не так,
+то процедуре <strong>расширитьвсе</strong> не удается
+получить ни одного расширенного дерева - все
+деревья из списка оказываются &quot;тупиковыми&quot;.</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>%&nbsp; ПОИСК В ШИРИНУ<br>
+%&nbsp; Множество кандидатов представлено деревом</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Старт,
+Решение) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вширину( л( Старт), Решение).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вширину( Дер,
+Решение) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( [ ], Дер, Дер1, ЕстьРеш, Решение),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( ЕстьРеш = да;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш = нет, вширину( Дер1, Решение) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( П, Л( В), _,
+да, [В | П] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( В).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( П, Л( В), д(
+В, Пд), нет, _ ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+bagof( л( B1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( после( В, B1), not принадлежит( В1, П)), Пд).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( П, д( В,
+Пд), д( В, Пд1), ЕстьРеш, Реш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширитьвсе( [В | П], Пд, [ ], Пд1, ЕстьРеш, Реш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширитьвсе( _, [ ],
+[Д | ДД], [Д | ДД], нет, _ ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% По крайней мере одно дерево должно вырасти</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширитьвсе( П, [Д |
+ДД], ДД1, Пд1, ЕстьРеш, Реш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить ( П, Д, Д1, ЕстьРеш1, Реш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( ЕстьРеш 1= да, ЕстьРеш = да;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ЕстьРеш1 = нет,&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширитьвсе( П, ДД, [Д1 | ДД1], Пд1, ЕстьРеш, Реш));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширитьвсе( П, ДД, ДД1, Пд1, ЕстьРеш, Реш ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 11. 13.</strong>&nbsp; Реализация
+поиска в ширину с использованием</small><br>
+<small>древовидного представления множества
+путей-кандидатов.</small></p>
+
+<p>Мы разработали эту более сложную реализацию
+поиска в ширину не только для того, чтобы
+получать программу более экономичную по
+сравнению с предыдущей версией, но также и
+потому, что такое решение задачи может послужить
+хорошим стартом для перехода к усложненным
+программам поиска, управляемым эвристиками,
+таким как программа поиска с предпочтением из гл.
+12.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>11. 5.</strong>&nbsp;&nbsp;&nbsp; Перепишите программу
+поиска в ширину рис. 11.10, используя разностное
+представление для списка путей-кандидатов и
+покажите, что в результате получится программа,
+приведенная на рис. 11.11. Зачем в программу рис. 11.11
+включена цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Пути \== Z</strong></p>
+
+<p>Проверьте, что случится при поиске в
+пространстве состояний рис. 11.9, если эту цель
+опустить. Различие в выполнении программы,
+возникнет только при попытке найти новые решения
+в ситуации, когда не осталось больше ни одного
+решения.</p>
+
+<p><strong>11. 6.</strong>&nbsp;&nbsp;&nbsp; Как программы
+настоящего раздела можно использовать для
+поиска, начинающегося от <em>стартового множества</em>
+вершин, вместо одной стартовой вершины?</p>
+
+<p><a href="javascript:fa('11_6')">Посмотреть ответ</a></p>
+
+<p><strong>11. 7.</strong>&nbsp;&nbsp;&nbsp; Как программы этой главы
+можно использовать для поиска в обратном
+направлении, т.е. от целевой вершины к стартовой
+вершине (или к одной из стартовых вершин, если их
+несколько). Указание: переопределите отношение <strong>после</strong>.
+В каких ситуациях обратный поиск будет иметь
+преимущества перед прямым поиском<a name="tn105">?</p>
+
+<p><strong>11. 8.</strong>&nbsp;&nbsp;&nbsp; <span id="t105">Иногда выгодно
+сделать поиск <em>двунаправленным</em></span>, т. е.
+продвигаться одновременно с двух сторон от
+стартовой и целевой вершин. Поиск заканчивается,
+когда оба пути &quot;встречаются&quot;. Определите
+пространство поиска (отношение <strong>после</strong>) и
+целевое отношение для заданного графа таким
+образом, чтобы наши процедуры поиска в
+действительности выполняли двунаправленный
+поиск.</p>
+
+<p><strong>11. 9.</strong>&nbsp;&nbsp;&nbsp; Проведите эксперименты
+с различными методами поиска применительно к
+задаче планирования в &quot;мире кубиков&quot;.</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch11_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch11_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

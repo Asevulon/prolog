@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 14. Пункт 4</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch14_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch14_5.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>14. 4.&nbsp;&nbsp;&nbsp; Разработка оболочки</h4>
+
+<p>Если мы посмотрим на правила наших двух
+маленьких баз знаний рис. 14.5 и 14.7, мы сразу увидим,
+что они по своему смыслу эквивалентны правилам
+Пролога. Однако, с точки зрения синтаксиса
+Пролога, эти правила в том виде, как они написаны,
+соответствуют всего лишь фактам. Для того, чтобы
+заставить их работать, самое простое, что может
+прийти в голову, это переписать их в виде
+настоящих прологовских правил. Например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Животное это
+млекопитающее :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Животное имеет шерсть;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Животное 'кормит детенышей' молоком.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Животное это хищник
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Животное это млекопитающее,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Животное ест мясо.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>Теперь эта программа сможет подтвердить, что
+тигр по имени Питер - это действительно тигр, если
+мы добавим в нее некоторые из свойств Питера (в
+виде прологовских фактов):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>питер имеет шерсть.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер ленив.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер большой.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер имеет
+'рыжевато-коричневый цвет'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер имеет 'черные
+полосы'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер ест мясо.</strong></p>
+
+<p>Тогда мы можем спросить:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; питер это тигр.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; питер это
+гепард.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p>Хотя пролог-система и отвечает на вопросы,
+используя для этого нашу базу знаний, нельзя
+сказать, что ее поведение вполне соответствует
+поведению эксперта. Это происходит по крайней
+мере по двум причинам:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Мы не можем попросить
+систему объяснить свой ответ; например, <em>как</em>
+она установила, что Питер это тигр, и <em>почему</em>
+Питер это <em>не</em> гепард.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Прежде, чем задать
+вопрос, нужно ввести в систему всю необходимую
+информацию (в виде прологовских фактов). Но тогда
+пользователь, возможно, введет какую-нибудь
+лишнюю информацию (как в нашем примере) или же
+упустит какую-нибудь информацию, имеющую
+решающее значение. В первом случае будет
+проделана ненужная работа, а во втором - система
+будет давать неверные ответы.</p>
+
+<p>Для того, чтобы исправить эти два недостатка, мы
+нуждаемся в более совершенном способе
+взаимодействия между пользователем и системой
+во время и после завершения процесса
+рассуждений. Поставим себе целью добиться того,
+чтобы система взаимодействовала с пользователем
+так, как в следующем примере диалога (ответы
+пользователя даются полужирным шрифтом, реплики
+пролог-системы - курсивом):</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Пожалуйста,
+спрашивайте:</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>питер это тигр.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер
+имеет шерсть?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер ест
+мясо?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>нет.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер
+имеет острые зубы?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер
+имеет когти?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>почему.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Чтобы проверить по
+прав3, что питер это хищник,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Чтобы проверить по прав5,
+что питер это тигр<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Это был ваш вопрос</em></p>
+
+<p><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Это правда: питер
+имеет когти?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер
+имеет глаза, направленные вперед?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер
+имеет рыжевато-коричневый цвет?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это правда: питер
+имеет черные полосы?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>(питер это тигр) это
+правда<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Хотите узнать, как?</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>да.</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>питер это тигр<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; было выведено по
+прав5 из<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер это
+хищник,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; было
+выведено по прав3 из<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер это млекопитающее<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было выведено по прав1 из<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер имеет шерсть<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было сказано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер имеет острые зубы<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было сказано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер имеет когти<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было сказано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер имеет глаза, направленные вперед<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было сказано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер имеет
+рыжевато-коричневый цвет<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; было
+сказано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; питер имеет
+черные полосы<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; было
+сказано</em></p>
+
+<p>Как видно из диалога, система задает
+пользователю вопросы, касающиеся
+&quot;примитивной&quot; информации, например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>Это&nbsp; правда: &nbsp;
+питер&nbsp; ест&nbsp; мясо?</em></p>
+
+<p>Эту информацию нельзя отыскать в базе знаний
+или вывести из другой информации. На подобные
+вопросы пользователь может отвечать двумя
+способами:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сообщив системе в
+качестве ответа на вопрос необходимую
+информацию или</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; спросив систему, <em>почему</em>
+эта информация необходима.</p>
+
+<p>Последняя из двух возможностей полезна,
+поскольку она позволяет пользователю заглянуть
+внутрь системы и увидеть ее текущие намерения.
+Пользователь спросит &quot;почему&quot; в том случае,
+когда вопрос системы покажется ему не
+относящимся к делу либо когда ответ на вопрос
+системы потребует от него дополнительных усилий.
+Из объяснений системы пользователь поймет, стоит
+ли информация, которую запрашивает система, тех
+дополнительных усилий, которые необходимо
+приложить для ее приобретения. Предположим,
+например, что система спрашивает: &quot;Это
+животное ест мясо?&quot; Пользователь, не знающий
+ответа на этот вопрос, поскольку он никогда не
+видел, как это животное ело что-либо, может
+решить, что не стоит ждать, пока он застанет
+животное за едой и убедится, что оно
+действительно ест мясо.</p>
+
+<p>Для того, чтобы заглянуть внутрь системы и до
+какой-то степени представить себе протекающий в
+ней процесс рассуждений, можно воспользоваться
+прологовскими средствами трассировки. Но эти
+средства в большинстве случаев окажутся
+недостаточно гибкими для наших целей. Поэтому,
+вместо того, чтобы воспользоваться собственным
+механизмом интерпретации Пролога, который не
+сможет справиться с нужным нам способом
+взаимодействия с пользователем, мы создадим свое
+средство интерпретации в виде специальной
+надстройки над пролог-системой. Этот новый
+интерпретатор будет включать в себя средства для
+взаимодействия с пользователем.</p>
+<a name="p14_4_1">
+
+<hr>
+</a>
+
+<h4>14. 4. 1.&nbsp;&nbsp;&nbsp; Процесс рассуждений</h4>
+
+<p>Наш интерпретатор будет принимать вопрос и
+искать на него ответ. Язык правил допускает,
+чтобы в условной части правила была И /
+ИЛИ-комбинация условий. Вопрос на входе
+интерпретатора может быть такой же комбинацией
+подвопросов. Поэтому процесс поиска ответов на
+эти вопросы будет аналогичен процессу поиска в И
+/ ИЛИ-графах, который мы обсуждали в гл. 13.</p>
+
+<p>Ответ на заданный вопрос можно найти
+несколькими способами в соответствии со
+следующими принципами:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Для того, чтобы найти ответ&nbsp; <em>Отв</em>&nbsp; на
+вопрос&nbsp; <em>В</em>,&nbsp; используйте одну из
+следующих возможностей: 
+
+<ul>
+  <li>если&nbsp; <em>В</em>&nbsp; найден в базе знаний в виде
+    факта, то&nbsp; <em>Отв</em>&nbsp; -&nbsp; это &quot;<em>В</em>&nbsp; это
+    правда&quot;</li>
+  <li>если в базе знаний существует правило вида<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;если&nbsp; <em>Условие</em>
+    &nbsp; то&nbsp; <em>В</em>&quot;,<br>
+    <br>
+    то для получения ответа&nbsp; <em>Отв</em> &nbsp;
+    рассмотрите&nbsp; <em>Условие</em><br>
+  </li>
+  <li>если вопрос <em>В</em>&nbsp; можно задавать
+    пользователю, спросите пользователя об
+    истинности <em>В</em></li>
+  <li>если в имеет вид&nbsp; <em>В1&nbsp; и&nbsp; В2</em>,&nbsp; то
+    рассмотрите&nbsp; <em>В1</em>,&nbsp; а затем,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если&nbsp; <em>В1</em>&nbsp; ложно,
+    то положите&nbsp; <em>Отв</em>&nbsp; равным&nbsp; &quot;<em>В</em>
+    &nbsp; это ложь&quot;,&nbsp; в противном случае
+    рассмотрите&nbsp; <em>В2</em>&nbsp; и получите&nbsp; <em>Отв</em>
+    &nbsp; как соответствующую комбинацию ответов на
+    вопросы&nbsp; <em>В1</em>&nbsp; и&nbsp; <em>В2</em></li>
+  <li>если&nbsp; <em>В</em>&nbsp; имеет вид&nbsp; <em>В1&nbsp; или&nbsp; В2</em>,
+    &nbsp; то рассмотрите&nbsp; <em>В1</em>,&nbsp; а затем,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; если&nbsp; <em>В1</em> &nbsp;
+    истинно, то положите&nbsp; <em>Отв</em>&nbsp; равным &nbsp;
+    &quot;<em>В</em>1 это правда&quot;,&nbsp; в противном случае
+    рассмотрите&nbsp; <em>В2</em>&nbsp; и получите&nbsp; <em>Oтв</em>
+    &nbsp; как соответствующую комбинацию ответов на
+    вопросы&nbsp; <em>В1</em>&nbsp; и&nbsp; <em>В2</em>.</li>
+</ul>
+<script language="JavaScript">line();</script>
+
+
+<p>Вопросы вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>не&nbsp; В</em></p>
+
+<p>обрабатываются не так просто, и мы обсудим их
+позже<a name="tn34">.</p>
+</a><a name="p14_4_2">
+
+<hr>
+</a>
+
+<h4>14. 4. 2.&nbsp;&nbsp;&nbsp; <span id="t34">Формирование ответа на
+вопрос &quot;почему&quot;</span></h4>
+
+<p>Вопрос&nbsp; &quot;<em>почему</em>&quot;&nbsp; возникает в
+ситуации, когда система просит пользователя
+сообщить ей некоторую информацию, а пользователь
+желает знать, <em>почему</em> эта информация
+необходима. Допустим, что система спрашивает:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>а - это правда?</em></p>
+
+<p>В ответ пользователь может спросить:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>почему?</strong></p>
+
+<p>Объяснение в этом случае выглядит примерно так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Потому, что</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Я могу использовать
+&nbsp;&nbsp; <em>а</em>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+чтобы проверить по правилу&nbsp; <em>П<sub>а</sub></em>,&nbsp;
+что&nbsp; <em>b</em>, &nbsp; и</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Я могу использовать&nbsp; <em>b</em>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+чтобы проверить по правилу&nbsp; <em>П<sub>b</sub></em>,&nbsp;
+что&nbsp; <em>с</em>, &nbsp; и</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Я могу использовать&nbsp; <em>с</em>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+чтобы проверить по правилу&nbsp; <em>П<sub>c</sub></em>,&nbsp;
+что&nbsp; <em>d</em>, &nbsp; и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Я могу использовать&nbsp; <em>y</em>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+чтобы проверить по правилу&nbsp; <em>П<sub>y</sub></em>,&nbsp;
+что&nbsp; <em>z</em>, &nbsp; и</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>z</em> - это ваш исходный
+вопрос.</p>
+
+<p>Объяснение - это демонстрация того, как система
+намерена использовать информацию, которую она
+хочет получить от пользователя. Намерения
+системы демонстрируются в виде цепочки правил и
+целей, соединяющей эту информацию с исходным
+вопросом.</p>
+
+<p align="center"><img src="pic/fig14_8.gif" width="448" height="301"
+alt="fig14_8.gif (2639 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 14. 8.</strong>&nbsp; Объяснение
+типа &quot;почему&quot;. На вопрос &quot;Почему вас
+интересует</small><br>
+<small>текущая цель?&quot; дается объяснение в виде
+цепочки правил и целей,</small><br>
+<small>соединяющей текущую цель с исходным вопросом
+пользователя,<br>
+находящимся в верхушке дерева. Эта цепочка
+называется трассой.</small></p>
+
+<p>Будем называть такую цепочку <em>трассой</em>.
+Трассу можно себе представлять как цепочку
+правил, соединяющую в И / ИЛИ-дереве вопросов
+текущую цель с целью самого верхнего уровня так,
+как это показано на рис. 14.8. Таким образом, для
+формирования ответа на вопрос &quot;почему&quot;
+нужно двигаться в пространстве поиска от текущей
+цели вверх вплоть до самой верхней цели. Для того,
+чтобы суметь это сделать, нам придется в процессе
+рассуждений сохранять трассу в явном виде<a
+name="tn32">.</p>
+</a><a name="p14_4_3">
+
+<hr>
+</a>
+
+<h4>14. 4. 3.&nbsp;&nbsp;&nbsp; <span id="t32">Формирование ответа на
+вопрос &quot;как&quot;</span></h4>
+
+<p>Получив ответ на свой вопрос, пользователь
+возможно захочет увидеть, <em>как</em> система
+пришла к такому заключению. Один из подходящих
+способов ответить на вопрос &quot;как&quot; - это
+представить доказательство, т. е. те правила и
+подцели, которые использовались для достижения
+полученного заключения. Это доказательство в
+случае нашего языка записи правил имеет вид
+решающего И / ИЛИ-дерева. Поэтому наша машина
+логического вывода будет не просто отвечать на
+вопрос, соответствующий цели самого верхнего
+уровня - этого нам недостаточно, а будет выдавать
+в качестве ответа решающее И / ИЛИ-дерево,
+составленное из имен правил и подцелей. Затем это
+дерево можно будет отобразить на выходе системы
+в качестве объяснения типа &quot;как&quot;. Объяснению
+можно придать удобную для восприятия форму, если
+каждое поддерево печатать с надлежащим отступом,
+например:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>питер это хищник<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; было
+выведено по прав3 из<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер это млекопитающее<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было выведено по прав1 из<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер имеет шерсть<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было сказано<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+питер ест мясо<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+было сказано</em></p>
+
+<hr>
+
+<p align="center"><a href="ch14_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch14_5.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

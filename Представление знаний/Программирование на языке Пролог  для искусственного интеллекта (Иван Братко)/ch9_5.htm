@@ -1,0 +1,686 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 9. Пункт 5</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch9_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch10_1.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>9. 5.&nbsp;&nbsp;&nbsp; Графы</h4>
+<a name="p9_5_1">
+
+<hr>
+</a>
+
+<h4>9. 5. 1.&nbsp;&nbsp;&nbsp; Представление графов</h4>
+
+<p>Графы используются <a name="tn95">во многих
+приложениях, например для представления
+отношений, ситуаций или структур задач. <span id="t95">Граф
+определяется</span> как множество <em>вершин</em>
+вместе с множеством <em>ребер</em>, причем каждое
+ребро задается парой вершин. </a>Если ребра
+направлены,<a name="tn93"> то их также называют <em>дугами</em>.
+Дуги задаются <em>упорядоченными</em> парами. <span
+id="t93">Такие графы называются <em>направленными</em></span>.
+Ребрам можно приписывать стоимости, имена или
+метки произвольного вида, в зависимости от
+конкретного приложения. На рис. 6.18 показаны
+примеры графов.</p>
+
+<p>В Прологе графы можно представлять различными
+способами. Один из них - каждое ребро записывать в
+виде отдельного предложения. Например, графы,
+показанные иа рис. 9.18, можно представить в виде
+следующего множества предложений:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>связь( а, b).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; связь( b, с).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дуга( s, t, 3).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дуга( t, v, 1).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дуга( u, t, 2).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>Другой способ - весь граф представлять как один
+объект. В этом случае графу соответствует пара
+множеств - множество вершин и множество ребер.
+Каждое множество можно задавать при помощи
+списка, каждое ребро - парой вершин. Для
+объединения двух множеств в пару будем применять
+функтор <strong>граф</strong>, а для записи ребра -
+функтор <strong>р</strong>. Тогда (ненаправленный) граф
+рис. 9.18 примет вид:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>G1 = граф( [a, b, c, d],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [р(
+а, b), р( b, d), р( b, с), p( c, d)] )</strong></p>
+
+<p align="center"><img src="pic/fig9_18.gif" width="319" height="129"
+alt="fig9_18.gif (1367 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 9. 18.</strong>&nbsp;&nbsp;&nbsp; (а)
+&nbsp;&nbsp;&nbsp; Граф.&nbsp;&nbsp;&nbsp; (b) &nbsp;&nbsp;&nbsp;
+Направленный граф. Каждой дуге приписана ее
+стоимость.</small></p>
+
+<p>Для представления направленного графа (рис. 9.18),
+применив функторы <strong>диграф</strong> и <strong>д</strong>
+(для дуг), получим</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>G2 = диграф( [s, t, u, v],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; [д( s, t, 3), д( t, v, 1), д( t, u, 5), д( u, t, 2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; д(
+v, u, 2) ] )</strong></p>
+
+<p>Если каждая вершина графа соединена ребром еще
+по крайней мере с одной вершиной, то в
+представлении графа можно опустить множество
+вершин, поскольку оно неявным образом содержится
+в списке ребер.</p>
+
+<p>Еще один способ представления графа - связать с
+каждой вершиной список смежных с ней вершин. В
+этом случае граф превращается в список пар,
+каждая из которых состоит из вершины- плюс ее
+список смежности. Наши графы (рис. 9.18), например,
+можно представить как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>G1 = [ a-&gt;[b1, b-&gt;[a, c, d],
+c-&gt;[b, d], d-&gt;[b, c] ]</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; G2 = [s-&gt;[t/3], t-&gt;[u/5, v/l],
+u-&gt;[t/2], v-&gt;[u/2]]</strong></p>
+
+<p>Здесь символы '-&gt;' и '/' - инфиксные операторы.</p>
+
+<p>Какой из способов представления окажется более
+удобным, зависит от конкретного приложения, а
+также от того, какие операции имеется в виду
+выполнять над графами. Вот типичные операции: 
+
+<ul>
+  <li>найти путь между двумя заданными вершинами;</li>
+  <li>найти подграф, обладающий некоторыми заданными
+    свойствами.</li>
+</ul>
+
+<p>Примером последней операции может служить
+построение основного дерева графа. В последующих
+разделах, мы рассмотрим некоторые простые
+программы для поиска пути в графе и построения
+основного дерева</a><a name="tn94">.</p>
+</a><a name="p9_5_2">
+
+<hr>
+</a>
+
+<h4>9. 5. 2.&nbsp;&nbsp;&nbsp; <span id="t94">Поиск пути в графе</span></h4>
+
+<p>Пусть G - граф, а А и Z - две его вершины. Определим
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( А, Z, G, Р)</strong></p>
+
+<p>где Р - ациклический путь между А и Z в графе G.
+Если G - граф, показанный в левой части рис. 9.18, то
+верно:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( a, d, G, [a, b, d] )<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; путь( а, d, G, [a, b, c, d] )</strong></p>
+
+<p>Поскольку путь не должен содержать циклов,
+любая <a name="tn222">вершина может присутствовать в
+пути не более одного раза. <span id="t222">Вот один из
+методов поиска пути</span>:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>Для того, чтобы найти ациклический путь Р между
+А и Z в графе G, необходимо:</p>
+
+<p>Если А = Z , то положить Р = [А], иначе найти
+ациклический путь Р1 из произвольной вершины Y в Z,
+а затем найти путь из А в Y, не содержащий вершин
+из Р1.</p>
+<script language="JavaScript">line();</script>
+
+
+<p>В этой формулировке неявно предполагается, что
+существует еще одно отношение, соответствующее
+поиску пути со следующий ограничением: путь не
+должен проходить через вершины из некоторого
+подмножества (в данном случае Р1) множества всех
+вершин графа. В связи с этим мы определим ещё одну
+процедуру:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь1( А, Р1, G, Р)</strong></p>
+
+<p>Аргументы в соответствии с рис. 9.19 имеют
+следующий смысл: 
+
+<ul>
+  <li>А - некоторая вершина,</li>
+</ul>
+
+<p align="center"><img src="pic/fig9_19.gif" width="480" height="126"
+alt="fig9_19.gif (1262 bytes)"></p>
+
+<p align="center"><small><strong>Pис. 9. 19.</strong>&nbsp; Отношение <strong>путь1</strong>:
+&nbsp; <strong>Путь</strong> - это путь между <strong>А</strong> и <strong>Z</strong>,
+в своей</small><br>
+<small>заключительной части он перекрывается с <strong>Путь1</strong>.</small></p>
+
+<ul>
+  <li>G - граф,</li>
+  <li>P1 - путь в G,</li>
+  <li>Р - ациклический путь в G, идущий из А в начальную
+    вершину пути Р1, а затем - вдоль пути Р1 вплоть до
+    его конца.</li>
+</ul>
+
+<p>Между <strong>путь</strong> и <strong>путь1</strong> имеется
+следующее соотношение:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( А, Z, G, Р) :-
+путь1( А, [Z], G, Р).</strong></p>
+
+<p>На рис. 9.19 показана идея рекурсивного
+определения отношения <strong>путь1</strong>. Существует
+&quot;граничный&quot; случай, когда начальная вершина
+пути P1 (Y на рис. 9.19) совпадает с начальной
+вершиной А пути Р. Если же начальные вершины этих
+двух путей не совпадают, то должна существовать
+такая вершина X, что</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y - вершина, смежная с X,<br>
+(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Х не содержится в Р1 и<br>
+(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; для Р выполняется
+отношение<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь1( А,
+[Х | Р1], G, Р).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( A, Z, Граф, Путь)
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+путь1( А, [Z], Граф, Путь).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; путь1( А, [А | Путь1, _,
+[А | Путь1] ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; путь1( А, [Y | Путь1],
+Граф, Путь) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+смеж( X, Y, Граф),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( X, Путь1),</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Условие отсутствия цикла</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>путь1( А, [ X, Y | Путь1], Граф, Путь).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 20.</strong>&nbsp; Поиск в графе <strong>Граф</strong>
+ациклического пути <strong>Путь</strong> из А в Z.</small></p>
+
+<p>На рис. 9.20 программа показана полностью. Здесь <strong>принадлежит</strong>
+- отношение принадлежности элемента списку.
+Отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>смеж( X, Y, G)</strong></p>
+
+<p>означает, что в графе G существует дуга, ведущая
+из Х в Y. Определение этого отношения зависит от
+способа представления графа. Если G представлен
+как пара множеств (вершин и ребер)</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>G = граф( Верш, Реб)</strong></p>
+
+<p>то</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>смеж( X, Y, граф( Верш,
+Реб) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( р( X, Y), Реб);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит( р( Y, X), Реб)</a><a name="tn84">.</strong></p>
+
+<p>Классическая задача на графах - <span id="t84">поиск
+Гамильтонова цикла</span>, т.е. ациклического пути,
+проходящего через все вершины графа. Используя
+отношение <strong>путь</strong>, эту задачу можно решить
+так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>гамильтон( Граф,
+Путь) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+путь( _, _, Граф, Путь),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+всевершины( Путь, Граф).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; всевершины( Путь,
+Граф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not (вершина( В, Граф),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not принадлежит( В, Путь) ).</strong></p>
+
+<p>Здесь <strong>вершина( В, Граф)</strong> означает: <strong>В</strong>
+- вершина графа <strong>Граф</strong>.</p>
+
+<p>Каждому пути можно приписать его стоимость.
+Стоимость пути равна сумме стоимостей входящих в
+него дуг. Если дугам не приписаны стоимости, то
+тогда, вместо стоимости, говорят о длине пути.</p>
+
+<p>Для того, чтобы наши отношения <strong>путь</strong> и <strong>путь1</strong>
+могли работать со стоимостями, их нужно
+модифицировать, введя дополнительный аргумент
+для каждого пути:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( А, Z, G, Р, С)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; путь1( A, P1, C1, G, Р, С)</strong></p>
+
+<p>Здесь С - стоимость пути Р, a C1 - стоимость пути Р1.
+В отношении <strong>смеж</strong> также появится
+дополнительный аргумент, стоимость дуги. На рис.
+9.21 показана программа поиска пути, которая
+строит путь и вычисляет его стоимость.</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( А, Z, Граф, Путь,
+Ст) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+путь1( A, [Z], 0, Граф, Путь, Ст).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; путь1( А, [А | Путь1],
+Ст1, Граф, [А | Путь1], Ст).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; путь1( А, [Y | Путь1],
+Ст1, Граф, Путь, Ст) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+смеж( X, Y, СтXY, Граф),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not принадлежит( X, Путь1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ст2 is Ст1 + СтXY,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+путь1( А, [ X, Y | Путь1], Ст2, Граф, Путь, Ст).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 21.</strong>&nbsp; Поиск пути в
+графе: <strong>Путь</strong> - путь между А и Z в графе <strong>Граф</strong>
+стоимостью Ст.</small></p>
+
+<p>Эту процедуру можно использовать для
+нахождения пути минимальной стоимости. Мы можем
+построить путь минимальной стоимости между
+вершинами <strong>Верш1</strong>, <strong>Верш2</strong> графа <strong>Граф</strong>,
+задав цели</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( Bepш1, Верш2,
+Граф, МинПуть, МинСт),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not ( путь( Верш1, Верш2, Граф,
+_, Ст), Ст&lt;МинСт )</strong></p>
+
+<p>Аналогично можно среди всех путей между
+вершинами графа найти путь максимальной
+стоимости, задав цели</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>путь( _, _, Граф,
+МаксПуть, МаксСт),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; not ( путь( _, _, Граф, _, Ст), Ст
+&gt; МаксСт)</strong></p>
+
+<p>Заметим, что приведенный способ поиска
+максимальных и минимальных путей крайне
+неэффективен, так как он предполагает просмотр
+всех возможных путей и потому не подходит для
+больших графов из-за своей высокой временной
+сложности. В искусственном интеллекте задача
+поиска пути возникает довольно часто. В главах 11
+и 12 мы изучим более сложные методы нахождения
+оптимальных путей.</p>
+</a><a name="p9_5_3">
+
+<hr>
+</a>
+
+<h4>9. 5. 3.&nbsp;&nbsp;&nbsp; Построение остовного дерева</h4>
+
+<p>Граф называется <em>связным</em>, если между любыми
+двумя его вершинами существует путь. Пусть&nbsp; G
+&nbsp; =&nbsp; (V,&nbsp; Е) - связный граф с множеством
+вершин&nbsp; V&nbsp; и множеством ребep&nbsp; Е.&nbsp; <em>Остовное
+дерево</em> графа&nbsp; G&nbsp; - это связный граф&nbsp; Т
+&nbsp; =&nbsp; ( V,&nbsp; Е'),&nbsp; где&nbsp; Е'&nbsp; - подмножество
+&nbsp; Е&nbsp; такое, что</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp; Т - связный граф,<br>
+(2)&nbsp;&nbsp;&nbsp; в Т нет циклов.</p>
+
+<p>Выполнение этих двух условий гарантирует то,
+что Т - дерево. Для графа, изображенного в левой
+части рис. 9.18, существует три остовных дерева,
+соответствующих следующим трем спискам ребер:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1 = [а-b, b-c, c-d]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Дер2 = [а-b, b-d, d-с]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Дер3 = [а-b, b-d, b-c]</strong></p>
+
+<p>Здесь каждый терм вида X-Y обозначает ребро,
+соединяющее вершины Х и Y. В качестве корня можно
+взять любую из вершин, указанных в списке.
+Остовные деревья представляют интерес, например
+в задачах проектирования сетей связи, поскольку
+они позволяют, имея минимальное число линий,
+установить связь между любыми двумя узлами,
+соответствующими вершинам графа.</p>
+
+<p>Определим процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>остдерево( G, Т)</strong></p>
+
+<p>где&nbsp; Т&nbsp; - остовное дерево графа&nbsp; G. &nbsp;
+Будем предполагать, что&nbsp; G&nbsp; - связный граф.
+Можно представить себе алгоритмический процесс
+построения остовного дерева следующим образом.
+Начать с пустого множества ребер и постепенно
+добавлять новые ребра, постоянно следя за тем,
+чтобы не образовывались циклы. Продолжать этот
+процесс до тех пор, пока не обнаружится, что
+нельзя присоединить ни одного ребра, поскольку
+любое новое ребро порождает цикл. Полученное
+множество ребер будет остовным деревом.
+Отсутствие циклов можно обеспечить, если
+придерживаться следующего простого правила:
+ребро присоединяется к дереву только в том
+случае, когда одна из его вершин уже содержится в
+строящемся дереве, а другая пока еще не включена
+в него. Программа, реализующая эту идею, показана
+на рис. 9.22. Основное отношение, используемое в
+этой программе, - это</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расширить( Дер1, Дер,
+G)</strong></p>
+
+<p>Здесь все три аргумента - множества ребер.&nbsp; <strong>G</strong>
+-</p>
+<a name="tn193"><script language="JavaScript">line();</script>
+
+
+<p><small>%&nbsp; <span id="t193">Построение остовного дерева
+графа</span><br>
+%<br>
+%&nbsp; Деревья и графы представлены списками<br>
+%&nbsp; своих ребер, например:<br>
+%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Граф = [а-b,
+b-с, b-d, c-d]</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>остдерево( Граф,
+Дер) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; % Дер - остовное дерево
+Граф'а</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит( Ребро, Граф),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( [Ребро], Дер, Граф).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( Дер1, Дер,
+Граф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+добребро( Дер1, Дер2, Граф),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+расширить( Дер2, Дер, Граф).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; расширить( Дер, Дер,
+Граф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not добребро( Дер, _, Граф).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Добавление любого ребра приводит к циклу</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добребро( Дер, [А-В |
+Дер], Граф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+смеж( А, В, Граф),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% А и В - смежные вершины</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>вершина( А, Дер).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% А содержится в Дер</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>не вершина( В, Дер).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% А-В не порождает цикла</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>смеж( А, В, Граф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит ( А-В, Граф);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+принадлежит ( В-А, Граф).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вершина( А, Граф) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% А содержится в графе, если</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>смеж( А, _, Граф).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% А смежна какой-нибудь вершине</small></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Pис. 9. 22.</strong>&nbsp; Построение
+остовного дерева: алгоритмический подход.</small><br>
+<small>Предполагается, что <strong>Граф</strong> - связный
+граф.</small></p>
+
+<p>связный граф; <strong>Дер1</strong> и <strong>Дер</strong> - два
+подмножества <strong>G</strong>, являющиеся деревьями. <strong>Дер</strong>
+- остовное дерево графа <strong>G</strong>, полученное
+добавлением некоторого (может быть пустого)
+множества ребер из <strong>G</strong> к <strong>Дер1</strong>.
+Можно сказать, что &quot;<strong>Дер1</strong> расширено до <strong>Дер</strong>&quot;.</p>
+
+<p>Интересно, что можно написать программу
+построения остовного дерева совершенно другим,
+полностью декларативным способом, просто
+формулируя на Прологе некоторые математические
+определения. Допустим, что как графы, так и
+деревья задаются списками своих ребер, как в
+программе рис. 9.22. Нам понадобятся следующие
+определения:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Т является остовным
+деревом графа G, если 
+
+<ul>
+  <li>Т - это подмножество графа G и</li>
+  <li>Т - дерево и</li>
+  <li>Т &quot;накрывает&quot; G, т.е. каждая вершина из G
+    содержится также в Т.</li>
+</ul>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Множество ребер Т есть
+дерево, если 
+
+<ul>
+  <li>Т - связный граф и</li>
+  <li>Т не содержит циклов.</li>
+</ul>
+
+<p>Эти определения можно сформулировать на
+Прологе (с использованием нашей программы <strong>путь</strong>
+из предыдущего раздела) так, как показано на рис.
+9.23. Следует, однако, заметить, что эта программа в
+таком ее виде не представляет практического
+интереса из-за своей неэффективности.</p>
+</a><a name="tn194"><script language="JavaScript">line();</script>
+
+
+<p><small>%&nbsp; <span id="t194">Построение остовного дерева</span><br>
+%&nbsp; Графы и деревья представлены списками ребер.</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>остдерево( Граф,
+Дер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+подмнож( Граф, Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+дерево( Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+накрывает( Дер, Граф).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; дерево( Дер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+связи( Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not имеетцикл( Дер).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; связи( Дер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not ( вершина( А, Дер), вершина( В, Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not путь( А, А, Дер, _ ) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; имеетцикл( Дер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+смеж( А, В, Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+путь( А, В, Дер, [А, X, Y | _ ).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Длина пути &gt; 1</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>накрывает( Дер,
+Граф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+not ( вершина( А, Граф), not вершина( А, Дер) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; подмнож( [ ], [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; подмнож( [ Х | L], S) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+подмнож( L, L1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+( S = L1; S = [ Х | L1] ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 23.</strong>&nbsp; Построение
+остовного дерева: &quot;декларативный подход&quot;.</small><br>
+<small>Отношения <strong>вершина</strong> и <strong>смеж</strong>
+см. на рис. 9. 22.</small></p>
+
+<h4>Упражнение</h4>
+
+<p><strong>9. 15.</strong>&nbsp;&nbsp;&nbsp; Рассмотрите остовные
+деревья в случае, когда каждому ребру графа
+приписана его стоимость. Пусть <em>стоимость</em>
+остовного дерева определена как сумма
+стоимостей составляющих его ребер. Напишите
+программу построения для заданного графа его
+остовного дерева минимальной стоимости.</p>
+
+<h4>Резюме</h4>
+
+<p>В данной главе мы изучали реализацию на Прологе
+некоторых часто используемых структур данных и
+соответствующих операций над ними. В том числе 
+
+<ul>
+  <li>Списки:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; варианты представления
+    списков<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сортировка списков:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    сортировка методом &quot;пузырька&quot;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    сортировка со вставками<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    быстрая сортировка<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    эффективность этих процедур<br>
+  </li>
+  <li>Представление множеств двоичными деревьями и
+    двоичными справочниками:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; поиск элемента в дереве<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; добавление элемента<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удаление элемента<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; добавление в качестве
+    листа или корня<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сбалансированность
+    деревьев и его связь с<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    эффективностью этих операций<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; отображение деревьев<br>
+  </li>
+  <li>Графы:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; представление графов<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; поиск пути в графе<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; построение остовного
+    дерева</li>
+</ul>
+
+<h4>Литература</h4>
+
+<p>В этой главе мы занимались такими важными
+темами, как сортировка и работа со структурами
+данных для представления множеств. Общее
+описание структур данных, а также алгоритмов,
+запрограммированных в данной главе, можно найти,
+например, в Aho, Hopcroft and Ullman (1974, 1983) или Baase (1978). В
+литературе рассматривается также поведение этих
+алгоритмов, особенно их временная сложность.
+Хороший и краткий обзор соответствующих
+алгоритмов и результатов их математического
+анализа можно найти в Gonnet (1984).</p>
+
+<p>Прологовская программа для внесения нового
+элемента на произвольный уровень дерева (раздел
+9.3) была впервые показана автору М. Ван Эмденом
+(при личном общении).</p>
+
+<p>Aho А. V., Hopcroft J. Е. and Ullman J. D. (1974). <em>The Design and Analysis of
+Computer Algorithms.</em> Addison-Wesley. [Имеется перевод: Ахо А.,
+Хопкрофт Дж. Построение и анализ вычислительных
+алгоритмов. Пер. с англ. - М-: Мир, 1979.]</p>
+
+<p>Aho А. V., Hopcroft J. Е. and Ullman J. D. (1983). <em>Data Structures and
+Algorithms.</em> Addison-Wesley.</p>
+
+<p>Baase S. (1978). <em>Computer Algorithms.</em> Addison-Wesley.</p>
+
+<p>Gonnet G. H. (1984). <em>Handbook of Algorithms and Data Structures.</em>
+Addison-Wesley.</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch9_4.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch10_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

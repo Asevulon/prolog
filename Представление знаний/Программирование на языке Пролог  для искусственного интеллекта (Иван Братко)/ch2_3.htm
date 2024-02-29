@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 2. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch2_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch2_4.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>2. 3.&nbsp;&nbsp;&nbsp; Декларативный смысл
+пролог-программ</h4>
+
+<p>В главе 1 мы уже видели, что пролог-программу
+можно понимать по-разному: с декларативной и
+процедурной точек зрения. В этом и следующем
+разделах мы рассмотрим более формальное
+определение декларативного и процедурного
+смыслов программ базисного Пролога. Но сначала
+давайте еще раз взглянем на различия между этими
+двумя семантиками.</p>
+
+<p>Рассмотрим предложение</p>
+
+<p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <strong>Р :- Q,&nbsp; R.</strong></p>
+
+<p>где Р, Q и R имеют синтаксис термов. Приведем
+некоторые способы декларативной интерпретации
+этого предложения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp; -&nbsp; истинно,
+если&nbsp; Q&nbsp; и&nbsp; R &nbsp; истинны.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Из&nbsp; Q&nbsp; и&nbsp; R&nbsp;
+следует&nbsp; Р.</p>
+
+<p>А вот два варианта его &quot;процедурного&quot;
+прочтения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Чтобы решить задачу&nbsp;
+Р,&nbsp; <em>сначала</em> реши подзадачу <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Q,&nbsp; а <em>затем</em> -
+подзадачу&nbsp; R.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Чтобы достичь&nbsp; Р,&nbsp; <em>сначала</em>
+достигни&nbsp; Q,&nbsp; а <em>затем</em>&nbsp; R.</p>
+
+<p>Таким образом, различие между
+&quot;декларативным&quot; и &quot;процедурным&quot;
+прочтениями заключается в том, что последнее
+определяет не только логические связи между
+головой предложения и целями в его теле, но еще и <em>порядок</em>,
+в котором эти цели обрабатываются.</p>
+
+<p>Формализуем теперь декларативный смысл<a
+name="tn107">.</p>
+
+<p><span id="t107">Декларативный смысл программы</span>
+определяет, является ли данная цель истинной
+(достижимой) и, если да, при каких значениях
+переменных она достигается. Для точного
+определения </a><a name="tn234">декларативного смысла
+нам потребуется понятие <em>конкретизации</em>
+предложения. <span id="t234">Конкретизацией
+предложения С</span></a><a name="tn26"> называется
+результат подстановки в него на место каждой
+переменной некоторого терма. <span id="t26"><em>Вариантом</em>
+предложения С</span> называется такая
+конкретизация С, при которой каждая переменная
+заменена на другую переменную. Например,
+рассмотрим предложение:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong> имеетребенка( X) :-
+родитель( X, Y).</strong></p>
+
+<p>Приведем два варианта этого предложения:</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; имеетребенка( А) :-
+родитель( А, В).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; имеетребенка( X1) :-
+родитель( X1, Х2).</strong></p>
+
+<p>Примеры конкретизаций этого же предложения:</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; имеетребенка(
+питер) :- родитель( питер, Z).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; имеетребенка( барри) :-
+родитель( барри,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+маленькая( каролина) ).</strong></p>
+
+<p>Пусть дана некоторая программа и цель G, тогда, в
+соответствии с декларативной семантикой, можно
+утверждать, что</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>Цель&nbsp; G&nbsp; истинна (т.е. достижима или
+логически следует из программы) тогда и только
+тогда, когда</strong></p>
+
+<p><strong>(1)&nbsp;&nbsp;&nbsp; в программе существует
+предложение&nbsp; С, такое, что</strong></p>
+
+<p><strong>(2)&nbsp;&nbsp;&nbsp; существует такая его&nbsp; (С) &nbsp;
+конкретизация&nbsp; I,&nbsp; что</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp; голова
+&nbsp; I&nbsp; совпадает с&nbsp; G&nbsp; и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (б)&nbsp;&nbsp;&nbsp; все цели в
+теле&nbsp; I&nbsp; истинны.</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p>Это определение можно распространить на
+вопросы следующим образом. В общем случае вопрос
+к пролог-системе представляет собой <em>список</em>
+целей, разделенных запятыми. Список целей
+называется <em>истинным</em> (достижимым), если <em>все</em>
+цели в этом списке истинны (достижимы) при <em>одинаковых</em>
+конкретизациях переменных. Значения переменных
+получаются из наиболее общей конкретизации</a><a
+name="tn153">.</p>
+
+<p>Таким образом, запятая между целями обозначает <span
+id="t153"><em>конъюнкцию</em> целей</span>: </a><a name="tn116">они <em>все</em>
+должны быть </a>истинными. Однако в Прологе
+возможна и <span id="t116"><em>дизъюнкция</em> целей</span>:
+должна быть истинной, <em>по крайней мере одна</em>
+из целей. Дизъюнкция обозначается точкой с
+запятой. Например:</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp;
+Q;&nbsp; R.</strong></p>
+
+<p>читается так:&nbsp; Р&nbsp; -&nbsp; истинно, если истинно
+&nbsp; Q <em>&nbsp; или</em> истинно&nbsp; R.&nbsp; То есть смысл
+такого предложения тот же, что и смысл следующей
+пары предложений:</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp; Q.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp; R.</strong></p>
+
+<p>Запятая связывает (цели) сильнее, чем точка с
+запятой. Таким образом, предложение</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp;
+Q,&nbsp; R;&nbsp; S,&nbsp; Т, &nbsp; U.</strong></p>
+
+<p>понимается как:</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp; (
+Q,&nbsp; R);&nbsp; (S, &nbsp; Т,&nbsp; U).</strong></p>
+
+<p>и имеет тот же смысл, что и два предложения</p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp;
+Q,&nbsp; R.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Р&nbsp;&nbsp; :-&nbsp;&nbsp; S,&nbsp; T,&nbsp;
+U.</strong></p>
+
+<h4>Упражнения</h4>
+
+<p><strong>2. 6.</strong>&nbsp;&nbsp;&nbsp; Рассмотрим следующую
+программу:</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>f( 1, один).<br>
+&nbsp;&nbsp;&nbsp; f( s(1), два).<br>
+&nbsp;&nbsp;&nbsp; f(&nbsp;&nbsp;&nbsp; s(s(1)),&nbsp;&nbsp;&nbsp; три).<br>
+&nbsp;&nbsp;&nbsp; f( s(s(s(X))),&nbsp; N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f(X,
+&nbsp; N).</strong></p>
+
+<p>Как пролог-система ответит на следующие
+вопросы? Там, где возможны несколько ответов,
+приведите по крайней мере два.</p>
+
+<p>&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- f( s( 1),
+A).</strong><br>
+&nbsp;&nbsp;&nbsp; (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- f( s(s(1)),
+два).</strong><br>
+&nbsp;&nbsp;&nbsp; (c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- f( &nbsp;
+s(s(s(s(s(s(1)))))), С).</strong><br>
+&nbsp;&nbsp;&nbsp; (d)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- f( D, три).</strong></p>
+
+<p><a href="javascript:fa('2_6')">Посмотреть ответ</a></p>
+
+<p><strong>2. 7.</strong>&nbsp;&nbsp;&nbsp; В следующей программе
+говорится, что два человека являются
+родственниками, если</p>
+
+<p>&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; один
+является предком другого, или<br>
+&nbsp;&nbsp;&nbsp; (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; у них есть
+общий предок, или<br>
+&nbsp;&nbsp;&nbsp; (c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; у них есть
+общий потомок.</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>родственники( X, Y) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( X, Y).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp; родственники( X, Y) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( Y, X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp; родственники( X, Y) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X и Y имеют общего предка</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предок( Z, X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( Z, Y).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp; родственники( X, Y) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X и Y имеют общего потомка</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предок( X, Z),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( Y, Z).</strong></p>
+
+<p>Сможете ли вы сократить эту программу,
+используя запись с точками с запятой?</p>
+
+<p><a href="javascript:fa('2_7')">Посмотреть ответ</a></p>
+
+<p><strong>2. 8.</strong>&nbsp;&nbsp;&nbsp; Перепишите следующую
+программу, не пользуясь точками с запятой.</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>преобразовать( Число, Слово) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Число = 1,&nbsp; Слово =
+один;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Число = 2,&nbsp; Слово =
+два;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Число = 3,&nbsp; Слово =
+три.</strong></p>
+
+<p><a href="javascript:fa('2_8')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch2_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch2_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

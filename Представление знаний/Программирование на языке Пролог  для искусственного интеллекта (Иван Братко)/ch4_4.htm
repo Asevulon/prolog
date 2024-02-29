@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 4. Пункт 4</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch4_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_5.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>4. 4.&nbsp;&nbsp;&nbsp; Планирование поездки</h4>
+
+<p>В данном разделе мы создадим программу, которая
+дает советы по планированию воздушного
+путешествия. Эта программа будет довольно
+примитивным советчиком, тем не менее она сможет
+отвечать на некоторые полезные вопросы, такие
+как: 
+
+<ul>
+  <li>По каким дням недели есть прямые рейсы из
+    Лондона в Любляну?</li>
+  <li>Как в четверг можно добраться из Любляны в
+    Эдинбург?</li>
+  <li>Мне нужно посетить Милан, Любляну и Цюрих;
+    вылетать нужно из Лондона во вторник и вернуться
+    обратно в Лондон в пятницу. В какой
+    последовательности мне следует посещать эти
+    города, чтобы ни разу на протяжении поездки не
+    пришлось совершать более одного перелета в день.</li>
+</ul>
+
+<p>Центральной частью программы будет база
+данных, содержащая информацию о рейсах. Эта
+информация будет представлена в виде
+трехаргументного отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расписание( Пункт1,
+Пункт2, Список_рейсов)</strong></p>
+
+<p>где&nbsp; <strong>Список_рейсов</strong>&nbsp; -&nbsp; это
+список, состоящий из структурированных объектов
+вида:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Время_отправления /
+Время_прибытия / Номер_рейса<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+/ Список_дней_вылета</strong></p>
+
+<p><strong>Список_дней_вылета</strong> - это либо список
+дней недели, либо атом &quot;ежедневно&quot;. Одно из
+предложений, входящих в <strong>расписание</strong>
+могло бы быть, например, таким:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>расписание( лондон,
+эдинбург,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[ 9:40 / 10:50 / bа4733/ ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+19:40 / 20:50 / bа4833 / [пн, вт, ср, чт, пт, сб]] ).</strong></p>
+
+<p>Время представлено в виде структурированных
+объектов, состоящих из двух компонент - часов и
+минут, объединенных оператором &quot;:&quot;.</p>
+
+<p>Главная задача состоит в отыскании точных
+маршрутов между двумя заданными городами в
+определенные дни недели. Ее решение мы будем
+программировать в виде четырехаргументного
+отношения:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>маршрут( Пункт1,
+Пункт2, День, Маршрут)</strong></p>
+
+<p>Здесь <strong>Маршрут</strong> - это
+последовательность перелетов, удовлетворяющих
+следующим критериям:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; начальная точка
+маршрута находится в <strong>Пункт1</strong>;<br>
+(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; конечная точка - в <strong>Пункт2</strong>;<br>
+(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; все перелеты
+совершаются в один и тот же день недели - <strong>День</strong>;<br>
+(4)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; все перелеты, входящие в
+<strong>Маршрут</strong>, содержатся в определении
+отношения <strong>расписание</strong>;<br>
+(5)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; остается достаточно
+времени для пересадки с рейса на рейс.</p>
+
+<p>Маршрут представляется в виде списка
+структурированных объектов вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Откуда - Куда :
+Номер_рейса : Время_отправления</strong></p>
+
+<p>Мы еще будем пользоваться следующими
+вспомогательными предикатами:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>рейс( Пункт1,
+Пункт2, День, N_рейса, Вр_отпр, Вр_приб)</strong></p>
+
+<p>Здесь сказано, что существует рейс <strong>N_рейса</strong>
+между <strong>Пункт1</strong> и <strong>Пункт2</strong> в день
+недели <strong>День</strong> с указанными временами
+отправления и прибытия.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>вр_отпр( Маршрут,
+Время)</strong></p>
+
+<p><strong>Время</strong> - это время отправления по
+маршруту <strong>Маршрут</strong>.</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>пересадка( Время1,
+Время2)</strong></p>
+
+<p>Между <strong>Время1</strong> и <strong>Время2</strong> должен
+существовать промежуток не менее 40 минут для
+пересадки с одного рейса на другой.</p>
+
+<p>Задача нахождения маршрута напоминает
+моделирование недетерминированного автомата из
+предыдущего раздела: 
+
+<ul>
+  <li>Состояния автомата соответствуют городам.</li>
+  <li>Переход из состояния в состояние соответствует
+    перелету из одного города в другой.</li>
+  <li>Отношение <strong>переход</strong> автомата
+    соответствует отношению <strong>расписание</strong>.</li>
+  <li>Модель автомата находит путь в графе переходов
+    между исходным и конечным состояниями;
+    планировщик поездки находит маршрут между
+    начальным н конечным пунктами поездки.</li>
+</ul>
+
+<p>Неудивительно поэтому, что отношение <strong>маршрут</strong>
+можно определить аналогично отношению <strong>допускает</strong>,
+с той разницей, что теперь нет &quot;спонтанных
+переходов&quot;. Существуют два случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Прямой рейс: если
+существует прямой рейс между пунктами <strong>Пункт1</strong>
+и <strong>Пункт2</strong>, то весь маршрут состоит только
+из одного перелета:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>маршрут( Пункт1,
+Пункт2, День, [Пункт1-Пункт2 : Nр : Отпр]):-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс(
+Пункт1, Пункт2, День, Np, Отпр, Приб).</strong></p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Маршрут с пересадками:
+маршрут между пунктами <strong>Р1</strong> и <strong>Р2</strong>
+состоит из первого перелета из <strong>P1</strong> в
+некоторый промежуточный пункт <strong>Р3</strong> и
+маршрута между <strong>Р3</strong> и <strong>Р2</strong>. Кроме
+того, между окончанием первого перелета и
+отправлением во второй необходимо оставить
+достаточно времени для пересадки.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>маршрут( Р1, Р2, День,
+[Р1-Р3 : Nр1 : Отпр1 | Маршрут]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+маршрут( Р3, Р2, День, Маршрут ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс(
+Р1, Р3, День, Npl, Oтпpl, Приб1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+вр_отпр( Маршрут, Отпр2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+пересадка( Приб1, Отпр2).</strong></p>
+
+<p>Вспомогательные отношения <strong>рейс</strong>, <strong>пересадка</strong>
+и <strong>вр_отпр</strong> запрограммировать легко; мы
+включили их в полный текст программы
+планировщика поездки на рис. 4.5. Там же приводится
+и пример базы данных расписания.</p>
+
+<p>Наш планировщик исключительно прост и может
+рассматривать пути, очевидно ведущие в никуда.
+Тем не менее его оказывается вполне достаточно,
+если база данных о рейсах самолетов невелика. Для
+больших баз данных потребовалось бы разработать
+более интеллектуальный планировщик, который мог
+бы справиться с большим количеством путей,
+участвующих в перебора при нахождении нужного
+пути.</p>
+
+<p>Вот некоторые примеры вопросов к планировщику: 
+
+<ul>
+  <li>По каким дням недели существуют прямые рейсы из
+    Лондона в Люблину?<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- рейс( лондон,
+    любляна, День, _, _, _ ).<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; День = пт;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; День = сб;<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    (нет)</li>
+</ul>
+<script language="JavaScript">line();</script>
+
+
+<p>% ПЛАНИРОВЩИК ВОЗДУШНЫХ МАРШРУТОВ</p>
+
+<p><strong>:- ор( 50, xfy, :).</strong></p>
+
+<p><strong>рейс( Пункт1, Пункт2, День, Np, ВрОтпр, ВрПриб)
+:-<br>
+&nbsp;&nbsp;&nbsp; расписание( Пункт1, Пункт2, СписРейсов),<br>
+&nbsp;&nbsp;&nbsp; принадлежит( ВрОтпр / ВрПриб / Nр /
+СписДней, СписРейсов),<br>
+&nbsp;&nbsp;&nbsp; день_выл( День, СписДней).</strong></p>
+
+<p><strong>принадлежит( X, [X | L] ).</strong></p>
+
+<p><strong>принадлежит( X, [Y | L] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( X, L ).</strong></p>
+
+<p><strong>день_выл( День, СписДней) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( День, СписДней).</strong></p>
+
+<p><strong>день_выл( День, ежедневно) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; принадлежит( День, [пн, вт, ср, чт,
+пт, сб, вс] ).</strong></p>
+
+<p><strong>маршрут( P1, P2, День, [Р1-Р2 : Np : ВрОтпр] ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</strong><small>% прямой рейс</small><strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс( P1, P2, День, Np, ВрОтпр, _ ).</strong></p>
+
+<p><strong>маршрут( Р1, Р2, День, [Pl-P3 : Np1 : Oтпp1 | Маршрут])
+:-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</strong><small>% маршрут с пересадками</small><strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; маршрут( Р3, P2, День, Маршрут ),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс( Р1, Р3, День, Npl, Oтпp1, Приб1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; вр_отпр( Маршрут, Отпр2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; пересадка( Приб1, Отпр2).</strong></p>
+
+<p><strong>вр_отпр( [Р1-Р2 : Np : Отпр | _ ], Отпр).</strong></p>
+
+<p><strong>пересадка( Часы1 : Минуты1, Часы2 : Минуты2) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 60 * (Часы2-Часы1) + Минуты2 - Минуты1
+&gt;= 40</strong></p>
+
+<p><br>
+% БАЗА ДАННЫХ О РЕЙСАХ САМОЛЕТОВ</p>
+
+<p><strong>расписание( эдинбург, лондон,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 9:40 / 10:50 / bа4733 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13:40 / 14:50 / ba4773 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 19:40 / 20:50 / bа4833 / [пн, вт, ср, чт, пт,
+вс] ] ).</strong></p>
+
+<p><strong>расписание( лондон, эдинбург,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 9:40 / 10:50 / bа4732 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11:40 / 12:50 / bа4752 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18:40 / 19:50 / bа4822 / [пн, вт, ср, чт, пт] ]
+),</strong></p>
+
+<p><strong>расписание( лондон, любляна,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [13:20 / 16:20 / ju201 / [пт],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13:20 / 16:20 / ju213 / [вс] ] ).</strong></p>
+
+<p><strong>расписание( лондон, цюрих,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 9:10 / 11:45 / bа614 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:45 / 17:20 / sr805 / ежедневно ] ).</strong></p>
+
+<p><strong>расписание( лондон, милан,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 8:30 / 11:20 / bа510 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11:00 / 13:50 / az459 / ежедневно ] ).</strong></p>
+
+<p><strong>расписание( любляна, цюрих,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [11:30 / 12:40 / ju322 / [вт,чт] ] ).</strong></p>
+
+<p><strong>расписание( любляна, лондон,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [11:10 / 12:20 / yu200 / [пт],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11:25 / 12:20 / yu212 / [вс] ] ).</strong></p>
+
+<p><strong>расписание( милан, лондон,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 9:10 / 10:00 / az458 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:20 / 13:10 / bа511 / ежедневно ] ).</strong></p>
+
+<p><strong>расписание( милан, цюрих,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 9:25 / 10:15 / sr621 / ежедневно,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:45 / 13:35 / sr623 / ежедневно ] ).</strong></p>
+
+<p><strong>расписание( цюрих, любляна,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [13:30 / 14:40 / yu323 / [вт, чт] ] ).</strong></p>
+
+<p><strong>расписание( цюрих, лондон,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9:00 / 9:40 / bа613 /<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ пн, вт, ср, чт, пт, сб],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16:10 / 16:55 / sr806 / [пн, вт, ср, чт, пт,
+сб] ] ).</strong></p>
+
+<p><strong>расписание( цюрих, милан,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ 7:55 / 8:45 / sr620 / ежедневно ] ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 4. 5.</strong>&nbsp; Планировщик
+воздушных маршрутов и база данных о рейсах
+самолетов.</small></p>
+
+<ul>
+  <li>Как мне добраться из Любляны в Эдинбург в
+    четверг?<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- маршрут( любляна,
+    эдинбург, чт, R).<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; R = [любляна-цюрих : уu322 :
+    11:30, цюрих-лондон:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sr806 : 16:10,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; лондон-эдинбург : bа4822 : 18:40
+    ]</strong><br>
+  </li>
+  <li>Как мне посетить Милан, Любляну и Цюрих, вылетев
+    из Лондона во вторник и вернувшись в него в
+    пятницу, совершая в день не более одного
+    перелета? Этот вопрос сложнее, чем предыдущие.
+    Его можно сформулировать, использовав отношение <strong>перестановка</strong>,
+    запрограммированное в гл. 3. Мы попросим найти
+    такую перестановку городов Милан, Любляна и
+    Цюрих, чтобы соответствующие перелеты можно было
+    осуществить в несколько последовательных дней
+    недели:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?- перестановка(
+    [милан, любляна, цюрих],<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    [Город1, Город2, Город3] ),<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс( лондон, Город1, вт, Np1,
+    Oтпp1, Пpиб1),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; peйc( Город1, Город2, ср, Np2,
+    Отпр2, Приб2),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс( Город2, Город3, чт, Np3,
+    Отпp3, Приб3),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; рейс( Город3, лондон, пт, Np4,
+    Отпр4, Приб4).<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Город1 = милан<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Город2 = цюрих<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Город3 = любляна<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Npl = ba510<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Отпр1 = 8:30<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Приб1 = 11:20<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Np2 =sr621<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Отпр2 = 9:25<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Приб2 = 10:15<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Np3 = yu323<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Отпр3 = 13:30<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Приб3 = 14:40<br>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Np4 = yu200<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Отпр4 = 11:10<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Приб4 = 12:20</strong></li>
+</ul>
+
+<hr>
+
+<p align="center"><a href="ch4_3.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch4_5.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 10. Пункт 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch10_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch11_1.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>10. 2.&nbsp;&nbsp;&nbsp; AVL - дерево: приближенно
+сбалансированное <a name="tn22">дерево</h4>
+
+<p><span id="t22">AVL-дерево</span> - это дерево, обладающее
+следующими свойствами:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Левое и правое
+поддеревья отличаются по глубине не более чем на
+1.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Оба поддерева
+являются AVL-деревьями.</p>
+
+<p>Деревья, удовлетворяющие этому определению,
+могут быть слегка разбалансированными. Однако
+можно показать, что даже в худшем случае глубина
+AVL-дерева примерно пропорциональна log <em>n</em>, где <em>n</em>
+- число вершин дерева. Таким образом
+гарантируется логарифмический порядок
+производительности операций <strong>внутри</strong>, <strong>добавить</strong>
+и </a><a name="tn20"><strong>удалить</strong>.</p>
+
+<p><span id="t20">Операции над AVL-деревом работают по
+существу так же, как и над двоичным справочником</span>.
+В них только сделаны добавления, связанные с
+поддержанием приближенной сбалансированности
+дерева. Если после вставления или удаления
+дерево перестает быть приближенно
+сбалансированным, то специальные механизмы
+возвращают ему требуемую степень
+сбалансированности. Для того, чтобы эффективно
+реализовать этот механизм, нам придется
+сохранять некоторую дополнительную информацию
+относительно степени сбалансированности дерева.
+На самом деле, нам нужно знать только разность
+между глубинами поддеревьев, которая может
+принимать значения -1, 0 или +1. Тем не менее для
+простоты мы предпочтем сохранять сами величины</a><a
+name="tn21"> глубин поддеревьев, а не разности между
+ними.</p>
+
+<p>Мы определим <span id="t21">отношение вставления
+элемента</span> как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доб_avl( Дер, X, НовДер)</strong></p>
+
+<p>где оба дерева <strong>Дер</strong> и <strong>НовДер</strong> -
+это AVL-деревья, причем <strong>НовДер</strong> получено
+из <strong>Дер</strong> вставлением элемента <strong>X</strong>.
+AVL-деревья будем представлять как термы вида</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>д( Лев, А, Прав)/Глуб</strong></p>
+
+<p>где <strong>А</strong> - корень, <strong>Лев</strong> и <strong>Прав</strong>
+- поддеревья, а <strong>Глуб</strong> -</p>
+
+<p align="center"><img src="pic/fig10_8.gif" width="460" height="328"
+alt="fig10_8.gif (3170 bytes)"></p>
+
+<blockquote>
+  <blockquote>
+    <blockquote>
+      <p><small><strong>Рис. 10. 8.</strong>&nbsp; Задача вставления
+      элемента в AVL-справочник<br>
+      (a)&nbsp; AVL-дерево перед вставлением Х, Х &gt; А;<br>
+      (b)&nbsp; AVL-дерево после вставления Х в R;<br>
+      (с)&nbsp; составные части, из которых следует
+      построить новое дерево.</small></p>
+    </blockquote>
+  </blockquote>
+</blockquote>
+
+<p>глубина дерева. Пустое дерево изображается как <strong>nil/0</strong>.
+Теперь рассмотрим вставление элемента Х в
+непустой AVL-справочник</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер = д( L, A, R)/H</strong></p>
+
+<p>Начнем со случая, когда Х больше А. Х необходимо
+вставить в R, поэтому имеем следующее отношение:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доб_аv1( R, X, д( R1, В,
+R2)/Hb)</strong></p>
+
+<p>На рис. 10.8 показаны составные части, из которых
+строится дерево <strong>НовДер</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>L, А, R1, В, R2</strong></p>
+
+<p>Какова глубина деревьев L, R, R1 и R2?&nbsp; L и R могут
+отличаться по глубине не более, чем на 1. На рис. 10.8
+видно, какую глубину могут иметь R1 и R2. Поскольку
+в R был добавлен только один элемент X, только одно
+из поддеревьев R1, R2 может иметь</p>
+
+<p align="center"><img src="pic/fig10_9.gif" width="583" height="493"
+alt="fig10_9.gif (6057 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 10. 9.</strong>&nbsp; Три правила
+построения нового AVL-дepевa.</small></p>
+
+<p>глубину h +1.</p>
+</a>
+
+<p><a name="tn21">В случае, когда Х меньше, чем А, имеем
+аналогичную ситуацию, причем левое и правое
+поддеревья меняются местами. Таким образом, в
+любом случае мы должны построить дерево <strong>НовДер</strong>,
+используя три дерева (назовем их <strong>Дер1</strong>, <strong>Дер2</strong>
+и <strong>Дер3</strong>) и два отдельных элемента А и В.
+Теперь рассмотрим вопрос: как соединить между
+собой эти пять составных частей, чтобы дерево <strong>НовДер</strong>
+было AVL-справочником? Ясно, что они должны
+располагаться внутри <strong>НовДер</strong> в
+следующем порядке (слева направо):</a></p>
+<a name="tn21">
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1, А, Дер2, В, Дер3</strong></p>
+
+<p>Рассмотрим три случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Среднее дерево <strong>Дер2</strong>
+глубже остальных двух деревьев.</p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер1</strong> имеет
+глубину не меньше, чем <strong>Дер2</strong> и <strong>Дер3</strong>.</p>
+
+<p>(3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Дер3</strong> имеет
+глубину не меньше, чем <strong>Дер2</strong> и <strong>Дер1</strong>.</p>
+
+<p>На рис. 10.9 видно, как можно построить дерево <strong>НовДер</strong>
+в каждом из этих трех случаев. Например, в случае 1
+среднее дерево <strong>Дер2</strong> следует разбить на
+два части, а затем включить их в состав <strong>НовДер</strong>.
+Три правила, показанные на pис.10.9, нетрудно
+запасать на Прологе в виде отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>соединить( Дер, А,
+Дер2, В, Дер3, НовДер)</strong></p>
+
+<p>Последний аргумент <strong>НовДер</strong> - это
+AVL-дерево, построенное из пяти составных частей,
+пяти первых аргументов. Правило 1, например,
+принимает вид:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>соединить( Д1/Н1, А, д(
+Д21, В, Д22)/Н2, С, Д3/Н3,</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Пять частей</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>д( д( Д1/Н1, А, Д21)/На, В,
+д( Д22, С, Д3/Н3)/Нс)/Нb) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Результат</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>H2 &gt; H1, H2 &gt; Н3,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Среднее дерево глубже остальных</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>На is Н1 + 1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Глубина левого поддерева</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Нс is Н3 + 1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Глубина правого поддерева</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Hb is На + 1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Глубина всего дерева</small></p>
+
+<p>Программа <strong>доб_аvl</strong>, вычисляющая также
+глубину дерева и его поддеревьев, показана
+полностью на рис. 10.10.</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>10. 3.</strong>&nbsp;&nbsp;&nbsp; Определите отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>avl( Дер)</strong></p>
+
+<p>для проверки того, является ли <strong>Дер</strong>
+AVL-деревом, т.е. верно ли, что любые два его
+поддерева, подсоединенные к одной и той же
+вершине, отличаются по глубине не более чем на 1.
+Двоичные</p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>%&nbsp; Вставление элемента в AVL-справочник</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доб_аvl( nil/0, X, д( nil/0, X,
+nil/0)/1).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Добавить Х к пустому дереву</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доб_аvl( д( L, Y, R)/Ну, X,
+НовДер) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Добавить Х к непустому дереву</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>больше( Y, X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+доб_аvl( L, X, д( L1, Z, L2)/ _ ),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Добавить к левому поддереву</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>соединить( L1, Z, L2, Y, R, НовДер).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Сформировать новое дерево</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доб_avl( д( L, Y, R)/Ну, X,
+НовДер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( X, Y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+доб_avl( R, X, д( R1, Z, R2)/ _ ),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Добавить к правому поддереву</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>соединить( L1, Y, Rl, Z, R2, НовДер).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; соединить( Д1/Н1, А, д(
+Д21, В, Д22)/Н2, С, Д3/Н3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+д( д( Д1/Н1, А, Д21)/На, В, д( Д22, С, L3/Н3)/Нс)/Нb) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Н2 &gt; H1, H2 &gt; Н3,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Среднее дерево глубже остальных</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>На is H1 + 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Hс is Н3 + 1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Нb is На + 1.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; соединить( Д1/Н1, А, д(
+Д2/Н2, С, Д3/Н3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+д( Д1/Н1, А, д( Д2/Н2, С, Д3/Н3)/Нс)/На) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+H1 &gt;= H2, H1 &gt;= Н3,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+&quot;Глубокое&quot; левое дерево</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>max1( H2, Н3, Нс),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+max1( H1, Нс, На).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; соединить( Д1/Н1, А,
+Д2/Н2, С, Д3/Н3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+д( д( Д1/Н1, А, Д2/Н2)/На, С, Д3/Н3)/Нс) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Н3 &gt;= H2, Н3 &gt;= H1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+&quot;Глубокое&quot; правое дерево</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>max1( H1, H2, На),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+max1( На, Н3, Нс).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; max1( U, V, М) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+U &gt; V,&nbsp; !,&nbsp; М is U + 1;</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% М равно 1
+плюс max( U,V)</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>М is V + 1.</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 10. 10.</strong>&nbsp; Вставление
+элемента в AVL-справочник. В этой</small><br>
+<small>программе предусмотрено, что попытка
+повторного вставления</small><br>
+<small>элемента терпит неудачу. По поводу процедуры <strong>соединить</strong>
+см.</small><br>
+<small>рис. 10.9.</small></p>
+
+<p>деревья представляйте в виде термов</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>д( Лев, Кор, Прав) </strong>или<strong>
+nil.</strong></p>
+</a>
+
+<p><a href="javascript:fa('10_3')">Посмотреть ответ</a></p>
+
+<h4>Резюме</h4>
+
+<ul>
+  <li>2-3 деревья и AVL-деревья, представленные в
+    настоящей главе, - это примеры <em>сбалансированных</em>
+    деревьев.</li>
+  <li>Сбалансированные или приближенно
+    сбалансированные деревья гарантируют
+    эффективное выполнение трех основных операций
+    над деревьями: поиск, добавление и удаление
+    элемента. Время выполнения этих операций
+    пропорционально log <em>n</em>, где <em>n</em> - число вершин
+    дерева.</li>
+</ul>
+
+<h4>Литература</h4>
+
+<p>2-3 деревья детально описаны, например, в Aho, Hopcroft
+and Ullman (1974, 1983). В книге этих авторов, вышедшей в 1983
+г., дается также реализация соответствующих
+алгоритмов на языке Паскаль. Н.Вирт (см. Wirth (1976))
+приводит программу на Паскале для работы с
+AVL-деревьями. 2-3 деревья являются частным случаем
+более общего понятия В-деревьев. В-деревья, а
+также несколько других вариантов структур
+данных, имеющих отношение к 2-3 деревьям в
+AVL-деревьям, рассматриваются в книге Gonnet (1984). В
+этой книге, кроме того, даны результаты анализа
+поведения этих структур.</p>
+
+<p>Программа вставления элемента в AVL-дерево,
+использующая только величину &quot;перекоса&quot;
+дерева (т.е. значение разности глубин
+поддеревьев, равной -1, 0 или 1, вместо самой
+глубины) опубликована ван Эмденом (1981).</p>
+
+<p>Aho А. V., Hopcroft J. Е. and Ullman J. D. (1974). <em>The Design and Analysis of
+Computer Algorithms.</em> Addison-Wesley. [Имеется перевод: Ахо А.,
+Хопкрофт Дж. Построение и анализ вычислительных
+алгоритмов. Пер. с англ. - М.: Мир, 1979.]</p>
+
+<p>Aho А. V., Hopcroft J. Е. and Ullman J. D. (1983). <em>Data Structures and
+Algorithms.</em> Addison-Wesley.</p>
+
+<p>Gonnet G. H. (1984). <em>Handbook of Algorithms + Data Structures.</em> Addison-Wesley.</p>
+
+<p>van Emden M. (1981). <em>Logic Programming Newsletter 2.</em></p>
+
+<p>Wirth N. (1976). <em>Algorithms + Data Structures = Programs.</em> Prentice-Hall.
+[Имеется перевод: Вирт H. Алгоритмы + структуры
+данных = программы. - M.: Мир, 1985.]</p>
+
+<hr>
+
+<p align="center"><a href="ch10_1.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch11_1.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

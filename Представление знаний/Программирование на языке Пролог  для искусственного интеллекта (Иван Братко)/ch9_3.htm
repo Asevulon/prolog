@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 9. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch9_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch9_4.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>9. 3.&nbsp;&nbsp;&nbsp; Двоичные справочники: добавление
+и удаление элемента</h4>
+
+<p>Если мы имеем дело с динамически изменяемым
+множеством элементов данных, то нам может
+понадобиться внести в него новый элемент или
+удалить из него один из старых. В связи с этим
+набор основных операций, выполняемых над
+множеством S, таков:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>внутри( X, S)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Х&nbsp; содержится в&nbsp; S</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( S, X, S1)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Добавить&nbsp; Х&nbsp; к&nbsp; S,&nbsp; результат -&nbsp; S1</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( S, X, S1)</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Удалить&nbsp; Х&nbsp; из&nbsp; S,&nbsp; результат -&nbsp; S1</small></p>
+
+<p align="center"><img src="pic/fig9_9.gif" width="398" height="374"
+alt="fig9_9.gif (2587 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 9. 9.</strong>&nbsp; Введение в
+двоичный справочник нового элемента на уровне
+листьев. Показанные деревья соответствуют
+следующей последовательности вставок:</small><br>
+<strong><small>добавить( Д1, 6, Д2), добавить( Д2, 6, Д3),
+добавить( Д3, 6, Д4)</small></strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доблист( nil, X, дер( nil,
+X, nil) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; доблист( дер( Лев, Х,
+Прав), Х, дер( Лев, Х, Прав) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; доблист( дер( Лев,
+Кор, Прав), Х, дер( Лев1, Кор, Прав)) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( Кор, X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+доблист( Лев, X, Лев1)).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; доблист( дер( Лев,
+Кор, Прав), Х, дер( Лев, Кор, Прав1)) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( X, Кор),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+доблист( Прав, X, Прав1).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 10.</strong>&nbsp; Вставление в
+двоичный справочник нового элемента в качестве
+листа<a name="tn101">.</small></p>
+
+<p>Определим <span id="t101">отношение <em>добавить</em></span>.
+Простейший способ: ввести новый элемент на самый
+нижний уровень дерева, так что он станет его
+листом. Место, на которое помещается новый
+элемент, выбрать таким образом, чтобы не нарушить
+упорядоченность дерева. На рис. 9.9 показано, какие
+изменения претерпевает дерево в процессе
+введения в него новых элементов. Назовем такой
+метод вставления элемента в множество</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>доблист( Д, X, Д1)</strong></p>
+
+<p>Правила добавления элемента на уровне листьев
+таковы: 
+
+<ul>
+  <li>Результат добавления элемента Х к пустому
+    дереву есть дерево <strong>дер( nil, X, nil)</strong>.</li>
+  <li>Если Х совпадает с корнем дерева Д, то Д1 = Д (в
+    множестве не допускается дублирования
+    элементов).</li>
+  <li>Если корень дерева Д больше, чем X, то Х вносится
+    в левое поддерево дерева Д; если корень меньше,
+    чем X, то Х вносится в правое поддерево.</li>
+</ul>
+
+<p>На рис. 9.10 показана соответствующая программа</a><a
+name="tn104">.</p>
+
+<p>Теперь рассмотрим <span id="t104">операцию <em>удалить</em></span>.
+Лист дерева удалить легко, однако удалить
+какую-либо внутреннюю вершину - дело не простое.
+Удаление листа можно на самом деле определить
+как операцию, обратную</p>
+
+<p align="center"><img src="pic/fig9_11.gif" width="429" height="182"
+alt="fig9_11.gif (1744 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 9. 11.</strong>&nbsp; Удаление X из
+двоичного справочника. Возникает проблема
+наложения &quot;заплаты&quot; на место удаленного
+элемента X.</small></p>
+
+<p>операции добавления листа:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удлист( Д1, X, Д2) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+доблист( Д2, X, Д1).</strong></p>
+
+<p>К сожалению, если Х - это внутренняя вершина, то
+такой способ не работает, поскольку возникает
+проблема, иллюстрацией к которой служит рис. 9.11.
+Вершина Х имеет два поддерева <strong>Лев</strong> и <strong>Прав</strong>.
+После удаления вершины Х в дереве образуется
+&quot;дыра&quot;, и поддеревья <strong>Лев</strong> и <strong>Прав</strong>
+теряют свою связь с остальной частью дерева. К
+вершине А оба эти поддерева присоединить
+невозможно, так как вершина А способна принять
+только одно из них.</p>
+
+<p>Если одно из поддеревьев <strong>Лев</strong> и <strong>Прав</strong>
+пусто, то существует простое решение:
+подсоединить к А непустое поддерево. Если же оба
+поддерева непусты,</p>
+
+<p align="center"><img src="pic/fig9_12.gif" width="427" height="120"
+alt="fig9_12.gif (1831 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 9. 12.</strong>&nbsp; Заполнение
+пустого места после удаления X.</small></p>
+
+<p>то можно использовать следующую идею (рис. 9.12):
+если самую левую вершину Y поддерева <strong>Прав</strong>
+переместить из ее текущего положения вверх и
+заполнить ею пробел, оставшийся после X, то
+упорядоченность дерева не нарушится. Разумеется,
+та же идея сработает и в симметричном случае,
+когда перемещается самая правая вершина
+поддерева <strong>Лев</strong>.</p>
+
+<p>На рис. 9.13 показана программа, реализующая
+операцию удаления элементов в соответствии с
+изложенными выше соображениями. Основную работу
+по перемещению самой левой вершины выполняет
+отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удмин( Дер, Y, Дер1)</strong></p>
+
+<p>Здесь Y - минимальная (т.е. самая левая) вершина
+дерева <strong>Дер</strong>, а <strong>Дер1</strong> - то, во что
+превращается дерево <strong>Дер</strong> после удаления
+вершины Y.</p>
+
+<p>Существует другой,</a><a name="tn102"> элегантный
+способ реализация операции <em>добавить</em> и <em>удалить</em>.
+<span id="t102">Отношение <em>добавить</em></span> можно
+сделать недетерминированным в том смысле, что
+новый элемент вводится на произвольный уровень
+дерева, а не только на уровень листьев. Правила
+таковы:</p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>уд( дер( nil, X, Прав), X,
+Прав).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; уд( дер( Лев, X, nil), X,
+Лев).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; уд( дер( Лев, Х, Прав),
+X, дер( Лев,Y, Прав1) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удмин( Прав, Y, Прав1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; уд( дер( Лев, Кор,
+Прав), X, дер( Лев1, Кор, Прав) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( Кор, X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+уд( Лев, X, Лев1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; уд( дер( Лев, Кор,
+Прав), X, дер( Лев, Кор, Прав1) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( X, Кор),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+уд( Прав, X, Прав1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удмин( дер( nil, Y,
+Прав), Y, Прав).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удмин( дер( Лев, Кор,
+Прав), Y, дер( Лев1, Кор, Прав) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удмин( Лев, Y, Лев1).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 13.</strong>&nbsp; Удаление
+элемента из двоичного справочника.</small></p>
+<script language="JavaScript">line();</script>
+
+
+<p>Для того, чтобы добавить Х в двоичный
+справочник Д, необходимо одно из двух: 
+
+<ul>
+  <li>добавить Х на место корня дерева (так, что Х
+    станет новым корнем) или</li>
+  <li>если корень больше, чем X, то внести Х в левое
+    поддерево, иначе - в правое поддерево. </li>
+</ul>
+<script language="JavaScript">line();</script>
+
+
+<p>Трудным моментом здесь является введение Х на
+место корня. Сформулируем эту операций в виде
+отношения</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добкор( Д, X, X1)</strong></p>
+
+<p>где Х - новый элемент, вставляемый вместо корня
+в Д, а Д1 - новый справочник с корнем Х. На рис. 9.14
+показано, как соотносятся X, Д и Д1. Остается
+вопрос: что из себя представляют поддеревья L1 и L2
+(или, соответственно, R1 и R2) на рис. 9.14?</p>
+
+<p align="center"><img src="pic/fig9_14.gif" width="405" height="392"
+alt="fig9_14.gif (2853 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 9. 14.</strong>&nbsp; Внесение Х в
+двоичный справочник в качестве корня.</small></p>
+
+<p>Ответ мы получим, если учтем следующие
+ограничения на L1, L2: 
+
+<ul>
+  <li>L1 и L2 - двоичные справочники;</li>
+  <li>множество всех вершин, содержащихся как в L1, так
+    и в L2, совпадает с множеством вершин справочника
+    L;</li>
+  <li>все вершины из L1 меньше, чем X; все вершены из L2
+    больше, чем X.</li>
+</ul>
+
+<p>Отношение, которое способно наложить все эти
+ограничения на L1, L2, - это как раз и есть наше
+отношение <strong>добкор</strong>. Действительно, если
+бы мы вводили Х в L на место корня, то поддеревьями
+результирующего дерева как раз и оказались бы L1 и
+L2. В терминах Пролога L1 и L2 должны быть такими,
+чтобы достигалась цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добкор( L, X, дер( L1, X,
+L2) ).</strong></p>
+
+<p>Те же самые ограничения применимы к R1, R2:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добкор( R, X, дер( R1, X,
+R2) ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( Д, X, Д1) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Добавить Х на место корня</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>добкор( Д, X, Д1).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( дер( L, Y, R),
+X, дер( L1, Y, R) ) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>больше( Y, X),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Ввести Х в левое поддерево</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>добавить( L, X, L1).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( дер( L, Y, R),
+X, дер( L, Y, R1) ) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>больше( X, Y),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Ввести Х в правое поддерево</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>добавить( R, X, R1).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добкор( nil, X, дер( nil,
+X, nil) ).</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Ввести Х в пустое дерево</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добкор( дер( L, Y, R), Х,
+дер( L1, Х, дер( L2, Y, R) )) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( Y, X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+добкор( L, X, дер( L1, X, L2) ).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; добкор( дep( L, Y, R), X,
+дep( дep( L, Y, R1), X, R2) ) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+больше( X, Y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+добкор( R, X, дер( R1, X, R2) ).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 9. 15.</strong>&nbsp; Внесение
+элемента на произвольный уровень двоичного
+справочника.</small></p>
+
+<p>На рис. 9.15 показана программа для
+&quot;недетерминированного&quot; добавления элемента
+в двоичный справочник.</p>
+
+<p>Эта процедура обладает тем замечательным
+свойством, что в нее не заложено никаких
+ограничений на уровень дерева, в который
+вносится новый элемент. В связи с этим операцию <em>добавить</em>
+можно использовать &quot;в обратном направлении&quot;
+для удаления элемента из справочника. Например,
+приведенная ниже последовательность целей
+строит справочник Д, содержащий элементы 3, 5, 1, 6, а
+затем удаляет из него элемент 5, после чего
+получается справочник ДД:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( nil, 3, Д1),
+&nbsp;&nbsp;&nbsp; добавить( Д1, 5, Д2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; добавить( Д2, 1, Д3),
+&nbsp;&nbsp;&nbsp; добавить( Д3, 6, Д),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; добавить( ДД, 5, Д).</strong></p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch9_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch9_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

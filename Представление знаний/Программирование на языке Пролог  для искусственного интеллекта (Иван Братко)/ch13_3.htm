@@ -1,0 +1,452 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 13. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch13_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch13_4.htm">Вперёд</a></p>
+<a name="tn139"><script language="JavaScript">double_line();</script>
+
+
+<h4>13. 3.&nbsp;&nbsp;&nbsp; <span id="t139">Базовые процедуры
+поиска в И / ИЛИ-графах</span></h4>
+
+<p>В этом разделе нас будет интересовать <em>какое-нибудь</em>
+решение задачи независимо от его стоимости,
+поэтому проигнорируем пока стоимости связей или
+вершин И / ИЛИ-графа. Простейший способ
+организовать поиск в И / ИЛИ-графах средствами
+Пролога - это использовать переборный механизм,
+заложенный в самой пролог-системе. Оказывается,
+что это очень просто сделать, потому что
+процедурный смысл Пролога это и есть не что иное,
+как поиск в И / ИЛИ-графе. Например, И / ИЛИ-граф
+рис. 13.4 (без учета стоимостей дуг) можно описать
+при помощи следующих предложений:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а :- b.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% а&nbsp; -&nbsp; ИЛИ-вершина с двумя преемниками</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а :- с.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% b&nbsp; и&nbsp; с</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>b :- d, е.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% b - И-вершина с двумя преемниками&nbsp; d&nbsp; и&nbsp;
+е</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>с :- h.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; с :- f, g.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f :- h, i.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; d.&nbsp; g.&nbsp; h.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+d,&nbsp; g&nbsp; и&nbsp; h - целевые вершины</small></p>
+
+<p>Для того, чтобы узнать, имеет ли эта задача
+решение, нужно просто спросить:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; а.</strong></p>
+
+<p>Получив этот вопрос, пролог-система произведет
+поиск в глубину в дереве рис. 13.4 и после того, как
+пройдет через все вершины подграфа,
+соответствующего решающему дереву рис. 13.4(b),
+ответит &quot;да&quot;.</p>
+
+<p>Преимущество такого метода программирования И
+/ ИЛИ-поиска состоит в его простоте. Но есть и
+недостатки: 
+
+<ul>
+  <li>Мы получаем ответ &quot;да&quot; или &quot;нет&quot;, но не
+    получаем решающее дерево. Можно было бы
+    восстановить решающее дерево при помощи
+    трассировки программы, но такой способ неудобен,
+    да его и недостаточно, если мы хотим иметь
+    возможность явно обратиться к решающему дереву
+    как к объекту программы.</li>
+  <li>В эту программу трудно вносить добавления,
+    связанные с обработкой стоимостей.</li>
+  <li>Если наш И / ИЛИ-граф - это граф общего вида,
+    содержащий циклы, то пролог-система, следуя
+    стратегии в глубину, может войти в бесконечный
+    рекурсивный цикл</a>.</li>
+</ul>
+
+<p>Попробуем постепенно исправить эти недостатки.
+Сначала определим нашу собственную процедуру
+поиска в глубину для И / ИЛИ-графов.</p>
+
+<p>Прежде всего мы должны изменить представление
+И / ИЛИ-графов. С этой целью введём бинарное
+отношение, изображаемое инфиксным оператором
+'---&gt;'. Например, вершина&nbsp; <em>а</em>&nbsp; с двумя
+ИЛИ-преемниками будет представлена предложением</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а ---&gt; или : [b, с].</strong></p>
+
+<p>Оба символа&nbsp; '---&gt;'&nbsp; и&nbsp; ':'&nbsp; - инфиксные
+операторы, которые можно определить как</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>:- ор( 600, xfx, ---&gt;).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :- ор( 500, xfx, :).</strong></p>
+
+<p>Весь И / ИЛИ-граф рис. 13.4 теперь можно задать при
+помощи множества предложений</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а ---&gt; или : [b, с].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b ---&gt; и : [d, e].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; с ---&gt; и : [f, g].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; е ---&gt; или : [h].<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f ---&gt; или : [h, i].</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; цель( d). &nbsp;&nbsp;&nbsp;
+цель( g).&nbsp;&nbsp;&nbsp; цель( h).</strong></p>
+
+<p>Процедуру поиска в глубину в И / ИЛИ-графах
+можно построить, базируясь на следующих
+принципах:</p>
+
+<p>Для того, чтобы решить задачу вершины&nbsp; В, &nbsp;
+необходимо придерживаться приведенных ниже
+правил:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если&nbsp; В
+&nbsp; -&nbsp; целевая вершина, то задача решается
+тривиальным образом.</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если
+вершина&nbsp; В&nbsp; имеет ИЛИ-преемников, то нужно
+решить одну из соответствующих задач-преемников
+(пробовать решать их одну за другой, пока не будет
+найдена задача, имеющая решение).</p>
+
+<p>&nbsp;&nbsp;&nbsp; (3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если
+вершина&nbsp; В&nbsp; имеет И-преемников, то нужно
+решить все соответствующие задачи (пробовать
+решать их одну за другой, пока они не будут решены
+все).</p>
+
+<p>Если применение этих правил не приводит к
+решению, считать, что задача не может быть решена.</p>
+
+<p>Соответствующая программа выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Верш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+цель( Верш).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решить( Верш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Верш ---&gt; или : Вершины,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Верш - ИЛИ-вершина</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит( Верш1, Вершины),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор преемника&nbsp; Верш1&nbsp; вершины&nbsp; Верш</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Bepш1).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решить( Верш) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Верш ---&gt; и : Вершины,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Верш - И-вершина</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>решитьвсе( Вершины).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Решить все задачи-преемники</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решитьвсе( [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решитьвсе( [Верш |
+Вершины]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решить( Верш),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решитьвсе( Вершины).</strong></p>
+
+<p>Здесь <strong>принадлежит</strong> - обычное отношение
+принадлежности к списку.</p>
+
+<p>Эта программа все еще имеет недостатки: 
+
+<ul>
+  <li>она не порождает решающее дерево, и</li>
+  <li>она может зацикливаться, если И / ИЛИ-граф имеет
+    соответствующую структуру (циклы).</li>
+</ul>
+
+<p>Программу нетрудно изменить с тем, чтобы она
+порождала решающее дерево. Необходимо так
+подправить отношение <strong>решить</strong>, чтобы оно
+имело два аргумента:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Верш,
+РешДер).</strong></p>
+
+<p>Решающее дерево представим следующим образом.
+Мы имеем три случая:</p>
+
+<p>&nbsp;&nbsp;&nbsp; (1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если <strong>Верш</strong>
+- целевая вершина, то соответствующее решающее
+дерево и есть сама эта вершина.</p>
+
+<p>&nbsp;&nbsp;&nbsp; (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если <strong>Верш</strong>
+- ИЛИ-вершина, то решающее дерево имеет вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Верш ---&gt; Поддерево</strong></p>
+
+<p>где <strong>Поддерево</strong> - это решающее дерево
+для одного из преемников вершины <strong>Верш</strong>.</p>
+
+<p>&nbsp;&nbsp;&nbsp; (3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Если <strong>Верш</strong>
+- И-вершина, то решающее дерево имеет вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Верш ---&gt; и : Поддеревья</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+где <strong>Поддеревья</strong> - список решающих
+деревьев для всех преемников вершины <strong>Верш</strong>.</p>
+<a name="tn132"><script language="JavaScript">line();</script>
+
+
+<p><small>% <span id="t132">Поиск в глубину для И / ИЛИ-графов</span><br>
+% Процедура решить( Верш, РешДер) находит решающее
+дерево для<br>
+% некоторой вершины в И / ИЛИ-графе</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Верш, Верш) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% Решающее дерево для
+целевой</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>цель( Верш).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% вершины - это сама вершина</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Верш, Верш
+---&gt; Дер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Верш ---&gt; или : Вершины,</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Верш - ИЛИ-вершина</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит( Верш1, Вершины),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор преемника&nbsp; Верш1&nbsp; вершины&nbsp; Верш</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>решить( Bepш1, Дер).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решить( Верш, Верш
+---&gt; и : Деревья) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Верш ---&gt; и : Вершины,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>&nbsp; % Верш -
+И-вершина</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>решитьвсе( Вершины, Деревья).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp; % Решить все задачи-преемники</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решитьвсе( [ ], [ ]).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; решитьвсе( [Верш |
+Вершины], [Дер | Деревья]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решить( Верш, Дер),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решитьвсе( Вершины, Деревья).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; отобр( Дер) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp; % Отобразить решающее дерево</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>отобр( Дер, 0),&nbsp; !.</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>&nbsp;&nbsp;&nbsp;&nbsp; % с отступом 0</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>отобр( Верш ---&gt; Дер,
+Н) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Отобразить решающее дерево с отступом Н</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>write( Верш), write( '---&gt;'),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+H1 is H + 7,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+отобр( Дер, H1),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; отобр( и : [Д], Н) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Отобразить И-список решающих деревьев</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>отобр( Д, Н).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; отобр( и : [Д | ДД], Н) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Отобразить И-список решающих деревьев</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>отобр( Д, Н),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+tab( H),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+отобр( и : ДД, Н),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; отобр( Верш, Н) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+write( Верш), nl.</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 13. 8.</strong>&nbsp; Поиск в
+глубину для И / ИЛИ-графов. Эта программа может<br>
+зацикливаться. Процедура <strong>решить</strong>
+находит решающее дерево, а<br>
+процедура <strong>отобр</strong> показывает его
+пользователю. В процедуре <strong>отобр</strong><br>
+предполагается, что на вывод вершины тратится
+только один символ.</small></p>
+
+<p>Например, при поиске в И / ИЛИ-графе рис. 13.4
+первое найденное решение задачи,
+соответствующей самой верхней вершине&nbsp; <em>а</em>,
+&nbsp; будет иметь следующее представление:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а ---&gt; b ---&gt; и : [d, c
+---&gt; h]</strong></p>
+
+<p>Три формы представления решающего дерева
+соответствуют трем предложениям отношения <strong>решить</strong>.
+Поэтому все, что нам нужно сделать для изменения
+нашей исходной программы <strong>решить</strong>, - это
+подправить каждое из этих трех предложений,
+просто добавив в каждое из них решающее дерево в
+качестве второго аргумента. Измененная
+программа показана на рис. 13.8. В нее также введена
+дополнительная процедура <strong>отобр</strong> для
+отображения решающих деревьев в текстовой форме.
+Например, решающее дерево рис. 13.4 будет
+отпечатано процедурой <strong>отобр</strong> в
+следующем виде:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>а ---&gt; b ---&gt; d<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+е ---&gt; h</strong></p>
+
+<p>Программа рис. 13.8 все еще сохраняет склонность
+к вхождению в бесконечные циклы. Один из простых
+способов избежать бесконечных циклов - это
+следить за текущей глубиной поиска и не давать
+программе заходить за пределы некоторого
+ограничения по глубине. Это можно сделать, введя
+в отношение <strong>решить</strong> еще один аргумент:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Верш,
+РешДер, МаксГлуб)</strong></p>
+
+<p>Как и раньше, вершиной <strong>Верш</strong>
+представлена решаемая задача, а <strong>РешДер</strong> -
+это решение этой задачи, имеющее глубину, не
+превосходящую <strong>МаксГлуб</strong>. <strong>МаксГлуб</strong>
+-это допустимая глубина поиска в графе. Если <strong>МаксГлуб</strong>
+= 0, то двигаться дальше запрещено, если же <strong>МаксГлуб</strong>
+&gt; 0, то поиск распространяется на преемников
+вершины <strong>Верш</strong>, причем для них
+устанавливается меньший предел по глубине,
+равный <strong>МаксГлуб</strong> -1. Это дополнение легко
+ввести в программу рис. 13.8. Например, второе
+предложение процедуры решить примет вид:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>решить( Верш, Верш
+---&gt; Дер, МаксГлуб) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+МаксГлуб &gt; 0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Верш ---&gt; или : Вершины,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Верш - ИЛИ-вершина</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>принадлежит ( Верш1, Вершины),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор преемника&nbsp; Верш1&nbsp; вершины&nbsp; Верш</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>Глуб1 is МаксГлуб - 1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Новый предел по глубине</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>решить( Bepш1, Дер, Глуб1).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Решить задачу-преемник с меньшим
+ограничением</small></p>
+
+<p>Нашу процедуру</a><a name="tn133"> поиска в глубину с
+ограничением</a><a name="tn30"> можно также использовать
+для имитации <span id="t133">поиска в ширину</span>. <span
+id="t30">Идея состоит в следующем</span>: многократно
+повторять поиск в глубину каждый раз все с
+большим значением ограничения до тех пор, пока
+решение не будет найдено, То есть попробовать
+решить задачу с ограничением по глубине, равным 0,
+затем - с ограничением 1, затем - 2 и т.д. Получаем
+следующую программу:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>имитация_в_ширину(
+Верш, РешДер) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+проба_в_глубину( Верш, РешДер, 0).</strong><br>
+<small>% Проба поиска с возрастающим ограничением,
+начиная с 0</small></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>проба_в_глубину(
+Верш, РешДер, Глуб) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+решить( Верш, РешДер, Глуб);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Глуб1 is Глуб + 1,</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Новый предел по глубине</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>проба_в_глубину( Верш, РешДер, Глуб1).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Попытка с новым ограничением</small></p>
+
+<p>Недостатком имитации поиска в ширину является
+то, что при каждом увеличении предела по глубине
+программа повторно просматривает верхнюю
+область пространства поиска.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>13. 1.</strong>&nbsp;&nbsp;&nbsp; Закончите составление
+программы поиска в глубину (с ограничением) для И
+/ ИЛИ-графов, намеченную в настоящем разделе.</p>
+
+<p><strong>13. 2.</strong>&nbsp;&nbsp;&nbsp; Определите на Прологе И /
+ИЛИ-пространство для задачи &quot;ханойская
+башня&quot; и примените к нему процедуры поиска
+настоящего раздела.</p>
+
+<p><strong>13. 3.</strong>&nbsp;&nbsp;&nbsp; Рассмотрите
+какую-нибудь простую детерминированную игру
+двух лиц с полной информацией и дайте
+определение ее И / ИЛИ-представления. Используйте
+программу поиска в И / ИЛИ-графах для построения
+выигрывающих стратегий в форме И / ИЛИ-деревьев.</p>
+
+<hr>
+</a>
+
+<p align="center"><a href="ch13_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch13_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

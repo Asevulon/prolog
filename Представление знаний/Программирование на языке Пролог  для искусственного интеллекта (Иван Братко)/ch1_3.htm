@@ -1,0 +1,353 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 1. Пункт 3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch1_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch1_4.htm">Вперёд</a></p>
+<script language="JavaScript">double_line();</script>
+
+
+<h4>1. 3.&nbsp;&nbsp;&nbsp; Рекурсивное определение правил</h4>
+
+<p>Давайте добавим к нашей программе о
+родственных связях еще одно отношение - <strong>предок</strong>.
+Определим его через отношение <strong>родитель</strong>.
+Все отношение можно выразить с помощью двух
+правил. Первое правило будет определять
+непосредственных (ближайших) предков, а второе -
+отдаленных. Будем говорить, что некоторый
+является отдаленным предком некоторого Z, если
+между X и Z существует цепочка людей, связанных</p>
+
+<p align="center"><img src="pic/fig1_5.gif" width="354" height="280"
+alt="fig1_5.gif (1998 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 1. 5.</strong>&nbsp; Пример
+отношения <strong>предок</strong>:<br>
+(а)&nbsp;&nbsp;&nbsp; <strong>X</strong> - <em>ближайший</em> предок <strong>Z</strong>;
+&nbsp;&nbsp;&nbsp; (b)&nbsp;&nbsp;&nbsp; <strong>X</strong> - отдаленный
+предок <strong>Z</strong>.</small></p>
+
+<p>между собой отношением родитель-ребенок, как
+показано на рис.1.5. В нашем примере на рис. 1.1 &nbsp;
+Том - ближайший предок Лиз и отдаленный предок
+Пат.</p>
+
+<p>Первое правило простое и его можно
+сформулировать так:</p>
+
+<p>&nbsp;&nbsp;&nbsp; Для всех X и Z,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X - предок Z, если<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X - родитель Z.</p>
+
+<p>Это непосредственно переводится на Пролог как</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( X, Z).</strong></p>
+
+<p>Второе правило сложнее, поскольку построение
+цепочки отношений <strong>родитель</strong> может
+вызвать некоторые трудности. Один из способов
+определения отдаленных родственников мог бы
+быть таким, как показано на рис. 1.6. В соответствии
+с ним отношение предок определялось бы следующим
+множеством предложений:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+родитель( X, Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( X, Y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Y, Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( X, Y1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Yl, Y2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Y2, Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( X, Y1),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Y1, Y2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Y2, Y3),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Y3, Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp; .&nbsp; .</strong></p>
+
+<p>&nbsp;</p>
+
+<p align="center"><img src="pic/fig1_6.gif" width="551" height="357"
+alt="fig1_6.gif (3835 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 1. 6.</strong>&nbsp; Пары
+предок-потомок, разделенных разным числом
+поколений.</small></p>
+
+<p>Эта программа длинна и, что более важно,
+работает только в определенных пределах. Она
+будет обнаруживать предков лишь до определенной
+глубины фамильного дерева, поскольку длина
+цепочки людей между предком и потомком
+ограничена длиной наших предложений в
+определении отношения.</p>
+
+<p>Существует, однако, корректная и элегантная
+формулировка отношения <strong>предок</strong> -
+корректная в том смысле, что будет работать для
+предков произвольной отдаленности. Ключевая
+идея здесь - определить отношение <strong>предок</strong>
+через него самого. Рис 1.7 иллюстрирует эту идею:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Для всех X и Z,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X -
+предок Z, если<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+существует Y, такой, что<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(1)&nbsp;&nbsp;&nbsp; X - родитель Y и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(2)&nbsp;&nbsp;&nbsp; Y - предок Z.</p>
+
+<p>Предложение Пролога, имеющее тот же смысл,
+записывается так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+родитель( X, Y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+предок( Y, Z).</strong></p>
+
+<p>Теперь мы построили полную программу для
+отношения <strong>предок</strong>, содержащую два
+правила: одно для ближайших предков и другое для
+отдаленных предков. Здесь приводятся они оба
+вместе:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+родитель( X, Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+родитель( X, Y),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+предок( Y, Z).</strong></p>
+
+<p align="center"><img src="pic/fig1_7.gif" width="267" height="449"
+alt="fig1_7.gif (2136 bytes)"></p>
+
+<p align="center"><small><strong>Рис 1. 7.</strong>&nbsp; Рекурсивная
+формулировка отношения <strong>предок</strong>.</small></p>
+
+<p>Ключевым моментом в данной формулировке было
+использование самого отношения <strong>предок</strong>
+в его определении. Такое определение может
+озадачить - допустимо ли при определении
+какого-либо понятия<a name="tn260"> использовать его же,
+ведь оно определено еще не полностью. <span id="t260">Такие
+определения называются <em>рекурсивными</em></span>.
+Логически они совершенно корректны и понятны;
+интуитивно это ясно, если посмотреть на рис. 1.7. Но
+будет ли в состоянии пролог-система использовать
+рекурсивные правила? Оказывается, что
+пролог-система очень легко может обрабатывать
+рекурсивные определения. На самом деле, рекурсия
+- один из фундаментальных приемов
+программирования на Прологе. Без рекурсии с его
+помощью невозможно решать задачи сколько-нибудь
+ощутимой сложности.</p>
+
+<p>Возвращаясь к нашей программе, можно теперь
+задать системе вопрос: &quot;Кто потомки Пам?&quot; То
+есть: &quot;Кто тот человек, чьим предком является
+Пам ?&quot;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; предок( пам, X).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X&nbsp; =&nbsp; боб;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X&nbsp; =&nbsp; энн;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X&nbsp; =&nbsp; пат;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X&nbsp; =&nbsp; джим</strong></p>
+
+<p>Ответы системы, конечно, правильны, и они
+логически вытекают из наших определений
+отношений <strong>предок</strong> и <strong>родитель</strong>.
+Возникает, однако, довольно важный вопрос: &quot;<em>Как</em>
+в действительности система использует программу
+для отыскания этих ответов?&quot;</p>
+
+<p>Неформальное объяснение того, как система это
+делает, приведено в следующем разделе. Но сначала
+давайте объединим все фрагменты нашей программы
+о родственных отношениях, которая постепенно
+расширялась по мере того, как мы вводили в нее
+новые факты и правила. Окончательный вид
+программы показан на рис. 1.8.</p>
+
+<p>При рассмотрении рис. 1.8 следует учесть два
+новых момента: первый касается понятия
+&quot;процедура&quot;, второй - комментариев в
+программах. Программа, приведенная на рис. 1.8,
+определяет несколько отношений - <strong>родитель</strong>,
+<strong>мужчина</strong>, <strong>женщина</strong>, <strong>предок</strong>
+и т.д. Отношение <strong>предок</strong>, например,
+определено с помощью двух предложений. Будем
+говорить, что эти два предложения входят в состав
+отношения</p>
+<script language="JavaScript">line();</script>
+
+
+<p><strong>родитель( пам, боб).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Пам - родитель Боба</small><br>
+<strong>родитель( том, боб).<br>
+родитель( том, лиз).<br>
+родитель( бoб, энн).<br>
+родитель( боб, пат).<br>
+родитель( пат, джим).</strong></p>
+
+<p><strong>женщина( пам).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small> % Пам - женщина</small><br>
+<strong>мужчина( том).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Том - мужчина</small><br>
+<strong>мужчина( боб).<br>
+женщина( лиз).<br>
+женщина( энн).<br>
+женщина( пат).<br>
+мужчина( джим).</strong></p>
+
+<p><strong>отпрыск( Y, X) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Y - отпрыск X, если</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель( X, Y).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+X - родитель Y</small></p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>мать( X, Y) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+X - мать Y, если</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель(
+X, Y),</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+X - родитель Y и</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>женщина(
+X).</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+X - женщина</small></p>
+
+<p><strong>родительродителя( X, Z) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X - родитель родителя Z, если</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель(
+X, Y),</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>&nbsp; %
+X - родитель Y и</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель(
+Y, Z).</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+Y - родитель Z</small></p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>сестра( X, Y) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X - сестра Y</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель(
+Z, X),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Z, Y)</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% X и Y имеют общего родителя</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>женщина(
+X, Y),</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>%
+X - женщина и</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>различны(
+X, Y).</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>% X
+отличается от Y</small></p>
+
+<p><strong>предок( X, Z) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Правило пр1:&nbsp; X - предок Z</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель(
+X, Z).</strong></p>
+
+<p><strong>предок( X, Z) :-</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>%
+Правило пр2:&nbsp; X - предок Z</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>родитель( X, Y),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>предок( Y, Z).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p><small><strong>Рис. 1. 8.</strong>&nbsp;&nbsp; Программа о
+родственных отношениях.</small></p>
+
+<p><strong>предок</strong>. Иногда бывает удобно
+рассматривать в целом все множество предложений,</a><a
+name="tn250"> входящих в состав одного отношения. Такое
+множество <span id="t250">называется <em>процедурой</em></span>.</p>
+
+<p>На рис. 1.8 два предложения, входящие в состав</a><a
+name="tn147"> отношения <strong>предок</strong>, выделены
+именами</a> &quot;пр1&quot; и &quot;пр2&quot;, добавленными в
+программу в виде <em><span id="t147">комментариев</span></em>.
+Эти имена будут использоваться в дальнейшем для
+ссылок на соответствующие правила. Вообще
+говоря, комментарии пролог-системой
+игнорируются. Они нужны лишь человеку, который
+читает программу. В Прологе комментарии
+отделяются от остального текста программы
+специальными скобками &quot;/*&quot; и &quot;*/&quot;. Таким
+образом, прологовский комментарий выглядит так</p>
+
+<p align="center">/*&nbsp;&nbsp;&nbsp; Это комментарий&nbsp;&nbsp;&nbsp; */</p>
+
+<p>Другой способ, более практичный для коротких
+комментариев, использует символ процента %. Все,
+что находится между % и концом строки,
+расценивается как комментарии:</p>
+
+<p align="center">%&nbsp;&nbsp;&nbsp; Это тоже комментарий</p>
+
+<h4>Упражнение</h4>
+
+<p><strong>1. 6.</strong>&nbsp;&nbsp;&nbsp; Рассмотрим другой
+вариант отношения предок:</p>
+
+<p>&nbsp;&nbsp;&nbsp; <strong>предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( X, Z).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp; предок( X, Z) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; родитель( Y, Z).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; предок( X, Y).</strong></p>
+
+<p>Верно ли и такое определение? Сможете ли Вы
+изменить диаграмму на рис. 1.7 таким образом, чтобы
+она соответствовала новому определению?</p>
+
+<p><a href="javascript:fa('1_6')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch1_2.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch1_4.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>

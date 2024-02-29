@@ -1,0 +1,613 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<title>Глава 7. Пункт 1</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script src="script.js" type="text/javascript"></script>
+</head>
+
+<body bgColor="#fff5ee">
+
+<p align="center"><a href="ch6_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch7_2.htm">Вперёд</a></p>
+
+<hr>
+
+<h3 align="center">Глава 7</h3>
+
+<h3 align="center">ДРУГИЕ ВСТРОЕННЫЕ ПРОЦЕДУРЫ</h3>
+
+<p>В данной главе мы изучим некоторые другие, не
+упоминавшиеся ранее встроенные процедуры,
+предназначенные для более серьезного
+программирования на Прологе. Эта новые процедуры
+дают возможность запрограммировать операции,
+которые известными нам средствами
+запрограммировать невозможно. Один набор таких
+процедур касается обработки термов: эти
+процедуры проверяют, была ли некоторая
+переменная конкретизирована целым числом, они
+разбирают термы на части, конструируют новые
+термы и т.д. Другой полезный набор процедур
+работает с &quot;базой данных&quot;: процедуры из
+этого набора добавляют новые отношения в
+программу или удаляют из нее существующие.</p>
+
+<p>Множество встроенных процедур сильно зависит
+от конкретной реализации Пролога. Однако
+процедуры, обсуждаемые в данной главе, имеются во
+многих реализациях. Различные реализации могут
+иметь свои наборы дополнительных средств.</p>
+<a name="p7_1"><script language="JavaScript">double_line();</script>
+</a>
+
+<h4>7. 1.&nbsp;&nbsp;&nbsp; Проверка типов термов</h4>
+<a name="p7_1_1">
+
+<hr>
+</a>
+
+<h4>7. 1. 1.&nbsp;&nbsp;&nbsp; Предикаты&nbsp;&nbsp; <font face="System">var,&nbsp;
+nоnvar,&nbsp; atom,&nbsp; integer,&nbsp; atomic</font></h4>
+
+<p>Термы бывают разных типов: переменные, целые
+числа, атомы и т.д. Если терм - переменная, то в
+некоторый момент выполнения программы он может
+оказаться конкретизированным или не
+конкретизированным. Далее, если он
+конкретизирован, то его значение может быть
+атомом, структурой и т. п. Иногда бывает полезно
+узнать, каков тип этого значения. Например, пусть
+мы хотим сложить значения двух переменных Х и Y:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Z&nbsp; is&nbsp; X + Y</strong></p>
+
+<p>Перед вычислением этой цели необходимо, чтобы Х
+и Y были конкретизированы целыми числами. Если у
+нас нет уверенности в том, что Х и Y действительно
+конкретизированы целыми числами, то перед
+выполнением арифметического действия нужно
+проверить это программно<a name="tn59">.</p>
+
+<p>Для этого следует воспользоваться встроенным
+предикатом <strong><span id="t59">integer</span></strong> (целое).
+Предикат <strong>integer( X)</strong> принимает значение
+истина, если Х - целое или если Х - переменная,
+имеющая целое значение. Будем говорить в этом
+случае, что Х &quot;обозначает&quot; целое. Цель для
+сложения Х и Y можно тогда &quot;защитить&quot; такой
+проверкой переменных Х и Y:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>. . ., integer( X), integer( Y), Z
+is X + Y, . . .</strong></p>
+
+<p>Если неверно, что X и Y оба являются целыми, то
+система и не будет пытаться их сложить. Таким
+образом, цели <strong>integer</strong> &quot;охраняют&quot; цель <strong>Z
+is Х + Y</strong> от бессмысленного вычисления.</p>
+
+<p>Встроенные предикаты этого типа таковы: <strong>var</strong>
+(переменная), <strong>nonvar</strong> (непеременная), <strong>atom</strong>
+(атом), <strong>integer</strong> (целое), <strong>atomic</strong>
+(атомарный). Они имеют следующий смысл</a><a name="tn82">:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t82">var( X)</span></strong></p>
+
+<p>Эта цель успешна, если Х в текущий момент - не
+конкретизированная переменная</a><a name="tn64">.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t64">nonvar( X)</span></strong></p>
+
+<p>Эта цель успешна, если Х - терм, отличный от
+переменной, или если Х - уже конкретизированная</a><a
+name="tn47"> переменная.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t47">atom( X)</span></strong></p>
+
+<p>Эта цель истинна, если Х обозначает атом.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>integer( X)</strong></p>
+
+<p>Цель истинна, если Х обозначает целое</a><a name="tn48">.</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><span id="t48">atomic( X)</span></strong></p>
+
+<p>Цель истинна, если Х обозначает целое или атом.</p>
+
+<p>Следующие примеры вопросов к пролог-системе
+иллюстрируют применение этих встроенных
+предикатов:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; var( Z),&nbsp; Z = 2.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z = 2</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; Z = 2, var( Z).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; integer( Z), Z = 2.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; Z = 2, integer( Z), nonvar(
+Z).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Z = 2</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; atom( 22).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; atomic( 22).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; atom( ==&gt;).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; atom( p( 1) ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no</strong></p>
+
+<p>Необходимость в предикате <strong>atom</strong>
+продемонстрируем на следующем примере. Пусть мы
+хотим подсчитать, сколько раз заданный атом
+встречается в некоторой списке объектов. Для
+этого мы определим процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>счетчик( А, L, N)</strong></p>
+
+<p>где <strong>А</strong> - атом, <strong>L</strong> - список и <strong>N</strong>
+- количество вхождений этого атома. В качестве
+первой попытки можно было бы определить <strong>счетчик</strong>
+так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>счетчик( _, [ ], 0).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; счетчик( A, [A | L], N)
+:-&nbsp; !,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+счетчик( A, L, N1),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% N1 - число вхождений атома в хвост</small><br>
+<strong>&nbsp;&nbsp; </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>N is N1 + 1.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; счетчик( А, [ _ | L], N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+счетчик( A, L, N).</strong></p>
+
+<p>Теперь на нескольких примерах посмотрим, как
+эта процедура работает:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; счетчик( а, [а, b,
+а, а], N).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N = 3</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; счетчик( a, [a, b,
+X, Y], Na).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Na = 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; счетчик( b, [a, b,
+X, Y], Nb).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nb = 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; L=[a, b, Х, Y],
+счетчик( а, L, Na), счетчик( b, L, Nb).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Na = 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nb = 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; X = a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Y = a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . . .</strong></p>
+
+<p>В последнем примере как X, так и Y после
+конкретизации получили значение <strong>а</strong>, и
+поэтому Nb оказалось равным только 1, однако мы
+хотели не этого. Нас интересовало количество
+реальных появлений конкретного <em>атома</em>, а
+вовсе не число термов, <em>сопоставимых</em> с этим
+атомом. В соответствии с этим более точным
+определением отношения <strong>счетчик</strong> мы
+должны теперь проверять, является ли голова
+списка атомом. Усовершенствованная программа
+выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>счетчик( _, [ ], 0).</strong></p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>счетчик( А, [В | L], N) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>atom( В), А = В,&nbsp; !,</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% B равно атому А?</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>счетчик( A, L, N1),</strong>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Подсчет в хвосте</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>N is N1 + 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+счетчик( А, L, N).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Иначе - подсчитать только в хвосте</small></p>
+
+<p>В следующем более сложном упражнении по
+программированию числовых ребусов используется </a><a
+name="tn11">предикат <strong>nonvar</strong>.</p>
+</a><a name="p7_1_2">
+
+<hr>
+</a>
+
+<h4>7. 1. 2.&nbsp;&nbsp;&nbsp; <span id="t11">Решение числового
+ребуса</span> с использованием <font face="System">&nbsp; nonvar</font></h4>
+
+<p>Известным примером числового ребуса является</p>
+
+<table>
+  <tr>
+    <td rowspan="2">+</td>
+    <td>D O N A L D</td>
+  </tr>
+  <tr>
+    <td><u>G E&nbsp; R A L D</u></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>R O B&nbsp; E R T</td>
+  </tr>
+</table>
+
+<p>Задача состоит в том. чтобы заменить буквы D, О, N
+и т.д. на цифры таким образом, чтобы
+вышеприведенная сумма была правильной. Разным
+буквам должны соответствовать разные цифры,
+иначе возможно тривиальное решение, например,
+все буквы можно заменить на нули.</p>
+
+<p>Определим отношение</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумма( Nl, N2, N)</strong></p>
+
+<p>где Nl, N2 и N представляют три числа данного
+ребуса. Цель <strong>cyммa(Nl, N2, N)</strong> достигается,
+если существует такая замена букв цифрами, что
+N1+N2 = N.</p>
+
+<p>Первым шагом к решению будет выбор
+представления чисел Nl, N2 и N в программе. Один из
+способов - представить каждое число в виде списка
+его цифр. Например, число 255 будет тогда
+представляться списком [2, 2, 5]. Поскольку значения
+цифр нам не известны заранее, каждая цифра будет
+обозначаться соответствующей
+неинициализированной переменной. Используя это
+представление, мы можем сформулировать задачу
+так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [ D, O, N, A, L, D ]<br>
+&nbsp; +&nbsp;&nbsp;&nbsp; [ G,&nbsp; E, R, A, L, D ]<br>
+&nbsp; =&nbsp;&nbsp;&nbsp; [ R, О, B,&nbsp; E, R, T ]</p>
+
+<p>Теперь задача состоит в том. чтобы найти такую
+конкретизацию переменных D, О, N и т.д., для которой
+сумма верна. После того, как отношение <strong>сумма</strong>
+будет запрограммировано, задание для
+пролог-системы на решение ребуса будет иметь вид</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; сумма( [D, O, N, A, L,
+D], [G, E, R, A, L, D],<br>
+&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[R, O, В, Е, R, T ).</strong></p>
+
+<p align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="pic/fig7_1.gif"
+width="234" height="274" alt="fig7_1.gif (2230 bytes)"></p>
+
+<p align="center"><small><strong>Рис. 7. 1.</strong>&nbsp; Поразрядное
+сложение.&nbsp;&nbsp;&nbsp; Отношения в показанном i-м</small><br>
+<small>разряде такие:&nbsp;&nbsp;&nbsp; D<sub>3i</sub> = (C1 + D<sub>1i</sub>
++ D<sub>2i</sub>) &nbsp;&nbsp;&nbsp; mod&nbsp;&nbsp;&nbsp; 10;&nbsp;&nbsp;&nbsp; C = (C1 +
+D<sub>1i</sub> + D<sub>2i</sub>)</small><br>
+<small>div&nbsp; 10&nbsp; (div - целочисленное деление, &nbsp; mod -
+остаток от деления).</small></p>
+
+<p>Для определения отношения <strong>сумма</strong> над
+списками цифр нам нужно запрограммировать
+реальные правила суммирования в десятичной
+системе счисления. Суммирование производится
+цифра за цифрой, начиная с младших цифр в сторону
+старших, всякий раз учитывая цифру переноса
+справа. Необходимо также сохранять множество
+допустимых цифр, т.е. цифр, которые еще не были
+использованы для конкретизации уже
+встретившихся переменных. Поэтому, вообще
+говоря, кроме трех чисел Nl, N2 и N в рассмотрении
+должна участвовать некоторая дополнительная
+информация, как показано на рис. 7.1: 
+
+<ul>
+  <li>перенос перед сложением</li>
+  <li>перенос после сложения</li>
+  <li>множество цифр, доступных перед сложением</li>
+  <li>оставшиеся цифры, не использованные при
+    сложении</li>
+</ul>
+
+<p>Для формулировки отношения <strong>сумма</strong> мы
+снова воспользуемся принципом обобщения задачи:
+введем вспомогательное, более общее отношение <strong>сумма1</strong>.
+Это отношение будет иметь несколько
+дополнительных аргументов, соответствующих той
+дополнительной информации, о которой говорилось
+выше:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумма1( Nl, N2, N, C1, С,
+Цифры1, Цифры)</strong></p>
+
+<p>Здесь Nl, N2 и N - наши три числа, как и в отношении
+сумма, С1 - перенос справа (до сложения Nl и N2), а С -
+перенос влево (после сложения). Пример:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; сумма1( [H, E], [6,
+E], [U, S], l, l,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[1, 3, 4, 7, 8, 9], Цифры ).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Н = 8<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Е = 3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S = 7<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; U = 4<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Цифры = [1, 9]</strong></p>
+
+<p>Если Nl и N удовлетворяют отношению <strong>сумма</strong>,
+то, как показано на рис. 7.1, С1 и С должны быть равны
+0. <strong>Цифры1</strong> - список цифр, которые не были
+использованы для конкретизации переменных.
+Поскольку мы допускаем использование в
+отношении <strong>сумма</strong> любых цифр, ее
+определение в терминах отношения <strong>сумма1</strong>
+выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумма( Nl, N2, N) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cyммa1( Nl, N2, N, 0, 0, [0, l, 2, 3, 4, 5, 6, 7, 8, 9], _ ).</strong></p>
+
+<p>Бремя решения задачи переложено теперь на
+отношение <strong>сумма1</strong>. Но это отношение
+является уже достаточно общим, чтобы можно было
+определить его рекурсивно. Без ограничения
+общности мы предположим, что все три списка,
+представляющие три числа, имеют одинаковую
+длину. Наш пример, конечно, удовлетворяет этому
+условию, но если это не так, то всегда можно
+приписать слева нужное количество нулей к более
+&quot;короткому&quot; числу.</p>
+
+<p>Определение отношения <strong>сумма1</strong> можно
+разбить на два случая:</p>
+
+<p>(1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Все три числа
+представляются пустыми списками. Тогда</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумма1( [ ], [ ], [ ], 0, 0,
+Циф, Циф).</strong></p>
+
+<p>(2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Все три числа имеют
+какую-то самую левую цифру и справа от нее -
+остальные цифры. То есть, они имеют вид:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>[D1 | Nl],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [D2 | N2],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [D | N]</strong></p>
+
+<p>В этом случае должны выполняться два условия:</p>
+
+<p>(а)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Оставшиеся цифры,
+рассматриваемые как три числа Nl, N2 и N, сами должны
+удовлетворять отношению <strong>сумма1</strong>, выдавая
+влево некоторый перенос С2 и оставляя некоторое
+подмножество неиспользованных цифр <strong>Циф2</strong>.</p>
+
+<p>(b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Крайние левые цифры D1,
+D2 и D, а также перенос С2 должны удовлетворять
+отношению, показанному на рис. 7.1: С2, D1 и D2
+складываются, давая в результате D и перенос
+влево. Это условие в нашей программе
+формулируется в виде отношения <strong>суммацифр</strong>.</p>
+
+<p>Переводя это на Пролог, получаем:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>сумма1( [D1 | N1], [D2 | N2],
+[D | N], С1, С, Циф1, Циф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; сумма1( Nl, N2, N, С1, С2, Циф1, Циф2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; суммацифр( D1, D2, С2, D, С, Циф2, Циф).</strong></p>
+
+<p>Осталось только описать на Прологе отношение <strong>суммацифр</strong>.
+В его определении есть одна тонкая деталь,
+касающаяся применения металогического
+предиката <strong>nonvar</strong>. D1, D2 и D должны быть
+десятичными цифрами. Если хоть одна из этих
+переменных еще не конкретизирована, ее нужно
+конкретизировать какой-нибудь цифрой из списка <strong>Циф2</strong>.
+Как только такая конкретизация произошла, эту
+цифру нужно удалить из множества доступных цифр.
+Если D1, D2 и D уже конкретизированы, тогда, конечно,
+ни одна из доступных цифр &quot;потрачена&quot; не
+будет. В программе эти действия реализуются при
+помощи недетерминированного вычеркивания
+элемента списка. Если этот элемент - не
+переменная, ничего не вычеркивается
+(конкретизации не было). Вот эта программа:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( Элемент,
+Список, Список) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+nonvar( Элемент),&nbsp; !.</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( Элемент,
+[Элемент | Список ], Список).</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить(Элемент, [А |
+Список], [А | Список1]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+удалить( Элемент, Список, Список1).</strong></p>
+
+<p>Полная программа для решения арифметических
+ребусов приводится на рис. 7.2. В программу
+включены также определения двух ребусов. Вопрос
+к пролог-системе для ребуса про DONALD'a, GERALD'a и ROBERT'a
+с использованием этой программы выглядит так:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; ребус1( N1, N2, N),
+сумма( N1, N2, N).</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p><small>%&nbsp; Решение числовых ребусов</small></p>
+
+<p><strong>сумма( N1, N2, N) :-</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Числа представлены в виде списков цифр</small><br>
+<strong>сумма1( N1, N2, N,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0, 0,</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Перенос справа и перенос влево равны 0</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<strong>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], _ ).</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Все цифры доступны</small></p>
+
+<p><strong>сумма1( [ ], [ ], [ ], 0, 0, Цифры, Цифры).</strong></p>
+
+<p><strong>сумма1( [D1 | N1], [D2 | N2], [D | N], C1, С, Циф1, Циф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; сумма1( Nl, N2, N, C1, C2, Циф1,
+Циф2),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; суммацифр( Dl, D2, C2, С, Циф2,
+Циф).</strong></p>
+
+<p><strong>суммацифр( Dl, D2, C1, D, С, Циф1, Циф) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( D1, Циф1, Циф2),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор доступной цифры для D1</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( D2, Циф2, Циф3),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор доступной цифры для D2</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>удалить( D, Циф3, Циф),</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Выбор доступной цифры для D</small><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>S is D1 + D2 + C1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D is S mod 10,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; С is S div 10.</strong></p>
+
+<p><strong>удалить( A, L, L) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonvar( A),&nbsp; !.</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<small>% Переменная А уже конкретизирована</small></p>
+
+<p><strong>удалить( А, [А | L], L).</strong></p>
+
+<p><strong>удалить( А, [В | L], [В | L1]) :-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; удалить( A, L, L1).</strong></p>
+
+<p><small>% Примеры ребусов</small></p>
+
+<p><strong>ребус1( [D, O, N, A, L, D],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [G, E, R,
+A, L, D],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [R, O, B,
+E, R, T].</strong></p>
+
+<p><strong>ребус2( [0, S, E, N, D],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [0, M, O,
+R, E],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [M, O, N,
+E, Y].</strong></p>
+<script language="JavaScript">line();</script>
+
+
+<p align="center"><small><strong>Рис. 7. 2.</strong>&nbsp; Программа для
+арифметических ребусов.</small></p>
+
+<p>Иногда этот ребус упрощают, сообщая часть
+решения в виде дополнительного ограничения,
+например D равно 5. В такой форме ребус можно
+передать пролог-системе при помощи <strong>сумма1</strong>:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>? -&nbsp; сумма1( [5, O, N, A,
+L, 5],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [G,
+E, R, A, L, 5],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [R,
+O, B, E, R, T],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,
+0, [0, 1, 2, 3, 4, 6, 7, 8, 9], _ ).</strong></p>
+
+<p>Интересно, что в обоих случаях существует
+только одно решение, т.е. только один способ
+заменить буквы цифрами.</p>
+
+<h4>Упражнения</h4>
+
+<p><strong>7. 1.</strong>&nbsp;&nbsp;&nbsp; Напишите процедуру <strong>упростить</strong>
+для упрощения алгебраических сумм, в которых
+участвуют числа и символы (строчные буквы). Пусть
+эта процедура переупорядочивает слагаемые так,
+чтобы символы предшествовали числам. Вот примеры
+ее использования:</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>?-&nbsp; упростить( 1 + 1 +
+а, Е).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Е = а + 2</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; упростить( l + a +
+4 + 2 + b + с, E).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Е = а + b + с + 7</strong></p>
+
+<p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ?-&nbsp; упростить( 3 + х
++ х, Е).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Е = 2*х + 3</strong></p>
+
+<p><strong>7. 2.</strong>&nbsp; Определите процедуру</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( Элемент,
+Список)</strong></p>
+
+<p>для добавления нового элемента в список.
+Предполагается, что все элементы, хранящиеся в
+списке, - атомы. <strong>Список</strong> состоит из всех
+хранящихся в нем элементов, а за ними следует
+хвост, который не конкретизирован и служит для
+принятия новых элементов. Пусть, например, в
+списке уже хранятся <strong>а</strong>, <strong>b</strong> и <strong>с</strong>,
+тогда</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Список = [а, b, с |
+Хвост]</strong></p>
+
+<p>где <strong>Хвост</strong> - переменная. Цель</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>добавить( d, Список)</strong></p>
+
+<p>вызовет конкретизацию</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Xвoст = [d |
+НовыйХвост]</strong> и<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Список = [а, b, с, d |
+НовыйХвост]</strong></p>
+
+<p>Таким способом структура может наращиваться,
+включая в себя новые элементы. Определите также
+соответствующее отношение принадлежности.</p>
+
+<p><a href="javascript:fa('7_2')">Посмотреть ответ</a></p>
+
+<hr>
+
+<p align="center"><a href="ch6_5.htm">Назад</a> | <a href="index.htm">Содержание</a>
+| <a href="ch7_2.htm">Вперёд</a></p>
+</body>
+<script language="JavaScript">
+
+hl();
+
+</script>
+
+</html>
