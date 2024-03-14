@@ -1,0 +1,48 @@
+fib(0):-write(0), !.
+fib(1):-write(1), !.
+fib(N):- N > -1, NN is N - 1, mfib(NN,0,R,0,1), write(R).
+mfib(N,N,R,_PREV,R):-!.
+mfib(N,CN,R,PREV,CUR):-
+    NN is CN + 1,
+    NPREV is CUR,
+    NCUR is PREV + CUR,
+    mfib(N,NN,R,NPREV,NCUR).
+
+tfib(N,N):-!.
+tfib(N,CN):-write(CN),write(': '),fib(CN),nl,NN is CN + 1, tfib(N,NN).
+fibS(N):-tfib(N,0).
+
+mmul(_X,Y,Y,R,R):-!.
+mmul(X,Y,N,R,V):-
+    NN is N + 1,
+    NV is V + X,
+    mmul(X,Y,NN,R,NV).
+mul(0,_Y):-write(0),!.
+mul(_X,0):-write(0),!.
+mul(X,Y):-(Y < 0 -> (YY is -Y, XX is -X);(YY is Y, XX is X)),mmul(XX,YY,0,R,0),write(R).
+
+ipr(N,N,R,R):-!.
+ipr(N,CN,R,V):-
+    NN is  CN + 1,
+    NV is V + CN * 2,
+    ipr(N,NN,R,NV).
+iprSumm(N):- N > -1, ipr(N,0,R,0),write(R).
+
+iprss(N,N):-!.
+iprss(N,CN):-write(CN),write(': '),iprSumm(CN),nl,NN is CN + 1, iprss(N, NN).
+iprSummS(N):-iprss(N,0).
+
+printSumm(S):-write('Summ: '),write(S),nl.
+cs(Cap,CCap):-
+    printSumm(CCap),
+    CCap < Cap,
+    repeat,
+    writeln('Введите положительное число'),
+    read(NUM),
+    (   NUM > 0 ->!),
+    NCCap is CCap + NUM,
+    cs(Cap,NCCap).
+cappedSum(0):-printSumm(0).
+cappedSum(Cap):- CCap is 0, not(cs(Cap,CCap)), write('Порог превышен'),nl.
+
+
