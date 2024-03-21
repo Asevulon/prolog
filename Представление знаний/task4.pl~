@@ -1,0 +1,15 @@
+msumm([],0):-!.
+msumm(L,R):- L = [H|T],msumm(T,NR), R is NR + H.
+summ(L):- msumm(L,R),writeln(R).
+testsumm:-summ([1,2,3,4,5,6,7,8,9,10]).
+
+mmax(L,R):-L = [H|T],(T\=[] ->(mmax(T,NR),(H > NR -> R is H; R is NR));R is H).
+max(L):-mmax(L,R), writeln(R).
+testmax:-max([1,2,3]),max([-1,-2,-3]),max([-50,-25,-100,100,25,50]).
+
+append([],L,L):-!.
+append([H|T],L,[H|AppT]):-append(T,L,AppT).
+mfind([],R,R,_).
+mfind([H|T],R, CR, CN):- ((CN = 2) -> (append(CR,[H],NCR),NCN is  1);(NCN is 2, NCR = CR)), mfind(T,R,NCR,NCN).
+find(L):-mfind(L,R,[],2),writeln(R).
+testfind:-find([1,2,3,4,5,6,7,8,9,10,11,12,13]).
